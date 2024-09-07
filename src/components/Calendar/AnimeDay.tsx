@@ -24,16 +24,15 @@ const AnimeMediumFormatted = ({
   dates: Map<Number, [String, Number]>;
   scroll?: boolean;
 }) => {
-  console.log(scroll);
   if (scroll) {
     return (
       <div className="flex gap-4 justify-center">
-        <AnimeMedium animeData={animeData} dates={dates} />
+        <AnimeMedium animeData={animeData} dates={dates} scroll={scroll} />
       </div>
     );
   }
   return (
-    <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+    <div className="flex flex-wrap gap-2 justify-center xl:justify-start">
       <AnimeMedium animeData={animeData} dates={dates} />
     </div>
   );
@@ -63,7 +62,7 @@ const AnimeDay = ({ day, animeData, dates, display }: AnimeDayProps) => {
         <div className="flex flex-col items-start">
           <div className={`${collapse ? "hidden" : "flex"}`}>
             {display == 0 ? (
-              <div className="">
+              <div className="flex flex-wrap gap-5 justify-start">
                 <AnimeSmall animeData={animeData} dates={dates} />
               </div>
             ) : display == 1 ? (

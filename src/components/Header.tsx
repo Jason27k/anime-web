@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Calendar, Heart, LogIn, Menu, Search, UserPen } from "lucide-react";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -36,28 +37,38 @@ const Header = ({ children }: { children: ReactNode }) => {
                   AnimeTrove
                 </SheetTitle>
                 <SheetDescription className="flex flex-col items-end gap-2 text-white">
-                  <Link href="search" className="flex gap-2">
-                    <Search size={24} />
-                    <p className="text-lg ">Search</p>
-                  </Link>
-                  <Link href="liked" className="flex gap-2">
-                    <Heart size={24} />
-                    <p className="text-lg">Liked</p>
-                  </Link>
-                  <Link href="calendar" className="flex gap-2">
-                    <Calendar size={24} />
-                    <p className="text-lg">Calendar</p>
-                  </Link>
-                  <Link href="sign-up" className="flex gap-2">
-                    <UserPen size={24} />
-                    <p className="text-lg">Sign Up</p>
-                  </Link>
-                  <Button className="w-24 bg-[#D67900] text-lg hover:bg-white hover:text-[#D67900]">
-                    <Link href="login" className="flex gap-2">
-                      <LogIn size={24} />
-                      <p>Login</p>
+                  <SheetClose asChild>
+                    <Link href="search" className="flex gap-2">
+                      <Search size={24} />
+                      <p className="text-lg ">Search</p>
                     </Link>
-                  </Button>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link href="liked" className="flex gap-2">
+                      <Heart size={24} />
+                      <p className="text-lg">Liked</p>
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link href="calendar" className="flex gap-2">
+                      <Calendar size={24} />
+                      <p className="text-lg">Calendar</p>
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link href="sign-up" className="flex gap-2">
+                      <UserPen size={24} />
+                      <p className="text-lg">Sign Up</p>
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Button className="w-24 bg-[#D67900] text-lg hover:bg-white hover:text-[#D67900]">
+                      <Link href="login" className="flex gap-2">
+                        <LogIn size={24} />
+                        <p>Login</p>
+                      </Link>
+                    </Button>
+                  </SheetClose>
                 </SheetDescription>
               </SheetHeader>
             </SheetContent>

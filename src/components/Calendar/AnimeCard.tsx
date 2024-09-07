@@ -26,7 +26,7 @@ const AnimeCard = ({
   return (
     <div className="flex">
       <div className="flex flex-col relative h-full">
-        <div className="relative h-[265px] w-[185px] lg:w-[160px] xl:w-[185px] md:h-[2">
+        <div className="relative h-[265px] w-[185px] lg:w-[160px] xl:w-[185px] md:h-[265px]">
           <Image src={image} alt={title} fill />
         </div>
         <div className="bg-[#000000b3] flex flex-col justify-around items-start absolute bottom-0 w-full min-h-20 p-2">
