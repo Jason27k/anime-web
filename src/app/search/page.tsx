@@ -21,7 +21,7 @@ const Search = async () => {
         <SearchFields
           genres={genres}
           seasons={seasons}
-          years={years}
+          years={years.reverse()}
           formats={formats}
         />
       )}

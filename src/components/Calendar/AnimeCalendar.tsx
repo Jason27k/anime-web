@@ -38,55 +38,20 @@ const AnimeCalendar = ({
   const offset = new Date().getDay() - 1;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full">
       <Tabs
         defaultValue="layout"
-        className="mx-auto sm:w-[400px] sm:mr-0 sm:ml-auto pt-3"
+        className="flex flex-col md:flex-row md:justify-between md:items-center mx-auto w-full sm:mr-0 sm:ml-auto pt-4"
       >
-        <TabsList className="grid w-full grid-cols-3 bg-transparent text-[#9fa7b0]">
+        <TabsList className="grid w-full md:max-w-[400px] grid-cols-2 bg-transparent text-[#9fa7b0]">
           <TabsTrigger value="layout">Layout</TabsTrigger>
           <TabsTrigger value="options">Options</TabsTrigger>
-          <TabsTrigger value="hide">
-            <EyeOff size={18} />
-          </TabsTrigger>
         </TabsList>
         <TabsContent value="layout">
           <Card className="bg-transparent text-white border-0">
-            <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <div className="flex sm:hidden justify-center sm:justify-end gap-2 pt-4">
-                  <Button
-                    className={`${
-                      display === 0
-                        ? "bg-[#d67900] text-white"
-                        : "bg-[#1f1f1f] text-[#d67900]"
-                    } px-2 py-1 rounded-md`}
-                    onClick={() => setDisplay(0)}
-                  >
-                    <List size={24} className="" />
-                  </Button>
-                  <Button
-                    className={`${
-                      display === 1
-                        ? "bg-[#d67900] text-white"
-                        : "bg-[#1f1f1f] text-[#d67900]"
-                    } px-2 py-1 rounded-md`}
-                    onClick={() => setDisplay(1)}
-                  >
-                    <GalleryHorizontalEnd size={24} />
-                  </Button>
-                  <Button
-                    className={`${
-                      display === 2 || display === 3
-                        ? "bg-[#d67900] text-white"
-                        : "bg-[#1f1f1f] text-[#d67900]"
-                    } px-2 py-1 rounded-md`}
-                    onClick={() => setDisplay(2)}
-                  >
-                    <LayoutGrid size={24} />
-                  </Button>
-                </div>
-                <div className="hidden sm:flex justify-center sm:justify-end gap-2 pt-4">
+            <CardContent className="p-0">
+              <div className="space-y-1 md:space-y-0">
+                <div className="flex justify-center md:justify-end gap-2 pt-4 md:pt-0">
                   <Button
                     className={`${
                       display === 0
@@ -134,12 +99,12 @@ const AnimeCalendar = ({
         </TabsContent>
         <TabsContent value="options">
           <Card className="bg-transparent text-white border-0">
-            <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <div className="flex justify-center sm:justify-end gap-2 pt-4">
+            <CardContent className="p-0">
+              <div className="space-y-1 md:space-y-0">
+                <div className="flex justify-center md:justify-end gap-2 pt-4 md:pt-0">
                   <Button
                     className={`${
-                      display === 0
+                      languageContext.language === LanguageType.Romanji
                         ? "bg-[#d67900] text-white"
                         : "bg-[#1f1f1f] text-[#d67900]"
                     } px-2 py-1 rounded-md`}
@@ -151,7 +116,7 @@ const AnimeCalendar = ({
                   </Button>
                   <Button
                     className={`${
-                      display === 0
+                      languageContext.language === LanguageType.English
                         ? "bg-[#d67900] text-white"
                         : "bg-[#1f1f1f] text-[#d67900]"
                     } px-2 py-1 rounded-md`}
@@ -163,7 +128,7 @@ const AnimeCalendar = ({
                   </Button>
                   <Button
                     className={`${
-                      display === 0
+                      languageContext.language === LanguageType.Japanese
                         ? "bg-[#d67900] text-white"
                         : "bg-[#1f1f1f] text-[#d67900]"
                     } px-2 py-1 rounded-md`}

@@ -10,6 +10,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Eye } from "lucide-react";
 
 const ForgotPasswordPage: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -18,6 +19,7 @@ const ForgotPasswordPage: NextPage = () => {
   const [successfulCreation, setSuccessfulCreation] = useState(false);
   const [secondFactor, setSecondFactor] = useState(false);
   const [error, setError] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const router = useRouter();
   const { isSignedIn } = useAuth();
@@ -143,14 +145,25 @@ const ForgotPasswordPage: NextPage = () => {
                     >
                       Enter your new password
                     </label>
-                    <input
-                      type="password"
-                      required
-                      placeholder="john@doe.com"
-                      className="w-full rounded-md bg-zinc-300 px-3.5 py-2 text-sm outline-none ring-1 ring-inset ring-zinc-300 hover:ring-zinc-400 focus:ring-[1.5px] focus:ring-zinc-950 data-[invalid]:ring-red-400"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <div className="relative">
+                      <input
+                        type={passwordVisible ? "text" : "password"}
+                        required
+                        placeholder="Password"
+                        className="w-full rounded-md bg-zinc-300 px-3.5 py-2 text-sm outline-none ring-1 ring-inset ring-zinc-300 hover:ring-zinc-400 focus:ring-[1.5px] focus:ring-zinc-950 data-[invalid]:ring-red-400"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPasswordVisible(!passwordVisible)}
+                        aria-label={
+                          passwordVisible ? "Hide password" : "Show password"
+                        }
+                      >
+                        <Eye size={20} className="absolute top-[8px] right-2" />
+                      </button>
+                    </div>
                     {error && (
                       <p className="block text-sm text-red-400">{error}</p>
                     )}

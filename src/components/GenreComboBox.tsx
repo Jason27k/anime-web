@@ -103,11 +103,12 @@ export function GenreComboBox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between border-input h-[42px] w-52"
+          className="justify-between border-input h-[42px]"
+          id="genres"
         >
           <div
             ref={containerRef}
-            className="flex items-center gap-1 max-w-[250px] overflow-hidden text-muted-foreground font-normal"
+            className="flex items-center gap-1 overflow-hidden text-muted-foreground font-normal"
           >
             {selectedGenres.length > 0 ? (
               <>
@@ -142,17 +143,17 @@ export function GenreComboBox({
                 )}
               </>
             ) : (
-              "Select frameworks..."
+              "Select genres..."
             )}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." />
+          <CommandInput placeholder="Search genres..." />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No Genre found.</CommandEmpty>
             <CommandGroup>
               {genres.map((genre) => (
                 <CommandItem

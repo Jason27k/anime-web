@@ -47,7 +47,7 @@ const AnimeDay = ({ day, animeData, dates, display }: AnimeDayProps) => {
 
   return (
     <>
-      <div className="flex w-full justify-between items-center pt-10 pb-6">
+      <div className="flex w-full justify-between items-center pt-5 pb-6">
         <h1 className="text-white text-4xl">{day}</h1>
         <Button className="bg-transparent" onClick={handleCollapse}>
           {collapse ? (

@@ -5,8 +5,12 @@ import * as SignUp from "@clerk/elements/sign-up";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Eye } from "lucide-react";
 
 export default function SignUpPage() {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   return (
     <div className="h-[50vh] pt-20">
       <div className="grid w-full flex-grow items-center px-4 sm:justify-center">
@@ -59,12 +63,23 @@ export default function SignUpPage() {
                 <Clerk.Label className="text-sm font-medium text-white">
                   Password
                 </Clerk.Label>
-                <Clerk.Input
-                  type="password"
-                  required
-                  placeholder="Password"
-                  className="w-full rounded-md bg-zinc-300 px-3.5 py-2 text-sm outline-none ring-1 ring-inset ring-zinc-300 hover:ring-zinc-400 focus:ring-[1.5px] focus:ring-zinc-950 data-[invalid]:ring-red-400"
-                />
+                <div className="relative">
+                  <Clerk.Input
+                    type={passwordVisible ? "text" : "password"}
+                    required
+                    placeholder="Password"
+                    className="w-full rounded-md bg-zinc-300 px-3.5 py-2 text-sm outline-none ring-1 ring-inset ring-zinc-300 hover:ring-zinc-400 focus:ring-[1.5px] focus:ring-zinc-950 data-[invalid]:ring-red-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                    aria-label={
+                      passwordVisible ? "Hide password" : "Show password"
+                    }
+                  >
+                    <Eye size={20} className="absolute top-[8px] right-2" />
+                  </button>
+                </div>
                 <Clerk.FieldError className="block text-sm text-red-400" />
               </Clerk.Field>
             </div>
