@@ -4,6 +4,9 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { cn } from "@/lib/utils";
 import Provider from "./Provider";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 const robo = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
@@ -21,17 +24,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={cn(
-          "bg-[#141414] h-screen overflow-x-hidden",
-          robo.className
-        )}
-      >
-        <Header>
-          <Provider>{children}</Provider>
-        </Header>
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+      }}
+    >
+      <html lang="en">
+        <body
+          className={cn(
+            "bg-[#141414] h-screen overflow-x-hidden",
+            robo.className
+          )}
+        >
+          <Header>
+            <Provider>
+              <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+            </Provider>
+          </Header>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

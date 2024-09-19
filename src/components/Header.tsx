@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import React, { ReactNode } from "react";
 import { Button } from "./ui/button";
@@ -12,6 +13,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/clerk-react";
 
 const Header = ({ children }: { children: ReactNode }) => {
   return (
@@ -96,19 +104,24 @@ const Header = ({ children }: { children: ReactNode }) => {
           >
             <Link href="calendar">Calendar</Link>
           </Button>
-          <Button
-            className="w-20 text-white hover:bg-[#d679009d] hover:text-white"
-            variant={"ghost"}
-            asChild
-          >
-            <Link href="sign-up">Sign Up</Link>
-          </Button>
-          <Button
-            className="w-24 bg-[#D67900] hover:bg-white hover:text-[#D67900]"
-            asChild
-          >
-            <Link href="login">Login</Link>
-          </Button>
+          <SignedOut>
+            <Button
+              className="w-20 text-white hover:bg-[#d679009d] hover:text-white"
+              variant={"ghost"}
+              asChild
+            >
+              <SignUpButton />
+            </Button>
+            <Button
+              className="w-24 bg-[#D67900] hover:bg-white hover:text-[#D67900]"
+              asChild
+            >
+              <SignInButton />
+            </Button>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
       <div className="px-5 md:px-10 lg:px-20 xl:px-30 2xl:px-[15vw] w-screen">

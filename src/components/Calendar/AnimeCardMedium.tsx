@@ -45,7 +45,11 @@ const AnimeCardMedium = ({
             className="mx-auto"
           />
         </div>
-        <h2 className="text-white line-clamp-2 text-start text-base h-[3rem]">
+        <h2
+          className={`${
+            scroll ? "w-52" : " "
+          } text-white line-clamp-2 text-start  text-base h-[3rem]`}
+        >
           {title}
         </h2>
         <div className="flex text-[#8c8c8c] gap-2 text-sm items-end justify-star ">

@@ -32,7 +32,7 @@ const AnimeMediumFormatted = ({
     );
   }
   return (
-    <div className="flex flex-wrap gap-2 justify-center xl:justify-start">
+    <div className="flex flex-wrap gap-2 justify-center sm:justify-start w-full">
       <AnimeMedium animeData={animeData} dates={dates} />
     </div>
   );
@@ -60,7 +60,7 @@ const AnimeDay = ({ day, animeData, dates, display }: AnimeDayProps) => {
 
       <ScrollArea>
         <div className="flex flex-col items-start">
-          <div className={`${collapse ? "hidden" : "flex"}`}>
+          <div className={`${collapse ? "hidden" : "flex"} w-full`}>
             {display == 0 ? (
               <div className="flex flex-wrap gap-5 justify-start">
                 <AnimeSmall animeData={animeData} dates={dates} />
