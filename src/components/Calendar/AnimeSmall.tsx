@@ -1,35 +1,29 @@
 import { Anime } from "@tutkli/jikan-ts";
-import AnimeSmallCard from "./AnimeSmallCard";
-import { LanguageContext, LanguageType } from "@/app/Provider";
-import { useContext } from "react";
+import AnimeSmallCard from "../Cards/AnimeSmallCard";
+import AnimeLongCard from "../Cards/AnimeLongCard";
 
 const AnimeSmall = ({
   animeData,
-  dates,
+  showDay,
 }: {
   animeData: Anime[];
-  dates: Map<Number, [String, Number]>;
+  showDay: boolean;
 }) => {
-  const languageContext = useContext(LanguageContext);
-
   return (
     <>
-      {animeData.map((anime: Anime) => (
-        <AnimeSmallCard
-          title={
-            (languageContext.language === LanguageType.English
-              ? anime.title_english
-              : languageContext.language === LanguageType.Romanji
-              ? anime.title
-              : anime.title_japanese) ?? anime.title
-          }
-          image={
-            anime.images.webp?.large_image_url ?? anime.images.jpg.image_url
-          }
-          time={dates.get(anime.mal_id)?.[0] ?? ""}
-          key={anime.mal_id}
-        />
-      ))}
+      {showDay ? (
+        animeData.map((anime: Anime) => (
+          <AnimeLongCard anime={anime} key={anime.mal_id} />
+        ))
+      ) : (
+        <div className="flex justify-start flex-wrap w-full ml-auto">
+          {animeData.map((anime: Anime) => (
+            <div className="py-2" key={anime.mal_id}>
+              <AnimeSmallCard anime={anime} />
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 };

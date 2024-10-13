@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,50 +19,90 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Genre } from "@tutkli/jikan-ts";
+import { useRouter } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 
-export function GenreComboBox({
-  genres,
-  selectedGenres,
-  setSelectedGenres,
-}: {
-  genres: Genre[];
-  selectedGenres: Genre[];
-  setSelectedGenres: (genres: Genre[]) => void;
-}) {
+export function GenreComboBox({ genres }: { genres: Genre[] }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const selectedGenres = searchParams.get("genres");
+
+  console.log("selectedGenres", selectedGenres?.split(","));
+
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [hiddenCount, setHiddenCount] = React.useState(0);
 
-  const handleSelect = (currentValue: Genre) => {
-    setSelectedGenres((prev) =>
-      prev.includes(currentValue)
-        ? prev.filter((value) => value.mal_id !== currentValue.mal_id)
-        : [...prev, currentValue]
-    );
+  const returnParamsExcepts = useCallback(
+    (name: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete(name);
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const handleSelect = (currentValue: string) => {
+    const newParams = returnParamsExcepts("genres");
+    let newGenres = "";
+    if (selectedGenres === null) {
+      newGenres = currentValue;
+    } else {
+      newGenres = selectedGenres.split(",").includes(currentValue)
+        ? selectedGenres
+            .split(",")
+            .filter((value) => value !== currentValue)
+            .join(",")
+        : [...selectedGenres.split(","), currentValue].join(",");
+    }
+    if (newGenres.length === 0) {
+      router.push(`${pathname}?${newParams}`);
+      return;
+    }
+    const updatedUrl = `${pathname}?${newParams}${
+      newParams.length > 0 ? "&" : ""
+    }genres=${newGenres}`;
+    router.push(updatedUrl);
   };
 
-  const handleRemove = (valueToRemove: Genre) => {
-    setSelectedGenres((prev) =>
-      prev.filter((value) => value.mal_id !== valueToRemove.mal_id)
-    );
+  const handleRemove = (genreToRemove: String) => {
+    if (selectedGenres === null) {
+      return;
+    }
+    const prev = selectedGenres.split(",");
+    const newSelectedGenres = prev
+      .filter((value) => value !== genreToRemove)
+      .join(",");
+    const newParams = returnParamsExcepts("genres");
+
+    if (newSelectedGenres.length === 0) {
+      router.push(`${pathname}?${newParams}`);
+    } else {
+      const updatedUrl = `${pathname}?${newParams}${
+        newParams.length > 0 ? "&" : ""
+      }genres=${newSelectedGenres}`;
+      router.push(updatedUrl);
+    }
   };
 
   React.useEffect(() => {
     const updateHiddenCount = () => {
-      if (containerRef.current && selectedGenres.length > 0) {
+      if (containerRef.current && selectedGenres && selectedGenres.length > 0) {
         const container = containerRef.current;
         const firstBadge = container.querySelector(
           ".selection-badge"
         ) as HTMLElement;
-        const containerWidth = container.offsetWidth - 60; // Subtract space for dropdown icon and padding
+        const containerWidth = container.offsetWidth - 60;
 
         if (firstBadge) {
           const firstBadgeWidth = firstBadge.offsetWidth;
           const availableSpace = containerWidth - firstBadgeWidth;
 
           if (availableSpace < 50) {
-            // If there's not enough space for "+X" badge
-            setHiddenCount(selectedGenres.length - 1);
+            setHiddenCount(selectedGenres.split(",").length - 1);
           } else {
             let totalWidth = firstBadgeWidth;
             let visibleCount = 1;
@@ -81,7 +120,9 @@ export function GenreComboBox({
               visibleCount++;
             }
 
-            setHiddenCount(Math.max(0, selectedGenres.length - visibleCount));
+            setHiddenCount(
+              Math.max(0, selectedGenres.split(",").length - visibleCount)
+            );
           }
         } else {
           setHiddenCount(0);
@@ -105,48 +146,52 @@ export function GenreComboBox({
           aria-expanded={open}
           className="justify-between border-input h-[42px]"
           id="genres"
+          asChild
         >
-          <div
-            ref={containerRef}
-            className="flex items-center gap-1 overflow-hidden text-muted-foreground font-normal"
-          >
-            {selectedGenres.length > 0 ? (
-              <>
-                <Badge
-                  key={selectedGenres[0].mal_id}
-                  variant="secondary"
-                  className="selection-badge mr-1"
-                >
-                  {
-                    genres.find(
-                      (genre) => genre.mal_id === selectedGenres[0].mal_id
-                    )?.name
-                  }
-                  <button
-                    className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleRemove(selectedGenres[0]);
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onClick={() => handleRemove(selectedGenres[0])}
+          <div className="">
+            <div
+              ref={containerRef}
+              className="flex items-center gap-1 overflow-hidden text-muted-foreground font-normal"
+            >
+              {selectedGenres && selectedGenres.length > 0 ? (
+                <>
+                  <Badge
+                    key={selectedGenres[0] + "badge" + selectedGenres}
+                    variant="secondary"
+                    className="selection-badge mr-1"
                   >
-                    <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                  </button>
-                </Badge>
-                {hiddenCount > 0 && (
-                  <Badge variant="secondary">+{hiddenCount}</Badge>
-                )}
-              </>
-            ) : (
-              "Select genres..."
-            )}
+                    {
+                      genres.find(
+                        (genre) =>
+                          String(genre.mal_id) === selectedGenres.split(",")[0]
+                      )?.name
+                    }
+                    <div
+                      className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleRemove(selectedGenres.split(",")[0]);
+                        }
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={() => handleRemove(selectedGenres.split(",")[0])}
+                    >
+                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                    </div>
+                  </Badge>
+                  {hiddenCount > 0 && (
+                    <Badge variant="secondary">+{hiddenCount}</Badge>
+                  )}
+                </>
+              ) : (
+                "Select genres..."
+              )}
+            </div>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
@@ -157,15 +202,20 @@ export function GenreComboBox({
             <CommandGroup>
               {genres.map((genre) => (
                 <CommandItem
-                  key={genre.mal_id}
+                  key={genre.mal_id + "genre" + selectedGenres}
                   value={genre.name}
-                  onSelect={() => handleSelect(genre)}
+                  onSelect={() => handleSelect(String(genre.mal_id))}
                   className="cursor-pointer"
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      selectedGenres.includes(genre)
+                      selectedGenres
+                        ?.split(",")
+                        .find(
+                          (selected: String) =>
+                            selected === String(genre.mal_id)
+                        )
                         ? "opacity-100"
                         : "opacity-0"
                     )}

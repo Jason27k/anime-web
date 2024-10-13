@@ -18,6 +18,8 @@ export async function fetchDataWithRetry<T>(
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       var response = await jikanLimiter.schedule(() => {
+        console.log(`Attempt ${attempt}`);
+        console.log(func);
         return Promise.resolve(func());
       });
       return response;

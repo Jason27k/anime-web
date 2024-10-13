@@ -29,11 +29,18 @@ export function convertToLocalTime(
   }
   const [hours, minutes] = time.split(":").map(Number);
 
+  var dayPlusOffset = date.day + dayOffset;
+  if (dayPlusOffset > date.daysInMonth) {
+    console.log(dayPlusOffset - date.daysInMonth);
+    dayPlusOffset = dayPlusOffset - date.daysInMonth;
+    date = date.set({ month: date.month + 1 });
+  }
+
   const tokyoTime = DateTime.fromObject(
     {
       year: date.year,
       month: date.month,
-      day: date.day + dayOffset,
+      day: dayPlusOffset,
       hour: hours,
       minute: minutes,
     },

@@ -3,7 +3,9 @@ import { convertToLocalTime } from "@/utils/date";
 import { fetchSchedule } from "../actions";
 
 const WeeklyCalendar = async () => {
-  const dates = new Map<Number, [String, Number]>();
+  const MIN_MEMBERS = 10000;
+
+  const dates = new Map<Number, Number>();
   var page = 1;
   var response = await fetchSchedule(page);
 
@@ -11,7 +13,7 @@ const WeeklyCalendar = async () => {
     return <div>Failed to fetch data, please refresh</div>;
   }
 
-  var animeData = response.data;
+  var animeData = response.data.filter((anime) => anime.members >= MIN_MEMBERS);
 
   animeData.map((anime) => {
     dates.set(
@@ -20,7 +22,7 @@ const WeeklyCalendar = async () => {
         anime.broadcast.day,
         anime.broadcast.time,
         anime.broadcast.timezone
-      )
+      )[1]
     );
   });
 
@@ -30,7 +32,9 @@ const WeeklyCalendar = async () => {
     if (response === undefined) {
       break;
     }
-    animeData.push(...response.data);
+    animeData.push(
+      ...response.data.filter((anime) => anime.members > MIN_MEMBERS)
+    );
     animeData.map((anime) => {
       dates.set(
         anime.mal_id,
@@ -38,12 +42,11 @@ const WeeklyCalendar = async () => {
           anime.broadcast.day,
           anime.broadcast.time,
           anime.broadcast.timezone
-        )
+        )[1]
       );
     });
   }
 
-  animeData = animeData.filter((anime) => anime.members > 15000);
   return (
     <div className="">
       <AnimeCalendar animeData={animeData} dates={dates} />
