@@ -64,7 +64,6 @@ const monthToSeason = (month: number) => {
 export const fetchAnimeSearch = async (
   genres?: string,
   year?: string,
-  format?: string,
   text?: string,
   season?: string,
   page?: number
@@ -76,9 +75,6 @@ export const fetchAnimeSearch = async (
   if (year) {
     params["start_date"] = year + "-01-01";
     params["end_date"] = year + "-12-31";
-  }
-  if (format) {
-    params["type"] = format;
   }
   if (text) {
     params["q"] = text;
@@ -120,6 +116,7 @@ export const fetchAnimeSearch = async (
       }
     }
   }
+  params["type"] = "TV";
   if (page) {
     params["page"] = String(page);
   }

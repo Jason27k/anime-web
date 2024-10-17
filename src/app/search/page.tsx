@@ -16,12 +16,10 @@ const Search = async ({
     );
   const years = range(1940, currentYear, 1);
   const seasons = ["winter", "spring", "summer", "fall"];
-  const formats = ["TV", "OVA", "Movie", "Special"];
 
   const selectedGenres = searchParams?.genres;
   const selectedSeason = searchParams?.season;
   const selectedYear = searchParams?.year;
-  const selectedFormat = searchParams?.format;
   const query = searchParams?.query;
 
   if (selectedSeason && !selectedYear) {
@@ -29,8 +27,6 @@ const Search = async ({
     redirect(
       `/search/?${query ? "query=" + query + "&" : ""}${
         selectedGenres ? "genres=" + selectedGenres + "&" : ""
-      }${
-        selectedFormat ? "format=" + selectedFormat + "&" : ""
       }season=${selectedSeason}&year=${currentYear}`
     );
   }
@@ -38,7 +34,6 @@ const Search = async ({
   const response = await fetchAnimeSearch(
     selectedGenres,
     selectedYear,
-    selectedFormat,
     query,
     selectedSeason
   );
@@ -51,7 +46,6 @@ const Search = async ({
           genres={genres}
           seasons={seasons}
           years={years.reverse()}
-          formats={formats}
           animeData={
             selectedSeason
               ? animeData.filter((anime) => anime.season === selectedSeason)

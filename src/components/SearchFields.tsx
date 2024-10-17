@@ -34,13 +34,12 @@ import { useRouter } from "next/navigation";
 import { usePathname, useSearchParams } from "next/navigation";
 import AnimeDisplay from "./AnimeDisplay";
 import { useInView } from "react-intersection-observer";
-import { fetchAnime, fetchAnimeSearch } from "@/app/actions";
+import { fetchAnimeSearch } from "@/app/actions";
 
 interface SearchFieldsProps {
   genres: Genre[];
   seasons: string[];
   years: number[];
-  formats: string[];
   className?: string;
   animeData: Anime[];
 }
@@ -49,7 +48,6 @@ const SearchFields = ({
   genres,
   seasons,
   years,
-  formats,
   className,
   animeData,
 }: SearchFieldsProps) => {
@@ -59,7 +57,6 @@ const SearchFields = ({
 
   const selectedYear = searchParams.get("year");
   const selectedSeason = searchParams.get("season");
-  const selectedFormat = searchParams.get("format");
   const selectedGenres = searchParams.get("genres")?.split(",");
 
   const { ref, inView } = useInView();
@@ -71,7 +68,6 @@ const SearchFields = ({
       const response = await fetchAnimeSearch(
         selectedGenres?.join(",") ?? undefined,
         selectedYear ?? undefined,
-        selectedFormat ?? undefined,
         searchParams.get("query") ?? undefined,
         selectedSeason ?? undefined,
         page
@@ -90,7 +86,6 @@ const SearchFields = ({
     inView,
     selectedGenres,
     selectedYear,
-    selectedFormat,
     searchParams,
     selectedSeason,
     page,
@@ -180,12 +175,6 @@ const SearchFields = ({
           createQueryStringPair("season", season, "year", String(currentYear))
       );
     }
-  };
-
-  const handleFormatSelect = (format: string) => {
-    router.push(
-      pathname + "?" + createQueryString("format", format).toString()
-    );
   };
 
   const handleGenreRemove = (genreID: String) => {
@@ -293,27 +282,6 @@ const SearchFields = ({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-1 min-w-[150px] xl:min-w-[200px] min-[1530px]:min-w-[150px] min-[1600px]:min-w-[200px] flex-2">
-            <Label htmlFor="formats">Formats</Label>
-            <Select
-              onValueChange={handleFormatSelect}
-              value={selectedFormat || undefined}
-            >
-              <SelectTrigger
-                className="text-muted-foreground border-input h-[42px]"
-                id="formats"
-              >
-                <SelectValue placeholder="Select formats..." />
-              </SelectTrigger>
-              <SelectContent>
-                {formats.map((format) => (
-                  <SelectItem key={format} value={format}>
-                    {format}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       </div>
       <div className="flex flex-wrap w-full justify-start gap-2 py-3">
@@ -338,19 +306,6 @@ const SearchFields = ({
             }
           >
             <p className="text-sm">{selectedSeason}</p>
-            <div className="hidden group-hover:block">
-              <X className="h-4 w-4 text-muted-foreground" size={16} />
-            </div>
-          </div>
-        )}
-        {selectedFormat && (
-          <div
-            className="bg-white px-3 py-1 rounded-lg group flex items-center gap-1"
-            onClick={() =>
-              router.push(pathname + "?" + createQueryString("format", ""))
-            }
-          >
-            <p className="text-sm">{selectedFormat}</p>
             <div className="hidden group-hover:block">
               <X className="h-4 w-4 text-muted-foreground" size={16} />
             </div>
