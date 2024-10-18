@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,8 +17,8 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Genre } from "@tutkli/jikan-ts";
-import { useRouter } from "next/navigation";
-import { usePathname, useSearchParams } from "next/navigation";
+import {} from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 export function GenreComboBox({ genres }: { genres: Genre[] }) {
@@ -29,8 +27,6 @@ export function GenreComboBox({ genres }: { genres: Genre[] }) {
   const searchParams = useSearchParams();
 
   const selectedGenres = searchParams.get("genres");
-
-  console.log("selectedGenres", selectedGenres?.split(","));
 
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -139,7 +135,7 @@ export function GenreComboBox({ genres }: { genres: Genre[] }) {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild className="w-full">
         <Button
           variant="outline"
           role="combobox"
@@ -194,18 +190,18 @@ export function GenreComboBox({ genres }: { genres: Genre[] }) {
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
+      <PopoverContent className="w-screen md:w-full bg-transparent border-0 px-5 -mt-4 md:px-0 md:mt-0">
+        <Command className="w-full">
           <CommandInput placeholder="Search genres..." />
-          <CommandList>
+          <CommandList className="w-full">
             <CommandEmpty>No Genre found.</CommandEmpty>
-            <CommandGroup>
+            <CommandGroup className="w-full">
               {genres.map((genre) => (
                 <CommandItem
                   key={genre.mal_id + "genre" + selectedGenres}
                   value={genre.name}
                   onSelect={() => handleSelect(String(genre.mal_id))}
-                  className="cursor-pointer"
+                  className="cursor-pointer w-full"
                 >
                   <Check
                     className={cn(

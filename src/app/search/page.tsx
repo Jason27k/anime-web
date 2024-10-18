@@ -37,7 +37,7 @@ const Search = async ({
     query,
     selectedSeason
   );
-  const animeData = response?.data;
+  const animeData = response?.data.filter((anime) => anime.members > 1000);
 
   return (
     <div>

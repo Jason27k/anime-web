@@ -1,7 +1,8 @@
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import AnimeSmall from "./Calendar/AnimeSmall";
+import AnimeLongCard from "./Cards/AnimeLongCard";
 import { AnimeMediumFormatted } from "./AnimeMediumFormatted";
 import AnimeCard from "./Cards/AnimeCard";
+import { Anime } from "@tutkli/jikan-ts";
 
 const AnimeDisplay = ({
   animeData,
@@ -19,11 +20,10 @@ const AnimeDisplay = ({
       <div className="flex flex-col items-center">
         <div className="">
           {display == 0 ? (
-            <div className="flex flex-wrap gap-5 justify-center bg-orange-700">
-              <AnimeSmall
-                animeData={animeData}
-                showDay={showDay ? showDay : false}
-              />
+            <div className="flex flex-wrap gap-5 justify-center">
+              {animeData.map((anime: Anime) => (
+                <AnimeLongCard anime={anime} key={anime.mal_id} />
+              ))}
             </div>
           ) : display == 1 && scroll ? (
             <div className="flex gap-4 justify-center">
@@ -49,7 +49,7 @@ const AnimeDisplay = ({
                 />
               </div>
               <div className="hidden min-[465px]:grid w-full grid-cols-1 min-[975px]:grid-cols-2 min-[2000px]:grid-cols-3 gap-4 justify-center">
-                {animeData.map((anime: any) => (
+                {animeData.map((anime: Anime) => (
                   <AnimeCard
                     anime={anime}
                     key={anime.mal_id}

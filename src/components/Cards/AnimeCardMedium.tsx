@@ -50,8 +50,7 @@ const AnimeCardMedium = ({ anime, showDay }: AnimeCardMediumProps) => {
         <h2 className="w-52 text-white line-clamp-2 text-start text-base h-[3rem]">
           {title}
         </h2>
-        <div className="flex text-[#8c8c8c] gap-2 text-sm items-end justify-star ">
-          {showDay && <p className="text-start">{time ? time[0] : ""}</p>}
+        <div className="flex text-[#8c8c8c] gap-2 text-sm items-end justify-between ">
           <div className="flex justify-start items-center gap-1">
             <User size={17} />
             <p>
@@ -61,6 +60,7 @@ const AnimeCardMedium = ({ anime, showDay }: AnimeCardMediumProps) => {
                 : Math.floor(members / 1000) + "K"}
             </p>
           </div>
+          {showDay && <p className="text-start">{time ? time[0] : ""}</p>}
           <div className="flex justify-start items-center gap-1">
             <Star size={17} />
             <p>{score}</p>

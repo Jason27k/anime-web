@@ -1,4 +1,3 @@
-import AnimeMedium from "@/components/Calendar/AnimeMedium";
 import { Anime } from "@tutkli/jikan-ts";
 import AnimeCardMedium from "./Cards/AnimeCardMedium";
 
@@ -13,7 +12,7 @@ export const AnimeMediumFormatted = ({
 }) => {
   if (scroll) {
     return (
-      <div className="flex gap-4 justify-center">
+      <div className="flex gap-4 justify-center" key="scroll">
         {animeData.map((anime: any) => (
           <AnimeCardMedium anime={anime} key={anime.id} showDay={showDay} />
         ))}
@@ -21,7 +20,10 @@ export const AnimeMediumFormatted = ({
     );
   }
   return (
-    <div className="flex flex-wrap gap-3 justify-center w-full">
+    <div
+      className="flex flex-wrap gap-3 justify-center w-full"
+      key="non-scroll"
+    >
       {animeData.map((anime: any) => (
         <AnimeCardMedium anime={anime} key={anime.id} showDay={showDay} />
       ))}

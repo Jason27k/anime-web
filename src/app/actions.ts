@@ -118,6 +118,11 @@ export const fetchAnimeSearch = async (
   }
   params["type"] = "TV";
   if (page) {
+    if (page === -1) {
+      return {
+        data: [],
+      };
+    }
     params["page"] = String(page);
   }
   return await fetchDataWithRetry<Anime[]>(() =>

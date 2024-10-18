@@ -1,3 +1,5 @@
+"use client";
+
 import { CirclePlus, Star, User } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -6,6 +8,7 @@ import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
 import { convertToLocalTime } from "@/utils/date";
 import { Anime } from "@tutkli/jikan-ts";
+import { useEffect, useState, useRef } from "react";
 
 interface AnimeCardProps {
   anime: Anime;
@@ -14,6 +17,36 @@ interface AnimeCardProps {
 
 const AnimeCard = ({ anime, showDay }: AnimeCardProps) => {
   const languageContext = useContext(LanguageContext);
+  const [visibleGenres, setVisibleGenres] = useState(3);
+  const genreContainerRef = useRef<HTMLDivElement>(null);
+
+  const updateVisibleGenres = () => {
+    if (genreContainerRef.current) {
+      const containerWidth = genreContainerRef.current.offsetWidth;
+      const buttonWidth = 100; // Approximate width of each genre button
+      const additionalButtonWidth = 50; // Approximate width of the "+X" button
+
+      // Calculate how many genres can fit based on the container width
+      let maxGenres = Math.floor(containerWidth / buttonWidth) - 1;
+      if (visibleGenres < maxGenres) {
+        maxGenres -= additionalButtonWidth;
+      }
+      setVisibleGenres(Math.max(1, maxGenres));
+    }
+  };
+
+  useEffect(() => {
+    const observer = new ResizeObserver(updateVisibleGenres);
+    if (genreContainerRef.current) {
+      observer.observe(genreContainerRef.current);
+    }
+
+    return () => {
+      if (genreContainerRef.current) {
+        observer.unobserve(genreContainerRef.current);
+      }
+    };
+  }, []);
 
   const image =
     anime.images.webp?.large_image_url ?? anime.images.jpg.image_url;
@@ -113,8 +146,11 @@ const AnimeCard = ({ anime, showDay }: AnimeCardProps) => {
           <div className="ml-auto pl-1">
             <CirclePlus size={24} className="text-[#7c8793] ml-auto" />
           </div>
-          <div className="flex items-center justify-start overflow-scroll w-full">
-            {genres.slice(0, 3).map((genre, index) => (
+          <div
+            ref={genreContainerRef}
+            className="flex items-center justify-start overflow-hidden w-full"
+          >
+            {genres.slice(0, visibleGenres).map((genre, index) => (
               <Button
                 key={index}
                 className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
@@ -125,6 +161,14 @@ const AnimeCard = ({ anime, showDay }: AnimeCardProps) => {
                 </Link>
               </Button>
             ))}
+            {genres.length > visibleGenres && (
+              <Button
+                className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
+                asChild
+              >
+                <p>+{genres.length - visibleGenres}</p>
+              </Button>
+            )}
           </div>
         </div>
       </div>

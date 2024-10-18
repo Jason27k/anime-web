@@ -54,14 +54,19 @@ const SearchFields = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [animes, setAnimes] = useState<Anime[]>([]);
+  const [page, setPage] = useState(2);
+
+  useEffect(() => {
+    setAnimes(animeData);
+    setPage(2);
+  }, [animeData]);
 
   const selectedYear = searchParams.get("year");
   const selectedSeason = searchParams.get("season");
   const selectedGenres = searchParams.get("genres")?.split(",");
 
   const { ref, inView } = useInView();
-  const [moreData, setMoreData] = useState<Anime[]>([]);
-  const [page, setPage] = useState(2);
 
   useEffect(() => {
     async function fetchMore() {
@@ -72,23 +77,28 @@ const SearchFields = ({
         selectedSeason ?? undefined,
         page
       );
-      if (response?.data) {
-        setMoreData([...moreData, ...response.data]);
-        console.log(moreData.length);
+      if (response?.data && response.data.length > 0) {
+        setAnimes([
+          ...animes,
+          ...response.data.filter((anime) => anime.members > 1000),
+        ]);
         setPage(page + 1);
+      } else {
+        setPage(-1);
       }
     }
     if (inView) {
       fetchMore();
+      console.log(page);
     }
   }, [
-    moreData,
     inView,
     selectedGenres,
     selectedYear,
     searchParams,
     selectedSeason,
     page,
+    animes,
   ]);
 
   const [yearsPopOpen, setYearsPopOpen] = useState(false);
@@ -116,7 +126,6 @@ const SearchFields = ({
       if (valueOne === "" || valueTwo === "") {
         params.delete(nameOne);
         params.delete(nameTwo);
-
         return params.toString();
       }
       params.set(nameOne, valueOne);
@@ -139,7 +148,6 @@ const SearchFields = ({
     const handler = setTimeout(() => {
       setDebouncedQuery(searchQuery);
     }, 500);
-
     return () => {
       clearTimeout(handler);
     };
@@ -148,6 +156,7 @@ const SearchFields = ({
   useEffect(() => {
     if (debouncedQuery) {
       router.push(pathname + "?" + createQueryString("query", debouncedQuery));
+      router.refresh();
     } else {
       if (searchParams.has("query")) {
         const params = new URLSearchParams(searchParams.toString());
@@ -195,7 +204,7 @@ const SearchFields = ({
 
   return (
     <div className={cn(className, `"w-full mt-2"`)}>
-      <div className="grid grid-rows-2 content-start min-[990px]:grid-cols-3 min-[990px]:content-evenly min-[990px]:h-[64px] text-white lg:justify-between gap-2 px-0 ">
+      <div className="flex flex-wrap min-[990px]:h-[64px] text-white lg:justify-between lg:flex-nowrap gap-2 px-0 ">
         <div className="flex flex-col gap-1 w-full lg:max-w-none mb-0">
           <Label htmlFor="search">Title</Label>
           <div className="rounded-md border border-input bg-background flex items-center w-full">
@@ -209,78 +218,84 @@ const SearchFields = ({
             />
           </div>
         </div>
-        <div className="flex w-full justify-between min-[990px]:justify-evenly min-[990px]:col-span-2 flex-wrap -mt-24 min-[348px]:-mt-16 min-[352px]:-mt-7 sm:mt-0 gap-2 sm:gap-0">
-          <div className="flex flex-col gap-1 min-w-[150px] xl:min-w-[200px] min-[1530px]:min-w-[150px] min-[1600px]:min-w-[200px] flex-2">
+        <div className="flex w-full justify-between flex-wrap md:flex-nowrap gap-2">
+          <div className="flex flex-col gap-1 w-full mb-0">
             <Label htmlFor="genres">Genres</Label>
-            <GenreComboBox genres={genres} />
+            <div className="rounded-md border border-input bg-background flex items-center w-full">
+              <GenreComboBox genres={genres} />
+            </div>
           </div>
-          <div className="flex flex-col gap-1 min-w-[150px] xl:min-w-[200px] min-[1530px]:min-w-[150px] min-[1600px]:min-w-[200px] flex-2">
+          <div className="flex flex-col gap-1 w-full mb-0">
             <Label htmlFor="years">Year</Label>
-            <Popover open={yearsPopOpen} onOpenChange={setYearsPopOpen}>
-              <PopoverTrigger asChild className="">
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="justify-between border-input h-[42px] text-muted-foreground font-normal group"
-                  id="years"
-                >
-                  {selectedYear ? selectedYear : "Select year..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 hidden group-hover:block" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[150px] p-0">
-                <Command value={selectedYear || undefined}>
-                  <CommandInput
-                    placeholder="Search years..."
-                    className="text-muted-foreground"
-                  />
-                  <CommandList>
-                    <CommandEmpty>No Year found.</CommandEmpty>
-                    <CommandGroup>
-                      {years.map((currentYear) => (
-                        <CommandItem
-                          key={currentYear}
-                          value={String(currentYear)}
-                          onSelect={handleYearSelect}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedYear === String(currentYear)
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {currentYear}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <div className="rounded-md border border-input bg-background flex items-center w-full">
+              <Popover open={yearsPopOpen} onOpenChange={setYearsPopOpen}>
+                <PopoverTrigger asChild className="w-full">
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    className="justify-between border-input h-[42px] text-muted-foreground font-normal group"
+                    id="years"
+                  >
+                    {selectedYear ? selectedYear : "Select year..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 hidden group-hover:block" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-screen md:w-full bg-transparent border-0 px-5 -mt-4 md:px-0 md:mt-0">
+                  <Command value={selectedYear || undefined} className="w-full">
+                    <CommandInput
+                      placeholder="Search years..."
+                      className="text-muted-foreground w-full"
+                    />
+                    <CommandList className="w-full">
+                      <CommandEmpty>No Year found.</CommandEmpty>
+                      <CommandGroup className="w-full">
+                        {years.map((currentYear) => (
+                          <CommandItem
+                            key={currentYear}
+                            value={String(currentYear)}
+                            onSelect={handleYearSelect}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedYear === String(currentYear)
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {currentYear}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-          <div className="flex flex-col gap-1 min-w-[150px] xl:min-w-[200px] min-[1530px]:min-w-[150px] min-[1600px]:min-w-[200px] flex-2">
+          <div className="flex flex-col gap-1 w-full mb-0">
             <Label htmlFor="seasons">Seasons</Label>
-            <Select
-              onValueChange={handleSeasonSelect}
-              value={selectedSeason || undefined}
-            >
-              <SelectTrigger
-                className="text-muted-foreground border-input h-[42px]"
-                id="seasons"
+            <div className="rounded-md border border-input bg-background flex items-center w-full">
+              <Select
+                onValueChange={handleSeasonSelect}
+                value={selectedSeason || undefined}
               >
-                <SelectValue placeholder="Select seasons..." />
-              </SelectTrigger>
-              <SelectContent>
-                {seasons.map((currentSeason) => (
-                  <SelectItem key={currentSeason} value={currentSeason}>
-                    {currentSeason.toUpperCase().charAt(0) +
-                      currentSeason.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectTrigger
+                  className="text-muted-foreground border-input h-[42px]"
+                  id="seasons"
+                >
+                  <SelectValue placeholder="Select seasons..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {seasons.map((currentSeason) => (
+                    <SelectItem key={currentSeason} value={currentSeason}>
+                      {currentSeason.toUpperCase().charAt(0) +
+                        currentSeason.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
@@ -328,12 +343,7 @@ const SearchFields = ({
           ))}
       </div>
       <TabOptions display={display} setDisplay={setDisplay} scroll={false} />
-      <AnimeDisplay animeData={animeData} display={display} showDay />
-      <div>
-        {moreData.length > 0 && (
-          <AnimeDisplay animeData={moreData} display={display} showDay />
-        )}
-      </div>
+      <AnimeDisplay animeData={animes} display={display} showDay />
       <div ref={ref}></div>
     </div>
   );
