@@ -169,7 +169,6 @@ export const fetchTopAnime = async (
 ) => {
   return await fetchDataWithRetry<Anime[]>(() =>
     getJikanClient().top.getTopAnime({
-      limit: 10,
       page: page,
       type: type,
       filter: filter,
@@ -179,10 +178,14 @@ export const fetchTopAnime = async (
 
 export const fetchSeasonalAnime = async (
   year: number,
-  season: "winter" | "spring" | "summer" | "fall"
+  season: "winter" | "spring" | "summer" | "fall",
+  page: number
 ) => {
   return await fetchDataWithRetry<Anime[]>(() =>
-    getJikanClient().seasons.getSeason(year, season)
+    getJikanClient().seasons.getSeason(year, season, {
+      filter: "TV",
+      page: page,
+    })
   );
 };
 
@@ -192,8 +195,8 @@ export const fetchCurrentSeason = async () => {
   );
 };
 
-export const fetchUpcomingSeason = async () => {
+export const fetchUpcomingSeason = async (page: number) => {
   return await fetchDataWithRetry<Anime[]>(() =>
-    getJikanClient().seasons.getSeasonUpcoming()
+    getJikanClient().seasons.getSeasonUpcoming({ filter: "TV", page: page })
   );
 };

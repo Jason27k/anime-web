@@ -342,7 +342,12 @@ const SearchFields = ({
             </div>
           ))}
       </div>
-      <TabOptions display={display} setDisplay={setDisplay} scroll={false} />
+      <TabOptions
+        display={display}
+        setDisplay={setDisplay}
+        scroll={false}
+        className="pb-2"
+      />
       <AnimeDisplay animeData={animes} display={display} showDay />
       <div ref={ref}></div>
     </div>

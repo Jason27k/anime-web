@@ -11,22 +11,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dispatch, SetStateAction, useContext } from "react";
 import { LanguageContext, LanguageType } from "@/app/Provider";
+import { cn } from "@/lib/utils";
 
 const TabOptions = ({
   display,
   setDisplay,
   scroll,
+  className,
 }: {
   display: 0 | 1 | 2 | 3;
   setDisplay: Dispatch<SetStateAction<0 | 1 | 2 | 3>>;
   scroll: boolean;
+  className?: string;
 }) => {
   const languageContext = useContext(LanguageContext);
   return (
     <>
       <Tabs
         defaultValue="layout"
-        className="flex flex-col md:flex-row md:justify-between md:items-center mx-auto w-full sm:mr-0 sm:ml-auto pt-4"
+        className={cn(
+          className,
+          "flex flex-col md:flex-row md:justify-between md:items-center mx-auto w-full sm:mr-0 sm:ml-auto pt-4"
+        )}
       >
         <TabsList className="grid w-full md:max-w-[400px] grid-cols-2 bg-transparent text-[#9fa7b0]">
           <TabsTrigger value="layout">Layout</TabsTrigger>

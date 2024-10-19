@@ -8,12 +8,10 @@ const AnimeDisplay = ({
   animeData,
   display,
   scroll,
-  showDay,
 }: {
   animeData: any;
   display: number;
   scroll?: boolean;
-  showDay?: boolean;
 }) => {
   return (
     <ScrollArea className="pt-2 flex justify-center w-full">
@@ -27,34 +25,20 @@ const AnimeDisplay = ({
             </div>
           ) : display == 1 && scroll ? (
             <div className="flex gap-4 justify-center">
-              <AnimeMediumFormatted
-                animeData={animeData}
-                scroll={scroll}
-                showDay={showDay ? showDay : false}
-              />
+              <AnimeMediumFormatted animeData={animeData} scroll={scroll} />
             </div>
           ) : display == 2 ? (
             <div className="flex justify-center">
-              <AnimeMediumFormatted
-                animeData={animeData}
-                showDay={showDay ? showDay : false}
-              />
+              <AnimeMediumFormatted animeData={animeData} />
             </div>
           ) : (
             <div className="w-full">
               <div className="min-[465px]:hidden">
-                <AnimeMediumFormatted
-                  animeData={animeData}
-                  showDay={showDay ? showDay : false}
-                />
+                <AnimeMediumFormatted animeData={animeData} />
               </div>
               <div className="hidden min-[465px]:grid w-full grid-cols-1 min-[975px]:grid-cols-2 min-[2000px]:grid-cols-3 gap-4 justify-center">
                 {animeData.map((anime: Anime) => (
-                  <AnimeCard
-                    anime={anime}
-                    key={anime.mal_id}
-                    showDay={showDay ? true : false}
-                  />
+                  <AnimeCard anime={anime} key={anime.mal_id} />
                 ))}
               </div>
             </div>

@@ -5,16 +5,23 @@ import { User, Star } from "lucide-react";
 import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
 import { convertToLocalTime } from "@/utils/date";
+import { cn } from "@/lib/utils";
 
-interface AnimeCardMediumProps {
+interface AnimeMediumResizableProps {
   anime: Anime;
+  className?: string;
 }
 
-const AnimeCardMedium = ({ anime }: AnimeCardMediumProps) => {
+const AnimeMediumResizable = ({
+  anime,
+  className,
+}: AnimeMediumResizableProps) => {
   const languageContext = useContext(LanguageContext);
 
   const image =
-    anime.images.webp?.large_image_url ?? anime.images.jpg.image_url;
+    anime.images.webp?.large_image_url ??
+    anime.images.jpg.large_image_url ??
+    anime.images.jpg.image_url;
   const title =
     (languageContext.language === LanguageType.English
       ? anime.title_english
@@ -34,23 +41,24 @@ const AnimeCardMedium = ({ anime }: AnimeCardMediumProps) => {
   const score = anime.score;
   const members = anime.members;
   return (
-    <div className="flex flex-col items-start h-96">
-      <div className="flex flex-col gap-2 justify-start h-96">
-        <div className="relative h-72 w-52 flex items-start">
+    <div className={cn(className, "flex flex-col items-start")}>
+      <div className="flex flex-col gap-2 justify-start w-full">
+        <div className="relative flex items-start min-w-[100px] min-h-[140px] max-w-[220px] max-h-[315px] mx-auto">
           <Image
             src={image}
-            alt={title}
-            fill={true}
+            alt={anime.title}
+            width={185}
+            height={265}
             placeholder="blur"
             blurDataURL="./placeholder.svg"
             loading="lazy"
-            className="mx-auto"
+            className="mx-auto w-full"
           />
         </div>
-        <h2 className="w-52 text-white line-clamp-2 text-start text-base h-[3rem]">
+        <h2 className="text-white line-clamp-2 text-start text-base w-full h-12">
           {title}
         </h2>
-        <div className="flex text-[#8c8c8c] gap-2 text-sm items-end justify-between ">
+        <div className="flex text-[#8c8c8c] gap-2 text-sm items-end justify-between -mt-1">
           <div className="flex justify-start items-center gap-1">
             <User size={17} />
             <p>
@@ -62,7 +70,7 @@ const AnimeCardMedium = ({ anime }: AnimeCardMediumProps) => {
           </div>
           {<p className="text-start">{time ? time[0] : ""}</p>}
           <div className="flex justify-start items-center gap-1">
-            <Star size={17} />
+            {score && <Star size={17} />}
             <p>{score}</p>
           </div>
         </div>
@@ -71,4 +79,4 @@ const AnimeCardMedium = ({ anime }: AnimeCardMediumProps) => {
   );
 };
 
-export default AnimeCardMedium;
+export default AnimeMediumResizable;

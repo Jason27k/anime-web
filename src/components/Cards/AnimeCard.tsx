@@ -12,10 +12,9 @@ import { useEffect, useState, useRef } from "react";
 
 interface AnimeCardProps {
   anime: Anime;
-  showDay: boolean;
 }
 
-const AnimeCard = ({ anime, showDay }: AnimeCardProps) => {
+const AnimeCard = ({ anime }: AnimeCardProps) => {
   const languageContext = useContext(LanguageContext);
   const [visibleGenres, setVisibleGenres] = useState(3);
   const genreContainerRef = useRef<HTMLDivElement>(null);
@@ -112,7 +111,7 @@ const AnimeCard = ({ anime, showDay }: AnimeCardProps) => {
         <div className="flex justify-between text-[#9fa7b0] p-3">
           {time && time[0] !== "No time specified" ? (
             <p className="text-lg">
-              {showDay ? day + " at " : ""}
+              {day + " at "}
               {time[0]}
             </p>
           ) : (
