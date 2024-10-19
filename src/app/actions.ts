@@ -164,16 +164,24 @@ export const fetchAnime = async (id: number) => {
 
 export const fetchTopAnime = async (
   page: number,
-  type: "TV" | "Ova" | "Movie" | "Special",
-  filter: "airing" | "bypopularity" | "favorite" | "upcoming"
+  filter: "airing" | "bypopularity" | "favorite" | "upcoming" | undefined
 ) => {
-  return await fetchDataWithRetry<Anime[]>(() =>
-    getJikanClient().top.getTopAnime({
-      page: page,
-      type: type,
-      filter: filter,
-    })
-  );
+  if (filter) {
+    return await fetchDataWithRetry<Anime[]>(() =>
+      getJikanClient().top.getTopAnime({
+        page: page,
+        type: "TV",
+        filter: filter,
+      })
+    );
+  } else {
+    return await fetchDataWithRetry<Anime[]>(() =>
+      getJikanClient().top.getTopAnime({
+        page: page,
+        type: "TV",
+      })
+    );
+  }
 };
 
 export const fetchSeasonalAnime = async (

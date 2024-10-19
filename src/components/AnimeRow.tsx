@@ -11,7 +11,7 @@ interface AnimeRowProps {
 const AnimeRow = ({ title, animes, link }: AnimeRowProps) => {
   return (
     <>
-      <div className="flex flex-col text-white">
+      <div className="flex flex-col text-white gap-2">
         <div className="flex justify-between">
           <h1>{title}</h1>
           <Link href={link}>View All</Link>

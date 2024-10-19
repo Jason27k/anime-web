@@ -1,5 +1,5 @@
 import React from "react";
-import { fetchSeasonalAnime } from "./actions";
+import { fetchSeasonalAnime, fetchTopAnime } from "./actions";
 import AnimeHomeRows from "@/components/AnimeHomeRows";
 
 const page = async () => {
@@ -17,10 +17,17 @@ const page = async () => {
     year += 1;
   }
 
-  const response = await fetchSeasonalAnime(year, nextSeason, 1);
-  const upcoming = response?.data;
+  const upcomingResponse = await fetchSeasonalAnime(year, nextSeason, 1);
+  const trendingResponse = await fetchTopAnime(1, "airing");
+  const popularResponse = await fetchTopAnime(1, "bypopularity");
+  const topResponse = await fetchTopAnime(1, undefined);
 
-  if (!upcoming) {
+  const upcoming = upcomingResponse?.data;
+  const trending = trendingResponse?.data;
+  const popular = popularResponse?.data;
+  const top = topResponse?.data;
+
+  if (!upcoming || !trending || !popular || !top) {
     return <div>Loading...</div>;
   }
 
@@ -28,9 +35,9 @@ const page = async () => {
     <div>
       <AnimeHomeRows
         upcoming={upcoming}
-        top={upcoming}
-        trending={upcoming}
-        popular={upcoming}
+        top={top}
+        trending={trending}
+        popular={popular}
       />
     </div>
   );

@@ -6,6 +6,7 @@ import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
 import { convertToLocalTime } from "@/utils/date";
 import { cn } from "@/lib/utils";
+import "@/styles/CardStyles.css";
 
 interface AnimeMediumResizableProps {
   anime: Anime;
@@ -43,16 +44,15 @@ const AnimeMediumResizable = ({
   return (
     <div className={cn(className, "flex flex-col items-start")}>
       <div className="flex flex-col gap-2 justify-start w-full">
-        <div className="relative flex items-start min-w-[100px] min-h-[140px] max-w-[220px] max-h-[315px] mx-auto">
+        <div className="relative w-full aspect-w-3 aspect-h-4">
           <Image
-            src={image}
+            src={anime.images.webp?.image_url ?? anime.images.jpg.image_url}
             alt={anime.title}
-            width={185}
-            height={265}
+            fill
             placeholder="blur"
             blurDataURL="./placeholder.svg"
             loading="lazy"
-            className="mx-auto w-full"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
         <h2 className="text-white line-clamp-2 text-start text-base w-full h-12">

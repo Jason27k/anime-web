@@ -74,7 +74,12 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
   return (
     <div className="flex w-full md:w-96 bg-[#1f232d] rounded-lg p-2 h-32">
       <div className="relative h-28 w-24">
-        <Image src={image} alt={title} fill />
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
       </div>
       <div className="flex flex-col justify-evenly items-start w-full px-2">
         <div className="flex justify-start pl-1">

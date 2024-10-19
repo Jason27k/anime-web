@@ -51,19 +51,22 @@ const Header = ({ children }: { children: ReactNode }) => {
                   <SheetClose asChild>
                     <Link href="search" className="flex gap-2">
                       <Search size={24} />
-                      <p className="text-lg">Search</p>
+                      <span className="text-lg">Search</span>{" "}
+                      {/* Replaced <p> with <span> */}
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
                     <Link href="liked" className="flex gap-2">
                       <Heart size={24} />
-                      <p className="text-lg">Liked</p>
+                      <span className="text-lg">Liked</span>{" "}
+                      {/* Replaced <p> with <span> */}
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
                     <Link href="calendar" className="flex gap-2">
                       <Calendar size={24} />
-                      <p className="text-lg">Calendar</p>
+                      <span className="text-lg">Calendar</span>{" "}
+                      {/* Replaced <p> with <span> */}
                     </Link>
                   </SheetClose>
                   <SignedOut>
@@ -78,10 +81,11 @@ const Header = ({ children }: { children: ReactNode }) => {
                         className="w-24 bg-[#D67900] text-lg hover:bg-white hover:text-[#D67900]"
                         asChild
                       >
-                        <div className="text-lg">
+                        {/* Changed <div> to <span> */}
+                        <span className="text-lg">
                           <LogIn size={24} />
                           <SignInButton />
-                        </div>
+                        </span>
                       </Button>
                     </SheetClose>
                   </SignedOut>

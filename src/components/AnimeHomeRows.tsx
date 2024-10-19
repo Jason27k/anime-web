@@ -28,10 +28,12 @@ const AnimeHomeRows = ({
         scroll={false}
         className="pb-2"
       />
-      <AnimeRow title="Upcoming" animes={upcoming} link="/upcoming" />
-      <AnimeRow title="Trending" animes={trending} link="/trending" />
-      <AnimeRow title="Popular" animes={popular} link="/popular" />
-      <AnimeRow title="Top" animes={top} link="/top" />
+      <div className="flex flex-col gap-4 pt-2">
+        <AnimeRow title="Top" animes={top} link="/top" />
+        <AnimeRow title="Trending" animes={trending} link="/trending" />
+        <AnimeRow title="Upcoming" animes={upcoming} link="/upcoming" />
+        <AnimeRow title="Popular" animes={popular} link="/popular" />
+      </div>
     </div>
   );
 };
