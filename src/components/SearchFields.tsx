@@ -348,7 +348,7 @@ const SearchFields = ({
         scroll={false}
         className="pb-2"
       />
-      <AnimeDisplay animeData={animes} display={display} showDay />
+      <AnimeDisplay animeData={animes} display={display} />
       <div ref={ref}></div>
     </div>
   );
