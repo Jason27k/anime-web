@@ -24,12 +24,6 @@ const AnimeCalendar = ({
   ];
 
   const offset = new Date().getDay();
-  console.log(offset);
-
-  days.forEach((_, index) => {
-    console.log(index + offset);
-    console.log(days[(index + offset) % 7].day);
-  });
 
   return (
     <div className="flex flex-col w-full">

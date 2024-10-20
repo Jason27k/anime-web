@@ -30,8 +30,9 @@ const AnimeDay = ({ day, animeData, display }: AnimeDayProps) => {
           )}
         </Button>
       </div>
-
-      <AnimeDisplay animeData={animeData} display={display} scroll />
+      {!collapse && (
+        <AnimeDisplay animeData={animeData} display={display} scroll />
+      )}
     </>
   );
 };

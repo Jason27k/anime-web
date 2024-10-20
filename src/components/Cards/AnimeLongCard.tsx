@@ -14,33 +14,56 @@ interface AnimeLongCardProps {
 
 const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
   const languageContext = useContext(LanguageContext);
-  const [visibleGenres, setVisibleGenres] = useState(3);
+  const [visibleGenres, setVisibleGenres] = useState(1);
+  const [maxWidth, setMaxWidth] = useState(window.innerWidth - 40); // Initialize with window width - 40px (20px padding each side)
   const genreContainerRef = useRef<HTMLDivElement>(null);
+
+  const genres = anime.genres;
+  const CHAR_SIZE = 14.6;
+  const PLUS_BUTTON_WIDTH = 50;
 
   const updateVisibleGenres = () => {
     if (genreContainerRef.current) {
-      let containerWidth = genreContainerRef.current.offsetWidth;
-      const buttonWidth = 90;
-      const additionalButtonWidth = 50;
-      if (visibleGenres < anime.genres.length) {
-        containerWidth -= additionalButtonWidth;
+      let containerWidth =
+        genreContainerRef.current.getBoundingClientRect().width - 60;
+      if (genres.length === 0) {
+        setVisibleGenres(0);
+        return;
       }
-      const maxGenres = Math.floor(containerWidth / buttonWidth) - 1;
-      setVisibleGenres(Math.max(1, maxGenres));
+
+      let currentSize = CHAR_SIZE * genres[0].name.length;
+      let index = 1;
+      while (currentSize < containerWidth && index < genres.length - 1) {
+        currentSize += anime.genres[index].name.length * CHAR_SIZE;
+        index++;
+      }
+      const containerMinusButtonWidth = containerWidth - PLUS_BUTTON_WIDTH;
+      if (currentSize > containerWidth) {
+        setVisibleGenres(index - 1);
+      } else if (currentSize < containerMinusButtonWidth) {
+        setVisibleGenres(index);
+      } else {
+        if (currentSize >= containerMinusButtonWidth) {
+          setVisibleGenres(index - 1);
+        } else {
+          setVisibleGenres(index - 1);
+        }
+      }
     }
   };
 
   useEffect(() => {
-    const observer = new ResizeObserver(updateVisibleGenres);
-    if (genreContainerRef.current) {
-      observer.observe(genreContainerRef.current);
-    }
-    return () => {
-      if (genreContainerRef.current) {
-        observer.unobserve(genreContainerRef.current);
-      }
+    const handleResize = () => {
+      setMaxWidth(window.innerWidth - 40); // Update max width on window resize
+      updateVisibleGenres();
     };
-  }, []);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [genreContainerRef.current, genres]);
 
   const image =
     anime.images.webp?.large_image_url ?? anime.images.jpg.image_url;
@@ -69,21 +92,18 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
   const episodes = anime.episodes;
   const score = anime.score;
   const members = anime.members;
-  const genres = anime.genres;
 
   return (
-    <div className="flex w-full md:w-96 bg-[#1f232d] rounded-lg p-2 h-32">
-      <div className="relative h-28 w-24">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+    <div
+      className="flex w-full md:w-96 bg-[#1f232d] rounded-lg p-2 h-32"
+      style={{ maxWidth: maxWidth + "px" }}
+    >
+      <div className="relative h-28 w-[75px] max-w-[75px] min-w-[75px]">
+        <Image src={image} alt={title} fill />
       </div>
-      <div className="flex flex-col justify-evenly items-start w-full px-2">
+      <div className="flex flex-col justify-evenly items-start w-full px-2 max-w-48 min-[380px]:max-w-none">
         <div className="flex justify-start pl-1">
-          <h1 className="text-white text-sm line-clamp-2 text-start">
+          <h1 className="text-white text-sm line-clamp-2 text-start max-w-48">
             {title}
           </h1>
         </div>
