@@ -46,6 +46,7 @@ const WeeklyCalendar = async () => {
       );
     });
   }
+  console.log(dates);
 
   return (
     <div className="">

@@ -14,16 +14,22 @@ const AnimeCalendar = ({
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
 
   const days = [
-    { day: 1, name: "Monday" },
-    { day: 2, name: "Tuesday" },
-    { day: 3, name: "Wednesday" },
-    { day: 4, name: "Thursday" },
-    { day: 5, name: "Friday" },
-    { day: 6, name: "Saturday" },
-    { day: 7, name: "Sunday" },
+    { day: 6, name: "Sunday" },
+    { day: 0, name: "Monday" },
+    { day: 1, name: "Tuesday" },
+    { day: 2, name: "Wednesday" },
+    { day: 3, name: "Thursday" },
+    { day: 4, name: "Friday" },
+    { day: 5, name: "Saturday" },
   ];
 
-  const offset = new Date().getDay() - 1;
+  const offset = new Date().getDay();
+  console.log(offset);
+
+  days.forEach((_, index) => {
+    console.log(index + offset);
+    console.log(days[(index + offset) % 7].day);
+  });
 
   return (
     <div className="flex flex-col w-full">

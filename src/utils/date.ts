@@ -49,5 +49,8 @@ export function convertToLocalTime(
 
   const localTime = tokyoTime.setZone(DateTime.local().zoneName);
 
-  return [localTime.toLocaleString(DateTime.TIME_SIMPLE), localTime.weekday];
+  return [
+    localTime.toLocaleString(DateTime.TIME_SIMPLE),
+    localTime.weekday - 1,
+  ];
 }
