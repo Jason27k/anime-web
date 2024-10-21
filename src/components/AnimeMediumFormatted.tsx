@@ -11,7 +11,10 @@ export const AnimeMediumFormatted = ({
 }) => {
   if (scroll) {
     return (
-      <div className="flex gap-4 justify-center" key="scroll">
+      <div
+        className="flex gap-4 justify-center overflow-x-scroll w-full"
+        key="scroll"
+      >
         {animeData.map((anime: any) => (
           <AnimeCardMedium anime={anime} key={anime.id} />
         ))}
@@ -20,7 +23,7 @@ export const AnimeMediumFormatted = ({
   }
   return (
     <div
-      className="grid grid-cols-1 min-[395px]:content-normal min-[395px]:grid-cols-2 min-[670px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center"
+      className="grid grid-cols-2 min-[670px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center"
       key="non-scroll"
     >
       {animeData.map((anime: any) => (

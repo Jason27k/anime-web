@@ -58,7 +58,7 @@ const AnimeMediumResizable = ({
         <h2 className="text-white line-clamp-2 text-start text-base w-full h-12">
           {title}
         </h2>
-        <div className="flex text-[#8c8c8c] gap-2 text-sm items-end justify-between -mt-1">
+        <div className="flex flex-wrap min-[450px]:flex-nowrap text-[#8c8c8c] gap-2 text-sm items-end justify-between -mt-1">
           <div className="flex justify-start items-center gap-1">
             <User size={17} />
             <p>

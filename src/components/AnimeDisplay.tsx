@@ -24,9 +24,12 @@ const AnimeDisplay = ({
               ))}
             </div>
           ) : display == 1 && scroll ? (
-            <div className="flex gap-4 justify-center">
-              <AnimeMediumFormatted animeData={animeData} scroll={scroll} />
-            </div>
+            <>
+              <div className="flex gap-4 justify-center overflow-x-scroll w-full">
+                <AnimeMediumFormatted animeData={animeData} scroll={scroll} />
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </>
           ) : display == 2 ? (
             <div className="flex justify-center">
               <AnimeMediumFormatted animeData={animeData} />
@@ -45,7 +48,6 @@ const AnimeDisplay = ({
           )}
         </div>
       </div>
-      <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );
 };

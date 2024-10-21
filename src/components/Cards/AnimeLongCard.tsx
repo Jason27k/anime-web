@@ -95,7 +95,7 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
 
   return (
     <div
-      className="flex w-full md:w-96 bg-[#1f232d] rounded-lg p-2 h-32"
+      className="flex w-full md:w-[22rem] xl:w-96 bg-[#1f232d] rounded-lg p-2 h-32"
       style={{ maxWidth: maxWidth + "px" }}
     >
       <div className="relative h-28 w-[75px] max-w-[75px] min-w-[75px]">
