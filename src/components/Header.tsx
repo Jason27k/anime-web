@@ -55,21 +55,21 @@ const Header = ({ children }: { children: ReactNode }) => {
                 </SheetTitle>
                 <SheetDescription className="flex flex-col items-end gap-2 text-white">
                   <SheetClose asChild>
-                    <Link href="search" className="flex gap-2">
+                    <Link href="/search" className="flex gap-2">
                       <Search size={24} />
                       <span className="text-lg">Search</span>{" "}
                       {/* Replaced <p> with <span> */}
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
-                    <Link href="liked" className="flex gap-2">
+                    <Link href="/liked" className="flex gap-2">
                       <Heart size={24} />
                       <span className="text-lg">Liked</span>{" "}
                       {/* Replaced <p> with <span> */}
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
-                    <Link href="calendar" className="flex gap-2">
+                    <Link href="/calendar" className="flex gap-2">
                       <Calendar size={24} />
                       <span className="text-lg">Calendar</span>{" "}
                       {/* Replaced <p> with <span> */}
@@ -77,7 +77,7 @@ const Header = ({ children }: { children: ReactNode }) => {
                   </SheetClose>
                   <SignedOut>
                     <SheetClose asChild>
-                      <Link href="sign-up" className="flex gap-2 text-lg">
+                      <Link href="/sign-up" className="flex gap-2 text-lg">
                         <UserPen size={24} />
                         <SignUpButton />
                       </Link>
@@ -106,21 +106,21 @@ const Header = ({ children }: { children: ReactNode }) => {
             variant={"ghost"}
             asChild
           >
-            <Link href="search">Search</Link>
+            <Link href="/search">Search</Link>
           </Button>
           <Button
             className="w-20 text-white hover:bg-[#d679009d] hover:text-white"
             variant={"ghost"}
             asChild
           >
-            <Link href="liked">Liked</Link>
+            <Link href="/liked">Liked</Link>
           </Button>
           <Button
             className="w-20 text-white hover:bg-[#d679009d] hover:text-white"
             variant={"ghost"}
             asChild
           >
-            <Link href="calendar">Calendar</Link>
+            <Link href="/calendar">Calendar</Link>
           </Button>
           <SignedOut>
             <Button

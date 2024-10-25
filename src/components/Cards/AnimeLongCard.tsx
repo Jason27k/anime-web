@@ -94,7 +94,8 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
   const members = anime.members;
 
   return (
-    <div
+    <Link
+      href={"/anime/" + anime.mal_id}
       className="flex w-full md:w-[22rem] xl:w-96 bg-[#1f232d] rounded-lg p-2 h-32"
       style={{ maxWidth: maxWidth + "px" }}
     >
@@ -160,7 +161,7 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

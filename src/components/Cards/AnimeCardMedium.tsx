@@ -5,6 +5,7 @@ import { User, Star } from "lucide-react";
 import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
 import { convertToLocalTime } from "@/utils/date";
+import Link from "next/link";
 
 interface AnimeCardMediumProps {
   anime: Anime;
@@ -34,7 +35,10 @@ const AnimeCardMedium = ({ anime }: AnimeCardMediumProps) => {
   const score = anime.score;
   const members = anime.members;
   return (
-    <div className="flex flex-col items-start h-96">
+    <Link
+      href={"/animes/" + anime.mal_id}
+      className="flex flex-col items-start h-96"
+    >
       <div className="flex flex-col gap-2 justify-start h-96">
         <div className="relative h-72 w-52 flex items-start">
           <Image
@@ -68,7 +72,7 @@ const AnimeCardMedium = ({ anime }: AnimeCardMediumProps) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

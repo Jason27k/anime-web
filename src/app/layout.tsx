@@ -4,7 +4,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { cn } from "@/lib/utils";
 import Provider from "./Provider";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
@@ -37,9 +36,7 @@ export default function RootLayout({
           )}
         >
           <Header>
-            <Provider>
-              <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
-            </Provider>
+            <Provider>{children}</Provider>
           </Header>
         </body>
       </html>

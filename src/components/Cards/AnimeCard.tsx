@@ -93,7 +93,10 @@ const AnimeCard = ({ anime }: AnimeCardProps) => {
   const genres = anime.genres;
 
   return (
-    <div className="flex h-[265px] justify-center w-full">
+    <Link
+      href={"/anime/" + anime.mal_id}
+      className="flex h-[265px] justify-center w-full"
+    >
       <div className="flex flex-col relative h-full w-[185px]">
         <div className="relative h-[265px] w-full min-w-[135px]">
           <Image
@@ -176,7 +179,7 @@ const AnimeCard = ({ anime }: AnimeCardProps) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

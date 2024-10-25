@@ -7,6 +7,7 @@ import { useContext } from "react";
 import { convertToLocalTime } from "@/utils/date";
 import { cn } from "@/lib/utils";
 import "@/styles/CardStyles.css";
+import Link from "next/link";
 
 interface AnimeMediumResizableProps {
   anime: Anime;
@@ -42,7 +43,10 @@ const AnimeMediumResizable = ({
   const score = anime.score;
   const members = anime.members;
   return (
-    <div className={cn(className, "flex flex-col items-start")}>
+    <Link
+      href={"/anime/" + anime.mal_id}
+      className={cn(className, "flex flex-col items-start")}
+    >
       <div className="flex flex-col gap-2 justify-start w-full">
         <div className="relative w-full aspect-w-3 aspect-h-4">
           <Image
@@ -75,7 +79,7 @@ const AnimeMediumResizable = ({
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
