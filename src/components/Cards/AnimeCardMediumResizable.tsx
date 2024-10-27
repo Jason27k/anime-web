@@ -50,7 +50,7 @@ const AnimeMediumResizable = ({
       <div className="flex flex-col gap-2 justify-start w-full">
         <div className="relative w-full aspect-w-3 aspect-h-4">
           <Image
-            src={anime.images.webp?.image_url ?? anime.images.jpg.image_url}
+            src={image}
             alt={anime.title}
             fill
             placeholder="blur"

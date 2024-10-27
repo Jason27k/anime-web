@@ -1,5 +1,5 @@
 import { fetchAniListAnime, fetchAnime } from "@/app/actions";
-import AnimeDetails from "@/components/AnimeDetails";
+import AnimeDetailsTwo from "@/components/AnimeDetailsTwo";
 import { MediaResponse } from "@/utils/anilistTypes";
 
 const DetailsPage = async ({ params }: { params: { id: string } }) => {
@@ -21,7 +21,7 @@ const DetailsPage = async ({ params }: { params: { id: string } }) => {
 
   return (
     <>
-      <AnimeDetails anime={anime} aniAnime={aniAnime} />
+      <AnimeDetailsTwo anime={anime} aniAnime={aniAnime} />
     </>
   );
 };

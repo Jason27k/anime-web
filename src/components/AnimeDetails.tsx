@@ -40,6 +40,20 @@ export default function AnimeDetails({ anime, aniAnime }: AnimeDetailProps) {
     anime.images.jpg?.large_image_url ??
     anime.images.jpg.image_url;
 
+  const streamingLinks = aniAnime.externalLinks.filter(
+    (link) => link.type === "STREAMING"
+  );
+  const mainStreamingLink =
+    streamingLinks.find(
+      (link) =>
+        link.site === "Crunchyroll" ||
+        link.site === "Netflix" ||
+        link.site === "HIDIVE"
+    ) ?? streamingLinks[0];
+  const officialSiteLink = aniAnime.externalLinks.find(
+    (link) => link.type === "INFO"
+  );
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -61,26 +75,31 @@ export default function AnimeDetails({ anime, aniAnime }: AnimeDetailProps) {
                 </span>
               </div>
               <div className="mt-4 space-y-2">
-                <Button className="w-full" asChild>
+                <Button
+                  className="w-full"
+                  asChild
+                  disabled={
+                    mainStreamingLink == null || mainStreamingLink == undefined
+                  }
+                >
                   <a
-                    href={
-                      aniAnime.externalLinks.find(
-                        (link) => link.type === "STREAMING"
-                      )?.url
-                    }
+                    href={mainStreamingLink.url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <PlayCircleIcon className="mr-2 h-4 w-4" /> Watch Now
                   </a>
                 </Button>
-                <Button variant="outline" className="w-full" asChild>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  asChild
+                  disabled={
+                    officialSiteLink == null || officialSiteLink == undefined
+                  }
+                >
                   <a
-                    href={
-                      aniAnime.externalLinks.find(
-                        (link) => link.type === "INFO"
-                      )?.url
-                    }
+                    href={officialSiteLink?.url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

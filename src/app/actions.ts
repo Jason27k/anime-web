@@ -273,6 +273,7 @@ query media($id: Int) {
         relationType(version: 2)
         node {
           id
+          idMal
           title {
             userPreferred
           }
@@ -368,6 +369,7 @@ query media($id: Int) {
           title {
             userPreferred
           }
+          idMal
           format
           type
           status(version: 2)

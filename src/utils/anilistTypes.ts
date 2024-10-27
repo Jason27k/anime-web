@@ -96,6 +96,7 @@ type RelationEdge = {
   relationType: string;
   node: {
     id: number;
+    idMal: number;
     title: { userPreferred: string };
     format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
     type: "ANIME" | "MANGA";
@@ -161,6 +162,7 @@ type RecommendationNode = {
   userRating: "NO_RATING";
   mediaRecommendation: {
     id: number;
+    idMal: number;
     title: { userPreferred: string };
     format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
     type: "ANIME" | "MANGA";

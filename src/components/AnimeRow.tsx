@@ -1,6 +1,6 @@
 import { Anime } from "@tutkli/jikan-ts";
 import Link from "next/link";
-import AnimeCardMediumTwo from "./Cards/AnimeCardMediumTwo";
+import AnimeMediumResizable from "./Cards/AnimeCardMediumResizable";
 
 interface AnimeRowProps {
   title: string;
@@ -21,9 +21,9 @@ const AnimeRow = ({ title, animes, link }: AnimeRowProps) => {
             animes
               .slice(0, 5)
               .map((anime: Anime) => (
-                <AnimeCardMediumTwo key={anime.mal_id} anime={anime} />
+                <AnimeMediumResizable key={anime.mal_id} anime={anime} />
               ))}
-          <AnimeCardMediumTwo
+          <AnimeMediumResizable
             anime={animes[6]}
             className="block md:hidden xl:block"
           />

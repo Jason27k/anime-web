@@ -1,6 +1,6 @@
 import { Anime } from "@tutkli/jikan-ts";
 import AnimeCardMedium from "./Cards/AnimeCardMedium";
-import AnimeMediumResizable from "./Cards/AnimeCardMediumTwo";
+import AnimeMediumResizable from "./Cards/AnimeCardMediumResizable";
 
 export const AnimeMediumFormatted = ({
   animeData,
