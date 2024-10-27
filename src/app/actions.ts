@@ -211,8 +211,9 @@ export const fetchUpcomingSeason = async (page: number) => {
 
 const query = `
 query media($id: Int) {
-  Media(idMal: $id) {
+  Media(idMal: $id, type:ANIME) {
     id
+    idMal
     title {
       userPreferred
       romaji
