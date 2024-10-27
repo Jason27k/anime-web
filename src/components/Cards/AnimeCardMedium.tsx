@@ -36,7 +36,7 @@ const AnimeCardMedium = ({ anime }: AnimeCardMediumProps) => {
   const members = anime.members;
   return (
     <Link
-      href={"/animes/" + anime.mal_id}
+      href={"/anime/" + anime.mal_id}
       className="flex flex-col items-start h-96"
     >
       <div className="flex flex-col gap-2 justify-start h-96">
