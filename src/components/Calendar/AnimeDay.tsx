@@ -1,17 +1,17 @@
 "use client";
 import { useState } from "react";
-import { Anime } from "@tutkli/jikan-ts";
+import { AiringSchedule } from "@/utils/anilistTypes";
 import { Button } from "../ui/button";
 import { ArrowDownToLine, ArrowUpToLine } from "lucide-react";
 import AnimeDisplay from "../AnimeDisplay";
 
 interface AnimeDayProps {
   day: String;
-  animeData: Anime[];
+  airingSchedules: AiringSchedule[];
   display: 0 | 1 | 2 | 3;
 }
 
-const AnimeDay = ({ day, animeData, display }: AnimeDayProps) => {
+const AnimeDay = ({ day, airingSchedules, display }: AnimeDayProps) => {
   const [collapse, setCollapse] = useState(false);
 
   const handleCollapse = () => {
@@ -31,7 +31,11 @@ const AnimeDay = ({ day, animeData, display }: AnimeDayProps) => {
         </Button>
       </div>
       {!collapse && (
-        <AnimeDisplay animeData={animeData} display={display} scroll />
+        <AnimeDisplay
+          display={display}
+          airingSchedules={airingSchedules}
+          scroll
+        />
       )}
     </>
   );

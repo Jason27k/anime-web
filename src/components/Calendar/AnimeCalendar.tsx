@@ -1,26 +1,25 @@
 "use client";
 import AnimeDay from "./AnimeDay";
-import { Anime } from "@tutkli/jikan-ts";
+import { AiringSchedule } from "@/utils/anilistTypes";
 import { useState } from "react";
 import TabOptions from "../TabOptions";
+import { convertUTCToLocal } from "@/utils/date";
 
 const AnimeCalendar = ({
-  animeData,
-  dates,
+  airingSchedules,
 }: {
-  animeData: Anime[];
-  dates: Map<Number, Number>;
+  airingSchedules: AiringSchedule[];
 }) => {
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
 
   const days = [
-    { day: 6, name: "Sunday" },
-    { day: 0, name: "Monday" },
-    { day: 1, name: "Tuesday" },
-    { day: 2, name: "Wednesday" },
-    { day: 3, name: "Thursday" },
-    { day: 4, name: "Friday" },
-    { day: 5, name: "Saturday" },
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
   ];
 
   const offset = new Date().getDay();
@@ -31,13 +30,14 @@ const AnimeCalendar = ({
       <div className="flex flex-col">
         {days.map((_, index) => (
           <AnimeDay
-            day={days[(index + offset) % 7].name}
-            animeData={animeData.filter(
-              (anime) =>
-                dates.get(anime.mal_id) == days[(index + offset) % 7].day
-            )}
+            key={index}
+            day={days[(index + offset) % 7]}
             display={display}
-            key={days[(index + offset) % 7].day}
+            airingSchedules={airingSchedules.filter(
+              (schedule) =>
+                convertUTCToLocal(schedule.airingAt).getDay() ===
+                (index + offset) % 7
+            )}
           />
         ))}
       </div>

@@ -1,22 +1,27 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Anime } from "@tutkli/jikan-ts";
 import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
-import { convertToLocalTime } from "@/utils/date";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Star, User } from "lucide-react";
+import { MediaDisplay } from "@/utils/anilistTypes";
+import { convertUTCToLocal } from "@/utils/date";
+import { useRouter } from "next/navigation";
+import { capitalize } from "@/utils/formatting";
 
 interface AnimeLongCardProps {
-  anime: Anime;
+  anime: MediaDisplay;
+  airing?: number;
 }
 
-const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
+const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
+  const router = useRouter();
   const languageContext = useContext(LanguageContext);
   const [visibleGenres, setVisibleGenres] = useState(1);
-  const [maxWidth, setMaxWidth] = useState(window.innerWidth - 40); // Initialize with window width - 40px (20px padding each side)
-  const genreContainerRef = useRef<HTMLDivElement>(null);
+  const [maxWidth, setMaxWidth] = useState(window.innerWidth - 40);
+  const genreContainerRef = useRef<HTMLAnchorElement>(null);
 
   const genres = anime.genres;
   const CHAR_SIZE = 14.6;
@@ -31,10 +36,10 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
         return;
       }
 
-      let currentSize = CHAR_SIZE * genres[0].name.length;
+      let currentSize = CHAR_SIZE * genres[0].length;
       let index = 1;
       while (currentSize < containerWidth && index < genres.length - 1) {
-        currentSize += anime.genres[index].name.length * CHAR_SIZE;
+        currentSize += anime.genres[index].length * CHAR_SIZE;
         index++;
       }
       const containerMinusButtonWidth = containerWidth - PLUS_BUTTON_WIDTH;
@@ -65,39 +70,82 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
     };
   }, [genreContainerRef.current, genres]);
 
-  const image =
-    anime.images.webp?.large_image_url ?? anime.images.jpg.image_url;
+  const image = anime.coverImage.extraLarge;
   const title =
     (languageContext.language === LanguageType.English
-      ? anime.title_english
+      ? anime.title.english
       : languageContext.language === LanguageType.Romanji
-      ? anime.title
-      : anime.title_japanese) ?? anime.title;
+      ? anime.title.romaji
+      : anime.title.native) ?? anime.title.romaji;
 
-  const airing = anime.airing;
-  let time = null;
-  let season = null;
+  let airingString = "";
   if (airing) {
-    time = convertToLocalTime(
-      anime.broadcast.day,
-      anime.broadcast.time,
-      anime.broadcast.timezone
-    );
-  } else {
-    season =
-      (anime.season
-        ? anime.season.charAt(0).toUpperCase() + anime.season.slice(1) + " "
-        : "") + anime.year;
+    const date = convertUTCToLocal(airing);
+    const day = date.getDay();
+    if (day === 0) {
+      airingString = "Sundays";
+    } else if (day === 1) {
+      airingString = "Mondays";
+    } else if (day === 2) {
+      airingString = "Tuesdays";
+    } else if (day === 3) {
+      airingString = "Wednesdays";
+    } else if (day === 4) {
+      airingString = "Thursdays";
+    } else if (day === 5) {
+      airingString = "Fridays";
+    } else if (day === 6) {
+      airingString = "Saturdays";
+    } else {
+      airingString = "No time specified";
+    }
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+    });
+    airingString = airingString + " at " + time;
+  } else if (anime.nextAiringEpisode) {
+    const date = convertUTCToLocal(anime.nextAiringEpisode.airingAt);
+    const day = date.getDay();
+    if (day === 0) {
+      airingString = "Sundays";
+    } else if (day === 1) {
+      airingString = "Mondays";
+    } else if (day === 2) {
+      airingString = "Tuesdays";
+    } else if (day === 3) {
+      airingString = "Wednesdays";
+    } else if (day === 4) {
+      airingString = "Thursdays";
+    } else if (day === 5) {
+      airingString = "Fridays";
+    } else if (day === 6) {
+      airingString = "Saturdays";
+    } else {
+      airingString = "No time specified";
+    }
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+    });
+    airingString = airingString + " at " + time;
   }
+
+  const season = anime.season;
+  const year = anime.seasonYear;
+
   const episodes = anime.episodes;
-  const score = anime.score;
-  const members = anime.members;
+  const score =
+    anime.averageScore === null || !anime.averageScore
+      ? ""
+      : anime.averageScore / 10;
 
   return (
     <Link
-      href={"/anime/" + anime.mal_id}
+      href={"/anime/" + anime.id}
       className="flex w-full md:w-[22rem] xl:w-96 bg-[#1f232d] rounded-lg p-2 h-32"
       style={{ maxWidth: maxWidth + "px" }}
+      ref={genreContainerRef}
     >
       <div className="relative h-28 w-[75px] max-w-[75px] min-w-[75px]">
         <Image src={image} alt={title} fill />
@@ -109,19 +157,17 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
           </h1>
         </div>
         <div className="flex justify-start text-start gap-1 w-full">
-          {time && time[0] !== "No time specified" ? (
-            <p className="text-[#8c8c8c] text-xs text-start pl-1">{time[0]}</p>
+          {airingString ? (
+            <p className="text-[#8c8c8c] text-xs text-start pl-1">
+              {airingString}
+            </p>
           ) : (
             <p className="text-[#8c8c8c] text-xs">
-              {season && season !== "null"
-                ? season + " | "
-                : anime.year
-                ? anime.year + " | "
-                : ""}
+              {season && capitalize(season)} {year}
             </p>
           )}
           <p className="text-[#8c8c8c] text-xs text-start">
-            {episodes ? `${episodes} episodes` : ""}
+            {episodes ? `| ${episodes} episodes` : ""}
           </p>
         </div>
         <div className="flex gap-2 justify-start items-end pl-1">
@@ -132,31 +178,36 @@ const AnimeLongCard = ({ anime }: AnimeLongCardProps) => {
           <div className="flex items-center gap-1">
             <User size={17} className="text-[#d67900]" />
             <p className="text-[#8c8c8c] text-xs text-center">
-              {members > 1000000
-                ? Math.floor(members / 100000) / 10 + "M"
-                : Math.floor(members / 1000) + "K"}
+              {anime.popularity > 1000000
+                ? Math.floor(anime.popularity / 100000) / 10 + "M"
+                : Math.floor(anime.popularity / 1000) + "K"}
             </p>
           </div>
         </div>
-        <div
-          ref={genreContainerRef}
-          className="flex items-center justify-start overflow-hidden w-full"
-        >
+        <div className="flex items-center justify-start overflow-hidden w-full">
           {genres.slice(0, visibleGenres).map((genre, index) => (
             <Button
               key={index}
               className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
-              asChild
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering the outer link
+                router.push(`/search?genres=${genre}`);
+              }}
             >
-              <Link href={`/search?genres=${genre.mal_id}`}>{genre.name}</Link>
+              {genre}
             </Button>
           ))}
           {genres.length > visibleGenres && (
             <Button
               className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
-              asChild
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(
+                  `/search?genres=${genres.slice(visibleGenres).join(",")}`
+                );
+              }}
             >
-              <p>+{genres.length - visibleGenres}</p>
+              +{genres.length - visibleGenres}
             </Button>
           )}
         </div>

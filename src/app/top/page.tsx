@@ -1,10 +1,13 @@
 import React from "react";
-import { fetchTopAnime } from "../actions";
 import AnimeDisplay from "@/components/AnimeDisplay";
+import { animeSearch } from "../actions";
 
 const page = async () => {
-  const top = await fetchTopAnime(1, undefined);
-  const topAnime = top?.data;
+  const topResponse = await animeSearch({
+    sort: ["SCORE_DESC"],
+    page: 1,
+  });
+  const topAnime = topResponse.data.Page.media;
 
   if (!topAnime) {
     return <div>Loading...</div>;

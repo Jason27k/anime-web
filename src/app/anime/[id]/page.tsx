@@ -1,4 +1,4 @@
-import { fetchAniListAnime, fetchAnime } from "@/app/actions";
+import { fetchAniListAnime } from "@/app/actions";
 import AnimeDetailsTwo from "@/components/AnimeDetailsTwo";
 import { MediaResponse } from "@/utils/anilistTypes";
 
@@ -8,20 +8,13 @@ const DetailsPage = async ({ params }: { params: { id: string } }) => {
     return <div>Invalid ID</div>;
   }
 
-  const jikanResponse = await fetchAnime(id);
-  if (!jikanResponse) {
-    return <div>Not Found</div>;
-  }
-  const anime = jikanResponse.data;
-
   const aniListDetailsQuery = await fetchAniListAnime(id);
 
   const animeResponse: MediaResponse = await aniListDetailsQuery.json();
-  const aniAnime = animeResponse.data.Media;
-
+  const anime = animeResponse.data.Media;
   return (
     <>
-      <AnimeDetailsTwo anime={anime} aniAnime={aniAnime} />
+      <AnimeDetailsTwo anime={anime} />
     </>
   );
 };

@@ -1,13 +1,16 @@
-import { Anime } from "@tutkli/jikan-ts";
+"use client";
 import AnimeCardMedium from "./Cards/AnimeCardMedium";
 import AnimeMediumResizable from "./Cards/AnimeCardMediumResizable";
+import { AiringSchedule, MediaDisplay } from "@/utils/anilistTypes";
 
 export const AnimeMediumFormatted = ({
-  animeData,
   scroll,
+  animeData,
+  airingSchedules,
 }: {
-  animeData: Anime[];
   scroll?: boolean;
+  animeData?: MediaDisplay[];
+  airingSchedules?: AiringSchedule[];
 }) => {
   if (scroll) {
     return (
@@ -15,9 +18,18 @@ export const AnimeMediumFormatted = ({
         className="flex gap-4 justify-center overflow-x-scroll w-full"
         key="scroll"
       >
-        {animeData.map((anime: any) => (
-          <AnimeCardMedium anime={anime} key={anime.id} />
-        ))}
+        {airingSchedules
+          ? airingSchedules.map((schedule: AiringSchedule) => (
+              <AnimeCardMedium
+                anime={schedule.media}
+                key={schedule.media.id}
+                airing={schedule.airingAt}
+              />
+            ))
+          : animeData &&
+            animeData.map((anime: MediaDisplay) => (
+              <AnimeCardMedium anime={anime} key={anime.id} />
+            ))}
       </div>
     );
   }
@@ -26,9 +38,18 @@ export const AnimeMediumFormatted = ({
       className="grid grid-cols-2 min-[670px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center"
       key="non-scroll"
     >
-      {animeData.map((anime: any) => (
-        <AnimeMediumResizable anime={anime} key={anime.id} />
-      ))}
+      {airingSchedules
+        ? airingSchedules.map((schedule: AiringSchedule) => (
+            <AnimeMediumResizable
+              anime={schedule.media}
+              key={schedule.media.id}
+              airing={schedule.airingAt}
+            />
+          ))
+        : animeData &&
+          animeData.map((anime: MediaDisplay) => (
+            <AnimeMediumResizable anime={anime} key={anime.id} />
+          ))}
     </div>
   );
 };

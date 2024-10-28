@@ -1,55 +1,38 @@
 import AnimeCalendar from "@/components/Calendar/AnimeCalendar";
-import { convertToLocalTime } from "@/utils/date";
 import { fetchSchedule } from "../actions";
+import { getWeekRangeFromToday } from "@/utils/date";
+import { CalendarQueryResponse } from "@/utils/anilistTypes";
 
 const WeeklyCalendar = async () => {
-  const MIN_MEMBERS = 10000;
+  const MIN_MEMBERS = 2000;
+  let page = 1;
+  const { startOfWeek, endOfWeek } = getWeekRangeFromToday();
 
-  const dates = new Map<Number, Number>();
-  var page = 1;
-  var response = await fetchSchedule(page);
+  let response: CalendarQueryResponse = await fetchSchedule(
+    startOfWeek,
+    endOfWeek,
+    page
+  );
 
-  if (response === undefined) {
-    return <div>Failed to fetch data, please refresh</div>;
-  }
+  let airingSchedules = response.data.Page.airingSchedules.filter(
+    (schedule) =>
+      schedule.media.popularity >= MIN_MEMBERS &&
+      schedule.media.format === "TV" &&
+      schedule.media.type === "ANIME"
+  );
 
-  var animeData = response.data.filter((anime) => anime.members >= MIN_MEMBERS);
-
-  animeData.map((anime) => {
-    dates.set(
-      anime.mal_id,
-      convertToLocalTime(
-        anime.broadcast.day,
-        anime.broadcast.time,
-        anime.broadcast.timezone
-      )[1]
+  while (response.data.Page.pageInfo.hasNextPage) {
+    page++;
+    console.log("Calling page: ", page);
+    response = await fetchSchedule(startOfWeek, endOfWeek, page);
+    airingSchedules = airingSchedules.concat(
+      response.data.Page.airingSchedules
     );
-  });
-
-  while (response.pagination?.has_next_page) {
-    page += 1;
-    response = await fetchSchedule(page);
-    if (response === undefined) {
-      break;
-    }
-    animeData.push(
-      ...response.data.filter((anime) => anime.members > MIN_MEMBERS)
-    );
-    animeData.map((anime) => {
-      dates.set(
-        anime.mal_id,
-        convertToLocalTime(
-          anime.broadcast.day,
-          anime.broadcast.time,
-          anime.broadcast.timezone
-        )[1]
-      );
-    });
   }
 
   return (
     <div className="">
-      <AnimeCalendar animeData={animeData} dates={dates} />
+      <AnimeCalendar airingSchedules={airingSchedules} />
     </div>
   );
 };

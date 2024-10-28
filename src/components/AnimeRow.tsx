@@ -1,10 +1,10 @@
-import { Anime } from "@tutkli/jikan-ts";
 import Link from "next/link";
 import AnimeMediumResizable from "./Cards/AnimeCardMediumResizable";
+import { MediaDisplay } from "@/utils/anilistTypes";
 
 interface AnimeRowProps {
   title: string;
-  animes: Anime[];
+  animes: MediaDisplay[];
   link: string;
 }
 
@@ -20,8 +20,8 @@ const AnimeRow = ({ title, animes, link }: AnimeRowProps) => {
           {animes &&
             animes
               .slice(0, 5)
-              .map((anime: Anime) => (
-                <AnimeMediumResizable key={anime.mal_id} anime={anime} />
+              .map((anime: MediaDisplay) => (
+                <AnimeMediumResizable key={anime.id} anime={anime} />
               ))}
           <AnimeMediumResizable
             anime={animes[6]}

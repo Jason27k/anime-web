@@ -16,12 +16,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-import { Genre } from "@tutkli/jikan-ts";
 import {} from "next/navigation";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useCallback } from "react";
 
-export function GenreComboBox({ genres }: { genres: Genre[] }) {
+export function GenreComboBox({ genres }: { genres: String[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -156,12 +155,9 @@ export function GenreComboBox({ genres }: { genres: Genre[] }) {
                     variant="secondary"
                     className="selection-badge mr-1"
                   >
-                    {
-                      genres.find(
-                        (genre) =>
-                          String(genre.mal_id) === selectedGenres.split(",")[0]
-                      )?.name
-                    }
+                    {genres.find(
+                      (genre) => String(genre) === selectedGenres.split(",")[0]
+                    )}
                     <div
                       className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                       onKeyDown={(e) => {
@@ -198,9 +194,9 @@ export function GenreComboBox({ genres }: { genres: Genre[] }) {
             <CommandGroup className="w-full">
               {genres.map((genre) => (
                 <CommandItem
-                  key={genre.mal_id + "genre" + selectedGenres}
-                  value={genre.name}
-                  onSelect={() => handleSelect(String(genre.mal_id))}
+                  key={genre + ""}
+                  value={genre + ""}
+                  onSelect={() => handleSelect(String(genre))}
                   className="cursor-pointer w-full"
                 >
                   <Check
@@ -208,15 +204,12 @@ export function GenreComboBox({ genres }: { genres: Genre[] }) {
                       "mr-2 h-4 w-4",
                       selectedGenres
                         ?.split(",")
-                        .find(
-                          (selected: String) =>
-                            selected === String(genre.mal_id)
-                        )
+                        .find((selected: String) => selected === genre)
                         ? "opacity-100"
                         : "opacity-0"
                     )}
                   />
-                  {genre.name}
+                  {genre}
                 </CommandItem>
               ))}
             </CommandGroup>

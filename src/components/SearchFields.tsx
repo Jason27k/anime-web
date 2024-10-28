@@ -1,11 +1,10 @@
 "use client";
 
-import { Anime, Genre } from "@tutkli/jikan-ts";
+import { useEffect, useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "./ui/label";
 import { SearchIcon, X } from "lucide-react";
 import { GenreComboBox } from "./GenreComboBox";
-import { useEffect, useState, useCallback } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -34,14 +33,17 @@ import { useRouter } from "next/navigation";
 import { usePathname, useSearchParams } from "next/navigation";
 import AnimeDisplay from "./AnimeDisplay";
 import { useInView } from "react-intersection-observer";
-import { fetchAnimeSearch } from "@/app/actions";
+import { animeSearch } from "@/app/actions";
+import { MediaDisplay } from "@/utils/anilistTypes";
+import { capitalize } from "@/utils/formatting";
 
 interface SearchFieldsProps {
-  genres: Genre[];
+  genres: String[];
   seasons: string[];
   years: number[];
   className?: string;
-  animeData: Anime[];
+  animeData: MediaDisplay[];
+  hasNextPage: boolean;
 }
 
 const SearchFields = ({
@@ -50,63 +52,64 @@ const SearchFields = ({
   years,
   className,
   animeData,
+  hasNextPage,
 }: SearchFieldsProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [animes, setAnimes] = useState<Anime[]>([]);
-  const [page, setPage] = useState(2);
-
-  useEffect(() => {
-    setAnimes(animeData);
-    setPage(2);
-  }, [animeData]);
-
+  const { ref, inView } = useInView();
+  const [page, setPage] = useState(hasNextPage ? 2 : -1);
+  const [hasNext, setHasNext] = useState(hasNextPage);
   const selectedYear = searchParams.get("year");
   const selectedSeason = searchParams.get("season");
   const selectedGenres = searchParams.get("genres")?.split(",");
-
-  const { ref, inView } = useInView();
-
-  useEffect(() => {
-    async function fetchMore() {
-      const response = await fetchAnimeSearch(
-        selectedGenres?.join(",") ?? undefined,
-        selectedYear ?? undefined,
-        searchParams.get("query") ?? undefined,
-        selectedSeason ?? undefined,
-        page
-      );
-      if (response?.data && response.data.length > 0) {
-        setAnimes([
-          ...animes,
-          ...response.data.filter((anime) => anime.members > 1000),
-        ]);
-        setPage(page + 1);
-      } else {
-        setPage(-1);
-      }
-    }
-    if (inView) {
-      fetchMore();
-      console.log(page);
-    }
-  }, [
-    inView,
-    selectedGenres,
-    selectedYear,
-    searchParams,
-    selectedSeason,
-    page,
-    animes,
-  ]);
-
   const [yearsPopOpen, setYearsPopOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("query") || ""
   );
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
+  const [animes, setAnimes] = useState(animeData);
+
+  useEffect(() => {
+    setAnimes(animeData);
+  }, [animeData]);
+
+  useEffect(() => {
+    const fetchMore = async () => {
+      const response = await animeSearch({
+        genres: selectedGenres ?? undefined,
+        year: selectedSeason ? undefined : selectedYear ?? undefined,
+        search: searchQuery === "" ? undefined : searchQuery ?? undefined,
+        season:
+          (selectedSeason as "WINTER" | "SPRING" | "SUMMER" | "FALL") ??
+          undefined,
+        seasonYear: selectedSeason
+          ? selectedYear
+            ? Number(selectedYear)
+            : new Date().getFullYear()
+          : undefined,
+        page,
+      });
+
+      setAnimes((prev) => [...prev, ...response.data.Page.media]);
+      setHasNext(response.data.Page.pageInfo.hasNextPage);
+      setPage(response.data.Page.pageInfo.hasNextPage ? page + 1 : -1);
+    };
+
+    let timer: NodeJS.Timeout;
+
+    if (inView) {
+      timer = setTimeout(() => {
+        if (hasNext) {
+          fetchMore();
+        }
+      }, 333);
+    }
+
+    return () => clearTimeout(timer);
+  }, [inView, page]);
+
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -289,8 +292,7 @@ const SearchFields = ({
                 <SelectContent>
                   {seasons.map((currentSeason) => (
                     <SelectItem key={currentSeason} value={currentSeason}>
-                      {currentSeason.toUpperCase().charAt(0) +
-                        currentSeason.slice(1)}
+                      {capitalize(currentSeason)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -304,7 +306,9 @@ const SearchFields = ({
           <div
             className="bg-white px-3 py-1 rounded-lg group flex items-center gap-1"
             onClick={() =>
-              router.push(pathname + "?" + createQueryString("year", ""))
+              selectedSeason
+                ? null
+                : router.push(pathname + "?" + createQueryString("year", ""))
             }
           >
             <p className="text-sm">{selectedYear}</p>
@@ -320,7 +324,7 @@ const SearchFields = ({
               router.push(pathname + "?" + createQueryString("season", ""))
             }
           >
-            <p className="text-sm">{selectedSeason}</p>
+            <p className="text-sm">{capitalize(selectedSeason)}</p>
             <div className="hidden group-hover:block">
               <X className="h-4 w-4 text-muted-foreground" size={16} />
             </div>
@@ -333,9 +337,7 @@ const SearchFields = ({
               key={genre + "filter"}
               onClick={() => handleGenreRemove(genre)}
             >
-              <p className="text-sm">
-                {genres.filter((g) => g.mal_id === Number(genre))[0].name}
-              </p>
+              <p className="text-sm">{genre}</p>
               <div className="hidden group-hover:block">
                 <X className="h-4 w-4 text-muted-foreground" size={16} />
               </div>
@@ -348,7 +350,7 @@ const SearchFields = ({
         scroll={false}
         className="pb-2"
       />
-      <AnimeDisplay animeData={animes} display={display} />
+      <AnimeDisplay display={display} animeData={animes} />
       <div ref={ref}></div>
     </div>
   );

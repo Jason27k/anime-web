@@ -6,15 +6,19 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
-import { convertToLocalTime } from "@/utils/date";
-import { Anime } from "@tutkli/jikan-ts";
 import { useEffect, useState, useRef } from "react";
+import { MediaDisplay } from "@/utils/anilistTypes";
+import { convertUTCToLocal } from "@/utils/date";
+import { useRouter } from "next/navigation";
+import { capitalize } from "@/utils/formatting";
 
 interface AnimeCardProps {
-  anime: Anime;
+  anime: MediaDisplay;
+  airing?: number;
 }
 
-const AnimeCard = ({ anime }: AnimeCardProps) => {
+const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
+  const router = useRouter();
   const languageContext = useContext(LanguageContext);
   const [visibleGenres, setVisibleGenres] = useState(3);
   const genreContainerRef = useRef<HTMLDivElement>(null);
@@ -47,54 +51,80 @@ const AnimeCard = ({ anime }: AnimeCardProps) => {
     };
   }, []);
 
-  const image =
-    anime.images.webp?.large_image_url ?? anime.images.jpg.image_url;
-  const producer = anime.producers[0]?.name ?? "";
+  const image = anime.coverImage.extraLarge;
+  const producer = anime.studios.nodes[0]?.name ?? "";
   const title =
     (languageContext.language === LanguageType.English
-      ? anime.title_english
+      ? anime.title.english
       : languageContext.language === LanguageType.Romanji
-      ? anime.title
-      : anime.title_japanese) ?? anime.title;
+      ? anime.title.romaji
+      : anime.title.native) ?? anime.title.romaji;
 
-  const airing = anime.airing;
-  let time = null;
-  let day = null;
-  let season = null;
+  let airingString = "";
   if (airing) {
-    time = convertToLocalTime(
-      anime.broadcast.day,
-      anime.broadcast.time,
-      anime.broadcast.timezone
-    );
-    day =
-      time[1] === 0
-        ? "Mondays"
-        : time[1] === 1
-        ? "Tuesdays"
-        : time[1] === 2
-        ? "Wednesdays"
-        : time[1] === 3
-        ? "Thursdays"
-        : time[1] === 4
-        ? "Fridays"
-        : time[1] === 5
-        ? "Saturdays"
-        : "Sundays";
-  } else {
-    season =
-      (anime.season
-        ? anime.season.charAt(0).toUpperCase() + anime.season.slice(1) + " "
-        : "") + anime.year;
+    const date = convertUTCToLocal(airing);
+    const day = date.getDay();
+    if (day === 0) {
+      airingString = "Sundays";
+    } else if (day === 1) {
+      airingString = "Mondays";
+    } else if (day === 2) {
+      airingString = "Tuesdays";
+    } else if (day === 3) {
+      airingString = "Wednesdays";
+    } else if (day === 4) {
+      airingString = "Thursdays";
+    } else if (day === 5) {
+      airingString = "Fridays";
+    } else if (day === 6) {
+      airingString = "Saturdays";
+    } else {
+      airingString = "No time specified";
+    }
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+    });
+    airingString = airingString + " at " + time;
+  } else if (anime.nextAiringEpisode) {
+    const date = convertUTCToLocal(anime.nextAiringEpisode.airingAt);
+    const day = date.getDay();
+    if (day === 0) {
+      airingString = "Sundays";
+    } else if (day === 1) {
+      airingString = "Mondays";
+    } else if (day === 2) {
+      airingString = "Tuesdays";
+    } else if (day === 3) {
+      airingString = "Wednesdays";
+    } else if (day === 4) {
+      airingString = "Thursdays";
+    } else if (day === 5) {
+      airingString = "Fridays";
+    } else if (day === 6) {
+      airingString = "Saturdays";
+    } else {
+      airingString = "No time specified";
+    }
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+    });
+    airingString = airingString + " at " + time;
   }
-  const score = anime.score;
-  const members = anime.members;
-  const synopsis = anime.synopsis;
+  const season = anime.season;
+  const year = anime.seasonYear;
+  const score =
+    anime.averageScore === null || !anime.averageScore
+      ? ""
+      : anime.averageScore / 10;
+  const members = anime.popularity;
+  const synopsis = anime.description;
   const genres = anime.genres;
 
   return (
     <Link
-      href={"/anime/" + anime.mal_id}
+      href={"/anime/" + anime.id}
       className="flex h-[265px] justify-center w-full"
     >
       <div className="flex flex-col relative h-full w-[185px]">
@@ -117,18 +147,11 @@ const AnimeCard = ({ anime }: AnimeCardProps) => {
       </div>
       <div className="flex flex-col bg-[#1f232d] w-[98%] max-w-[500px]">
         <div className="flex justify-between text-[#9fa7b0] p-3">
-          {time && time[0] !== "No time specified" ? (
-            <p className="text-lg">
-              {day + " at "}
-              {time[0]}
-            </p>
+          {airingString ? (
+            <p className="text-lg">{airingString}</p>
           ) : (
             <p className="text-lg">
-              {season && season !== "null"
-                ? season
-                : anime.year
-                ? anime.year
-                : anime.type}
+              {season && capitalize(season)} {year}
             </p>
           )}
           <div className="flex flex-col items-end">
@@ -161,11 +184,13 @@ const AnimeCard = ({ anime }: AnimeCardProps) => {
               <Button
                 key={index}
                 className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/search/?genres=" + genre);
+                }}
                 asChild
               >
-                <Link href={`/search?genres=${genre.mal_id}`}>
-                  {genre.name}
-                </Link>
+                <p>{genre}</p>
               </Button>
             ))}
             {genres.length > visibleGenres && (

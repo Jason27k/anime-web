@@ -14,7 +14,6 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { Anime } from "@tutkli/jikan-ts";
 import { Media } from "@/utils/anilistTypes";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -26,34 +25,27 @@ import {
 } from "@radix-ui/react-collapsible";
 
 interface AnimeDetailPropsTwo {
-  anime: Anime;
-  aniAnime: Media;
+  anime: Media;
 }
 
-export default function AnimeDetailsTwo({
-  anime,
-  aniAnime,
-}: AnimeDetailPropsTwo) {
+export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   const languageContext = useContext(LanguageContext);
   const [linkCollapsed, setLinkCollapsed] = useState(false);
   const title =
     (languageContext.language === LanguageType.English
-      ? anime.title_english
+      ? anime.title.english
       : languageContext.language === LanguageType.Romanji
-      ? anime.title
-      : anime.title_japanese) ?? anime.title;
+      ? anime.title.romaji
+      : anime.title.native) ?? anime.title.romaji;
   const subTitle =
-    title === anime.title
-      ? anime.title_english ?? anime.title_japanese
-      : anime.title;
+    title === anime.title.romaji
+      ? anime.title.english ?? anime.title.native
+      : anime.title.romaji;
   const [selectedEpisode, setSelectedEpisode] = useState(
-    aniAnime.streamingEpisodes[0]
+    anime.streamingEpisodes[0]
   );
-  const image =
-    anime.images.webp?.large_image_url ??
-    anime.images.jpg.large_image_url ??
-    anime.images.jpg.image_url;
-  const streamingLinks = aniAnime.externalLinks.filter(
+  const image = anime.coverImage.extraLarge;
+  const streamingLinks = anime.externalLinks.filter(
     (link) => link.type === "STREAMING"
   );
   const mainStreamingLink =
@@ -63,16 +55,18 @@ export default function AnimeDetailsTwo({
         link.site === "Netflix" ||
         link.site === "HIDIVE"
     ) ?? streamingLinks[0];
-  const officialSiteLink = aniAnime.externalLinks.find(
+  const officialSiteLink = anime.externalLinks.find(
     (link) => link.type === "INFO"
   );
+
+  const score = anime.averageScore ? anime.averageScore / 10 : "N/A";
 
   return (
     <div className="container mx-auto px-4 py-8 ">
       <div className="relative h-64 md:h-96 mb-8 rounded-xl overflow-hidden">
         <Image
-          src={aniAnime.bannerImage || anime.images.jpg.image_url}
-          alt={anime.title}
+          src={anime.bannerImage || anime.coverImage.extraLarge}
+          alt={title}
           layout="fill"
           objectFit="cover"
           className="brightness-50"
@@ -89,19 +83,19 @@ export default function AnimeDetailsTwo({
             <CardContent className="p-4">
               <Image
                 src={image}
-                alt={anime.title}
+                alt={title}
                 width={350}
                 height={500}
                 className="w-full max-w-56 max-h-96 aspect-auto sm:h-auto rounded-lg mx-auto"
               />
               <div className="mt-4 flex items-center justify-center space-x-2 text-white">
                 <StarIcon className="w-6 h-6 text-yellow-400" />
-                <span className="text-xl font-bold">{anime.score}</span>
+                <span className="text-xl font-bold">{score}</span>
                 <User className="w-6 h-6 text-yellow-400" />
                 <span className="text-xl font-bold">
-                  {anime.members > 1000000
-                    ? Math.floor(anime.members / 100000) / 10 + "M"
-                    : Math.floor(anime.members / 1000) + "K"}{" "}
+                  {anime.popularity > 1000000
+                    ? Math.floor(anime.popularity / 100000) / 10 + "M"
+                    : Math.floor(anime.popularity / 1000) + "K"}{" "}
                 </span>
               </div>
               <div className="mt-4 space-y-2">
@@ -146,7 +140,11 @@ export default function AnimeDetailsTwo({
             <CardContent>
               <div className="aspect-video">
                 <iframe
-                  src={anime.trailer.embed_url}
+                  src={
+                    anime.trailer?.site === "youtube"
+                      ? "https://www.youtube.com/embed/" + anime.trailer.id
+                      : ""
+                  }
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="w-full h-full rounded-lg"
@@ -171,7 +169,7 @@ export default function AnimeDetailsTwo({
               </CollapsibleTrigger>
               <CardContent>
                 <CollapsibleContent className="space-y-2">
-                  {aniAnime.externalLinks.map((link, index) => (
+                  {anime.externalLinks.map((link, index) => (
                     <Button
                       key={index}
                       className="w-full"
@@ -216,7 +214,7 @@ export default function AnimeDetailsTwo({
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-1">
                       <div className="flex items-center mb-4"></div>
-                      <p className="mb-4">{anime.synopsis}</p>
+                      <p className="mb-4">{anime.description}</p>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <strong>Episodes:</strong> {anime.episodes}
@@ -230,20 +228,10 @@ export default function AnimeDetailsTwo({
                             {anime.genres.map((genre, index) => (
                               <Link
                                 key={index}
-                                href={`/search?genres=${genre.mal_id}`}
+                                href={`/search?genres=${genre}`}
                               >
-                                <Badge variant="secondary">{genre.name}</Badge>
+                                <Badge variant="secondary">{genre}</Badge>
                               </Link>
-                            ))}
-                          </div>
-                        </div>
-                        <div>
-                          <strong>Themes:</strong>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {anime.themes.map((theme, index) => (
-                              <Badge key={index} variant="secondary">
-                                {theme.name}
-                              </Badge>
                             ))}
                           </div>
                         </div>
@@ -293,7 +281,7 @@ export default function AnimeDetailsTwo({
                     </div>
                     <ScrollArea className="h-[400px]">
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {aniAnime.streamingEpisodes.map((episode, index) => (
+                        {anime.streamingEpisodes.map((episode, index) => (
                           <div
                             key={index}
                             className="flex flex-col items-center p-2 rounded-lg hover:bg-accent cursor-pointer"
@@ -324,7 +312,7 @@ export default function AnimeDetailsTwo({
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {aniAnime.characterPreview?.edges.map((character) => (
+                    {anime.characterPreview?.edges.map((character) => (
                       <div
                         key={character.id}
                         className="flex flex-col items-center"
@@ -355,7 +343,7 @@ export default function AnimeDetailsTwo({
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {aniAnime.staffPreview?.edges.map((person) => (
+                    {anime.staffPreview?.edges.map((person) => (
                       <div
                         key={person.id}
                         className="flex flex-col items-center"
@@ -398,7 +386,7 @@ export default function AnimeDetailsTwo({
                         "repeat(auto-fit, minmax(130px, 1fr))",
                     }}
                   >
-                    {aniAnime.relations.edges
+                    {anime.relations.edges
                       .filter(
                         (rel) =>
                           rel.node.format === "TV" &&
@@ -440,7 +428,7 @@ export default function AnimeDetailsTwo({
                         "repeat(auto-fit, minmax(130px, 1fr))",
                     }}
                   >
-                    {aniAnime.recommendations.nodes
+                    {anime.recommendations.nodes
                       .filter(
                         (rec) =>
                           rec.mediaRecommendation.format === "TV" &&

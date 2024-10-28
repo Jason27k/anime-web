@@ -227,3 +227,108 @@ type Stats = {
     amount: number;
   }[];
 };
+
+// Weekly & Search Types
+export type CalendarQueryResponse = {
+  data: {
+    Page: {
+      pageInfo: PageInfo;
+      airingSchedules: AiringSchedule[];
+    };
+  };
+};
+
+export type PageInfo = {
+  hasNextPage: boolean;
+  total: number;
+};
+
+export type AiringSchedule = {
+  id: number;
+  episode: number;
+  airingAt: number;
+  media: MediaDisplay;
+};
+
+export type MediaDisplay = {
+  id: number;
+  idMal: number;
+  title: {
+    romaji: string;
+    native: string;
+    english: string;
+  };
+  startDate: DateTypeDisplay;
+  endDate: DateTypeDisplay;
+  status: "RELEASING" | "FINISHED" | "NOT_YET_RELEASED" | "CANCELLED";
+  season: "WINTER" | "SPRING" | "SUMMER" | "FALL";
+  seasonYear: number;
+  format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
+  genres: string[];
+  duration: number;
+  type: "ANIME" | "MANGA";
+  popularity: number;
+  episodes: number;
+  averageScore?: number;
+  description: string;
+  isAdult: boolean;
+  nextAiringEpisode?: AiringEpisode; // optional if it can be null
+  coverImage: CoverImage;
+  rankings: RankingDisplay[];
+  studios: Studios;
+};
+
+type DateTypeDisplay = {
+  year: number;
+  month: number;
+  day: number;
+};
+
+type AiringEpisode = {
+  airingAt: number;
+  timeUntilAiring: number;
+  episode: number;
+};
+
+type CoverImage = {
+  extraLarge: string;
+  color?: string | null; // optional if it can be null
+};
+
+type RankingDisplay = {
+  rank: number;
+  type: "RATED" | "POPULAR";
+  season: "WINTER" | "SPRING" | "SUMMER" | "FALL" | null;
+  allTime: boolean;
+};
+
+type Studios = {
+  nodes: Studio[];
+};
+
+type Studio = {
+  id: number;
+  name: string;
+  siteUrl: string;
+};
+
+// Search types
+export type SearchQueryResponse = {
+  data: {
+    Page: Page;
+  };
+};
+
+// Page and PageInfo Types
+type Page = {
+  pageInfo: PageInfoSearch;
+  media: MediaDisplay[];
+};
+
+type PageInfoSearch = {
+  total: number;
+  perPage: number;
+  currentPage: number;
+  lastPage: number;
+  hasNextPage: boolean;
+};

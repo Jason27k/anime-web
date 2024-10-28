@@ -1,57 +1,59 @@
 "use client";
 import Image from "next/image";
-import { Anime } from "@tutkli/jikan-ts";
 import { User, Star } from "lucide-react";
 import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
-import { convertToLocalTime } from "@/utils/date";
 import { cn } from "@/lib/utils";
 import "@/styles/CardStyles.css";
 import Link from "next/link";
+import { MediaDisplay } from "@/utils/anilistTypes";
+import { convertUTCToLocal } from "@/utils/date";
 
 interface AnimeMediumResizableProps {
-  anime: Anime;
+  anime: MediaDisplay;
   className?: string;
+  airing?: number;
 }
 
 const AnimeMediumResizable = ({
   anime,
   className,
+  airing,
 }: AnimeMediumResizableProps) => {
   const languageContext = useContext(LanguageContext);
 
-  const image =
-    anime.images.webp?.large_image_url ??
-    anime.images.jpg.large_image_url ??
-    anime.images.jpg.image_url;
+  const image = anime.coverImage.extraLarge;
   const title =
     (languageContext.language === LanguageType.English
-      ? anime.title_english
+      ? anime.title.english
       : languageContext.language === LanguageType.Romanji
-      ? anime.title
-      : anime.title_japanese) ?? anime.title;
+      ? anime.title.romaji
+      : anime.title.native) ?? anime.title.romaji;
 
-  const airing = anime.airing;
-  let time = null;
+  let airingString = "";
   if (airing) {
-    time = convertToLocalTime(
-      anime.broadcast.day,
-      anime.broadcast.time,
-      anime.broadcast.timezone
-    );
+    const date = convertUTCToLocal(airing);
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+    });
+    airingString = time;
   }
-  const score = anime.score;
-  const members = anime.members;
+  const score =
+    anime.averageScore === null || !anime.averageScore
+      ? ""
+      : anime.averageScore / 10;
+  const members = anime.popularity;
   return (
     <Link
-      href={"/anime/" + anime.mal_id}
+      href={"/anime/" + anime.id}
       className={cn(className, "flex flex-col items-start")}
     >
       <div className="flex flex-col gap-2 justify-start w-full">
         <div className="relative w-full aspect-w-3 aspect-h-4">
           <Image
             src={image}
-            alt={anime.title}
+            alt={title}
             fill
             placeholder="blur"
             blurDataURL="./placeholder.svg"
@@ -72,7 +74,7 @@ const AnimeMediumResizable = ({
                 : Math.floor(members / 1000) + "K"}
             </p>
           </div>
-          {<p className="text-start">{time ? time[0] : ""}</p>}
+          <p className="text-start">{airingString}</p>
           <div className="flex justify-start items-center gap-1">
             {score && <Star size={17} />}
             <p>{score}</p>

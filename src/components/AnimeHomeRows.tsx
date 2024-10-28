@@ -3,13 +3,13 @@
 import { useState } from "react";
 import TabOptions from "@/components/TabOptions";
 import AnimeRow from "./AnimeRow";
-import { Anime } from "@tutkli/jikan-ts";
+import { MediaDisplay } from "@/utils/anilistTypes";
 
 interface AnimeHomeRowsProps {
-  upcoming: Anime[];
-  trending: Anime[];
-  popular: Anime[];
-  top: Anime[];
+  upcoming: MediaDisplay[];
+  trending: MediaDisplay[];
+  popular: MediaDisplay[];
+  top: MediaDisplay[];
 }
 
 const AnimeHomeRows = ({
