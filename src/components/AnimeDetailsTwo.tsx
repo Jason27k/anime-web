@@ -29,12 +29,6 @@ interface AnimeDetailPropsTwo {
   anime: Media;
 }
 
-export function convertHtmlToPlainText(htmlString: string) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlString, "text/html");
-  return doc.body.textContent || "";
-}
-
 export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   const languageContext = useContext(LanguageContext);
   const [linkCollapsed, setLinkCollapsed] = useState(false);

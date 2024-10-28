@@ -447,7 +447,6 @@ export async function animeSearch(variables: SearchQueryVariables) {
     }),
     cache: "force-cache",
   });
-  console.log(variables);
   const json: SearchQueryResponse = await response.json();
   return json;
 }

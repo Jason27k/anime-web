@@ -11,12 +11,7 @@ import { MediaDisplay } from "@/utils/anilistTypes";
 import { convertUTCToLocal } from "@/utils/date";
 import { useRouter } from "next/navigation";
 import { capitalize } from "@/utils/formatting";
-
-export function convertHtmlToPlainText(htmlString: string) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlString, "text/html");
-  return doc.body.textContent || "";
-}
+import TurndownService from "turndown";
 
 interface AnimeCardProps {
   anime: MediaDisplay;
@@ -28,6 +23,7 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
   const languageContext = useContext(LanguageContext);
   const [visibleGenres, setVisibleGenres] = useState(3);
   const genreContainerRef = useRef<HTMLDivElement>(null);
+  const turndownService = new TurndownService();
 
   const updateVisibleGenres = () => {
     if (genreContainerRef.current) {
@@ -125,7 +121,7 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
       ? ""
       : anime.averageScore / 10;
   const members = anime.popularity;
-  const synopsis = convertHtmlToPlainText(anime.description);
+  const synopsis = turndownService.turndown(anime.description || "");
   const genres = anime.genres;
 
   return (

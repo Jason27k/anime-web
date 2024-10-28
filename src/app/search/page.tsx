@@ -51,7 +51,6 @@ const Search = async ({
   };
 
   const response: SearchQueryResponse = await animeSearch(variables);
-  console.log(response.data.Page.pageInfo);
   const animeData = response.data.Page.media;
   if (!animeData) {
     return <div>Error loading data</div>;
