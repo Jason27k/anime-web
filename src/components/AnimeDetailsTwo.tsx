@@ -23,14 +23,22 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
+import TurndownService from "turndown";
 
 interface AnimeDetailPropsTwo {
   anime: Media;
 }
 
+export function convertHtmlToPlainText(htmlString: string) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, "text/html");
+  return doc.body.textContent || "";
+}
+
 export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   const languageContext = useContext(LanguageContext);
   const [linkCollapsed, setLinkCollapsed] = useState(false);
+  if (!anime) return <>Error</>;
   const title =
     (languageContext.language === LanguageType.English
       ? anime.title.english
@@ -60,6 +68,8 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   );
 
   const score = anime.averageScore ? anime.averageScore / 10 : "N/A";
+  const turndownService = new TurndownService();
+  const synopsis = turndownService.turndown(anime.description || "");
 
   return (
     <div className="container mx-auto px-4 py-8 ">
@@ -102,17 +112,23 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                 <Button
                   className="w-full"
                   asChild
-                  disabled={
-                    mainStreamingLink == null || mainStreamingLink == undefined
+                  variant={
+                    !mainStreamingLink || mainStreamingLink == null
+                      ? "ghost"
+                      : "default"
                   }
                 >
-                  <a
-                    href={mainStreamingLink.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <PlayCircleIcon className="mr-2 h-4 w-4" /> Watch Now
-                  </a>
+                  {mainStreamingLink ? (
+                    <a
+                      href={mainStreamingLink.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <PlayCircleIcon className="mr-2 h-4 w-4" /> Watch Now
+                    </a>
+                  ) : (
+                    <p>No Link Found</p>
+                  )}
                 </Button>
                 <Button
                   variant="outline"
@@ -133,63 +149,69 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-[#1f232d] text-[#7c8793] border-0">
-            <CardHeader>
-              <CardTitle className="text-white">Trailer</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="aspect-video">
-                <iframe
-                  src={
-                    anime.trailer?.site === "youtube"
-                      ? "https://www.youtube.com/embed/" + anime.trailer.id
-                      : ""
-                  }
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full rounded-lg"
-                ></iframe>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#1f232d] text-[#7c8793] border-0">
-            <Collapsible open={linkCollapsed} onOpenChange={setLinkCollapsed}>
-              <CollapsibleTrigger className="w-full flex items-center justify-start">
-                <CardHeader className="w-full">
-                  <CardTitle className="text-white text-start">
-                    Anime Links
-                  </CardTitle>
+          {anime.trailer &&
+            anime.trailer.site === "youtube" &&
+            anime.trailer?.id && (
+              <Card className="bg-[#1f232d] text-[#7c8793] border-0">
+                <CardHeader>
+                  <CardTitle className="text-white">Trailer</CardTitle>
                 </CardHeader>
-                {linkCollapsed ? (
-                  <ChevronUp className="h-6 w-6 mr-2" />
-                ) : (
-                  <ChevronDown className="h-6 w-6 mr-2" />
-                )}
-              </CollapsibleTrigger>
-              <CardContent>
-                <CollapsibleContent className="space-y-2">
-                  {anime.externalLinks.map((link, index) => (
-                    <Button
-                      key={index}
-                      className="w-full"
-                      variant="outline"
-                      asChild
-                    >
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                <CardContent>
+                  <div className="aspect-video">
+                    <iframe
+                      src={
+                        anime.trailer?.site === "youtube"
+                          ? "https://www.youtube.com/embed/" + anime.trailer.id
+                          : ""
+                      }
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full rounded-lg"
+                    ></iframe>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+          {anime.externalLinks.length > 0 && (
+            <Card className="bg-[#1f232d] text-[#7c8793] border-0">
+              <Collapsible open={linkCollapsed} onOpenChange={setLinkCollapsed}>
+                <CollapsibleTrigger className="w-full flex items-center justify-start">
+                  <CardHeader className="w-full">
+                    <CardTitle className="text-white text-start">
+                      Anime Links
+                    </CardTitle>
+                  </CardHeader>
+                  {linkCollapsed ? (
+                    <ChevronUp className="h-6 w-6 mr-2" />
+                  ) : (
+                    <ChevronDown className="h-6 w-6 mr-2" />
+                  )}
+                </CollapsibleTrigger>
+                <CardContent>
+                  <CollapsibleContent className="space-y-2">
+                    {anime.externalLinks.map((link, index) => (
+                      <Button
+                        key={index}
+                        className="w-full"
+                        variant="outline"
+                        asChild
                       >
-                        <ExternalLinkIcon className="mr-2 h-4 w-4" />{" "}
-                        {link.site}
-                      </a>
-                    </Button>
-                  ))}
-                </CollapsibleContent>
-              </CardContent>
-            </Collapsible>
-          </Card>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLinkIcon className="mr-2 h-4 w-4" />{" "}
+                          {link.site}
+                        </a>
+                      </Button>
+                    ))}
+                  </CollapsibleContent>
+                </CardContent>
+              </Collapsible>
+            </Card>
+          )}
         </div>
         <div className="sm:col-span-2 flex flex-col gap-8">
           <Tabs defaultValue="overview">
@@ -214,7 +236,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-1">
                       <div className="flex items-center mb-4"></div>
-                      <p className="mb-4">{anime.description}</p>
+                      <p className="mb-4">{synopsis}</p>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <strong>Episodes:</strong> {anime.episodes}
@@ -325,7 +347,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                           className="rounded-lg"
                         />
                         <h3 className="mt-2 font-semibold text-center">
-                          {character.name}
+                          {character.node.name.userPreferred}
                         </h3>
                         <p className="text-sm text-muted-foreground">
                           {character.role}
@@ -390,12 +412,11 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                       .filter(
                         (rel) =>
                           rel.node.format === "TV" &&
-                          rel.node.idMal &&
                           rel.relationType !== "CHARACTER"
                       )
                       .map((rec) => (
                         <Link
-                          href={"/anime/" + rec.node.idMal}
+                          href={"/anime/" + rec.node.id}
                           key={rec.id}
                           className="flex flex-col items-center"
                         >
@@ -432,12 +453,11 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                       .filter(
                         (rec) =>
                           rec.mediaRecommendation.format === "TV" &&
-                          rec.mediaRecommendation.type === "ANIME" &&
-                          rec.mediaRecommendation.idMal
+                          rec.mediaRecommendation.type === "ANIME"
                       )
                       .map((rec) => (
                         <Link
-                          href={"/anime/" + rec.mediaRecommendation.idMal}
+                          href={"/anime/" + rec.mediaRecommendation.id}
                           key={rec.id}
                           className="flex flex-col items-center"
                         >

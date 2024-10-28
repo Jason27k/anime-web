@@ -12,6 +12,12 @@ import { convertUTCToLocal } from "@/utils/date";
 import { useRouter } from "next/navigation";
 import { capitalize } from "@/utils/formatting";
 
+export function convertHtmlToPlainText(htmlString: string) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, "text/html");
+  return doc.body.textContent || "";
+}
+
 interface AnimeCardProps {
   anime: MediaDisplay;
   airing?: number;
@@ -119,7 +125,7 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
       ? ""
       : anime.averageScore / 10;
   const members = anime.popularity;
-  const synopsis = anime.description;
+  const synopsis = convertHtmlToPlainText(anime.description);
   const genres = anime.genres;
 
   return (
