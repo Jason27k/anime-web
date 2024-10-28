@@ -32,7 +32,6 @@ interface AnimeDetailPropsTwo {
 export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   const languageContext = useContext(LanguageContext);
   const [linkCollapsed, setLinkCollapsed] = useState(false);
-  if (!anime) return <>Error</>;
   const title =
     (languageContext.language === LanguageType.English
       ? anime.title.english
@@ -46,6 +45,9 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   const [selectedEpisode, setSelectedEpisode] = useState(
     anime.streamingEpisodes[0]
   );
+
+  if (!anime) return <>Error</>;
+
   const image = anime.coverImage.extraLarge;
   const streamingLinks = anime.externalLinks.filter(
     (link) => link.type === "STREAMING"
