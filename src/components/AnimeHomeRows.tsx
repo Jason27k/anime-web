@@ -1,15 +1,13 @@
-"use client";
-
-import { useState } from "react";
-import TabOptions from "@/components/TabOptions";
 import AnimeRow from "./AnimeRow";
 import { MediaDisplay } from "@/utils/anilistTypes";
+import AnimeCarousel from "./AnimeCarousel";
 
 interface AnimeHomeRowsProps {
   upcoming: MediaDisplay[];
   trending: MediaDisplay[];
   popular: MediaDisplay[];
   top: MediaDisplay[];
+  romance: MediaDisplay[];
 }
 
 const AnimeHomeRows = ({
@@ -17,22 +15,16 @@ const AnimeHomeRows = ({
   trending,
   popular,
   top,
+  romance,
 }: AnimeHomeRowsProps) => {
-  const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
-
   return (
-    <div>
-      <TabOptions
-        display={display}
-        setDisplay={setDisplay}
-        scroll={false}
-        className="pb-2"
-      />
-      <div className="flex flex-col gap-4 pt-2">
-        <AnimeRow title="Top" animes={top} link="/top" />
+    <div className="flex flex-col gap-4 h-full">
+      <div className="flex flex-col gap-8 pt-2 h-full">
         <AnimeRow title="Trending" animes={trending} link="/trending" />
-        <AnimeRow title="Upcoming" animes={upcoming} link="/upcoming" />
-        <AnimeRow title="Popular" animes={popular} link="/popular" />
+        <AnimeRow title="Top All Time" animes={top} link="/top" />
+        <AnimeRow title="Upcoming Season" animes={upcoming} link="/upcoming" />
+        <AnimeRow title="Popular Anime" animes={popular} link="/popular" />
+        <AnimeRow title="Romance Lover" animes={romance} link="/romance" />
       </div>
     </div>
   );

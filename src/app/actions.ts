@@ -151,7 +151,7 @@ query media($id: Int) {
         }
       }
     }
-    recommendations(perPage: 7, sort: [RATING_DESC, ID]) {
+    recommendations(perPage: 10, sort: [RATING_DESC, ID]) {
       pageInfo {
         total
       }
@@ -298,6 +298,7 @@ query ($weekStart: Int, $weekEnd: Int, $page: Int) {
         averageScore
         description
         isAdult
+        bannerImage
         nextAiringEpisode {
           airingAt
           timeUntilAiring
@@ -388,6 +389,7 @@ query ($page: Int = 1, $id: Int, $isAdult: Boolean = false, $search: String, $st
       averageScore
       description
       isAdult
+      bannerImage
       nextAiringEpisode {
         airingAt
         timeUntilAiring

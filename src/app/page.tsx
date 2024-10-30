@@ -43,11 +43,16 @@ const page = async () => {
     sort: ["SCORE_DESC"],
     page: 1,
   });
+  const romanceResponse = await animeSearch({
+    genres: ["Romance"],
+    page: 1,
+  });
 
   const upcoming = upcomingResponse?.data.Page.media;
   const trending = trendingResponse?.data.Page.media;
   const popular = popularResponse?.data.Page.media;
   const top = topResponse?.data.Page.media;
+  const romance = romanceResponse?.data.Page.media;
 
   if (!upcoming || !trending || !popular || !top) {
     return <div>Loading...</div>;
@@ -60,6 +65,7 @@ const page = async () => {
         top={top}
         trending={trending}
         popular={popular}
+        romance={romance}
       />
     </div>
   );

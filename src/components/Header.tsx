@@ -142,7 +142,7 @@ const Header = ({ children }: { children: ReactNode }) => {
           </SignedIn>
         </div>
       </div>
-      <div className="px-5 pt-6 pb-10 lg:px-10 xl:px-17 2xl:px-[12vw] w-screen">
+      <div className="px-5 pt-6 pb-10 lg:px-10 xl:px-17 2xl:px-[12vw] w-screen relative">
         {children}
       </div>
     </div>

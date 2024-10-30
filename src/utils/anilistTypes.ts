@@ -271,6 +271,7 @@ export type MediaDisplay = {
   episodes: number;
   averageScore?: number;
   description: string;
+  bannerImage: string;
   isAdult: boolean;
   nextAiringEpisode?: AiringEpisode; // optional if it can be null
   coverImage: CoverImage;

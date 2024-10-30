@@ -13,7 +13,7 @@ const AnimeRow = ({ title, animes, link }: AnimeRowProps) => {
     <>
       <div className="flex flex-col text-white gap-2">
         <div className="flex justify-between">
-          <h1>{title}</h1>
+          <h1 className="text-2xl">{title}</h1>
           <Link href={link}>View All</Link>
         </div>
         <div className="grid grid-cols-2 min-[670px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center">
