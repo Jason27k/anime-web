@@ -78,7 +78,7 @@ export default function MyAnimePage({ animes }: MyAnimeProps) {
         <Button
           className={`${
             filter === "finished"
-              ? "bg-[#d67900] text-white "
+              ? "bg-[#d67900] text-white"
               : "bg-[#1f1f1f] text-[#d67900]"
           }`}
           onClick={() => setFilter("finished")}

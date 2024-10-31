@@ -98,7 +98,7 @@ const page = async () => {
                 <ListVideo className="h-6 w-6 text-primary-foreground" />
               </div>
               <p className="text-sm">
-                Keep track of anime you're watching and have finished
+                Keep track of anime you&apos;re watching and have finished
               </p>
             </div>
             <div className="flex items-center space-x-4">
