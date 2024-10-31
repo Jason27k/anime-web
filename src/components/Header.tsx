@@ -113,7 +113,7 @@ const Header = ({ children }: { children: ReactNode }) => {
             variant={"ghost"}
             asChild
           >
-            <Link href="/liked">Liked</Link>
+            <Link href="/my-anime">My Anime</Link>
           </Button>
           <Button
             className="w-20 text-white hover:bg-[#d679009d] hover:text-white"

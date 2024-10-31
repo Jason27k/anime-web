@@ -14,6 +14,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "img1.ak.crunchyroll.com",
       },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+      },
     ],
   },
 };
