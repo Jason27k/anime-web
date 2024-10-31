@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, PlayCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Anime } from "@/utils/myAnimeTypes";
-import Image from "next/image";
 import { convertUTCToLocal } from "@/utils/date";
 import { capitalize } from "@/utils/formatting";
 import Link from "next/link";
@@ -103,10 +102,9 @@ export default function MyAnimePage({ animes }: MyAnimeProps) {
                 className="overflow-hidden border-0 bg-[#1f232d] flex flex-col justify-between"
               >
                 <div className="relative w-full h-48">
-                  <Image
+                  <img
                     src={anime.coverImage.extraLarge}
                     alt={anime.title.userPreferred}
-                    fill
                     className="object-cover"
                   />
                 </div>

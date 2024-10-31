@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { User, Star } from "lucide-react";
 import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
@@ -51,15 +50,7 @@ const AnimeMediumResizable = ({
     >
       <div className="flex flex-col gap-2 justify-start w-full">
         <div className="relative w-full aspect-w-3 aspect-h-4">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            placeholder="blur"
-            blurDataURL="./placeholder.svg"
-            loading="lazy"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
+          <img src={image} alt={title} />
         </div>
         <h2 className="text-white line-clamp-2 text-start text-base w-full h-12">
           {title}

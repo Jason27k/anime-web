@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { User, Star } from "lucide-react";
 import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
@@ -44,13 +43,9 @@ const AnimeCardMedium = ({ anime, airing }: AnimeCardMediumProps) => {
     >
       <div className="flex flex-col gap-2 justify-start h-96">
         <div className="relative h-72 w-52 flex items-start">
-          <Image
+          <img
             src={image}
             alt={title}
-            fill={true}
-            placeholder="blur"
-            blurDataURL="./placeholder.svg"
-            loading="lazy"
             className="mx-auto"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />

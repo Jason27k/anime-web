@@ -1,6 +1,5 @@
 "use client";
 import { useState, useContext } from "react";
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -70,11 +69,9 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   return (
     <div className="container mx-auto px-4 py-8 ">
       <div className="relative h-64 md:h-96 mb-8 rounded-xl overflow-hidden">
-        <Image
+        <img
           src={anime.bannerImage || anime.coverImage.extraLarge}
           alt={title}
-          layout="fill"
-          objectFit="cover"
           className="brightness-50"
         />
         <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
@@ -87,7 +84,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
         <div className="sm:col-span-1 flex flex-col gap-8">
           <Card className="bg-[#1f232d] text-[#7c8793] border-0">
             <CardContent className="p-4">
-              <Image
+              <img
                 src={image}
                 alt={title}
                 width={350}
@@ -268,11 +265,9 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div className="aspect-video relative">
-                        <Image
+                        <img
                           src={selectedEpisode.thumbnail}
                           alt={selectedEpisode.title}
-                          layout="fill"
-                          objectFit="cover"
                           className="rounded-lg"
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -305,7 +300,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                             className="flex flex-col items-center p-2 rounded-lg hover:bg-accent cursor-pointer"
                             onClick={() => setSelectedEpisode(episode)}
                           >
-                            <Image
+                            <img
                               src={episode.thumbnail}
                               alt={episode.title}
                               width={160}
@@ -335,7 +330,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                         key={character.id}
                         className="flex flex-col items-center"
                       >
-                        <Image
+                        <img
                           src={character.node.image.large}
                           alt={character.node.name.userPreferred}
                           width={150}
@@ -366,7 +361,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                         key={person.id}
                         className="flex flex-col items-center"
                       >
-                        <Image
+                        <img
                           src={person.node.image.large}
                           alt={person.node.name.userPreferred}
                           width={150}
@@ -417,7 +412,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                           key={rec.id}
                           className="flex flex-col items-center"
                         >
-                          <Image
+                          <img
                             src={rec.node.coverImage.large}
                             alt={rec.node.title.userPreferred}
                             width={100}
@@ -459,7 +454,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                           key={rec.id}
                           className="flex flex-col items-center"
                         >
-                          <Image
+                          <img
                             src={rec.mediaRecommendation.coverImage.large}
                             alt={rec.mediaRecommendation.title.userPreferred}
                             width={100}

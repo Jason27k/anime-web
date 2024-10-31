@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { LanguageContext, LanguageType } from "@/app/Provider";
 import { useContext } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Star, User } from "lucide-react";
@@ -148,7 +147,7 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
       ref={genreContainerRef}
     >
       <div className="relative h-28 w-[75px] max-w-[75px] min-w-[75px]">
-        <Image src={image} alt={title} fill />
+        <img src={image} alt={title} />
       </div>
       <div className="flex flex-col justify-evenly items-start w-full px-2 max-w-48 min-[380px]:max-w-none">
         <div className="flex justify-start pl-1">

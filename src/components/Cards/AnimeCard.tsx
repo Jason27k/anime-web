@@ -1,7 +1,6 @@
 "use client";
 
 import { CirclePlus, Star, User } from "lucide-react";
-import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { LanguageContext, LanguageType } from "@/app/Provider";
@@ -131,10 +130,9 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
     >
       <div className="flex flex-col relative h-full w-[185px]">
         <div className="relative h-[265px] w-full min-w-[135px]">
-          <Image
+          <img
             src={image}
             alt={title}
-            fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
