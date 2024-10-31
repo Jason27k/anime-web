@@ -359,7 +359,7 @@ query ($page: Int = 1, $id: Int, $isAdult: Boolean = false, $search: String, $st
       lastPage
       hasNextPage
     }
-    media(id: $id, type: ANIME, season: $season, format: TV, status: $status, seasonYear: $seasonYear, startDate_like: $year, search: $search, genre_in: $genres, sort: $sort, isAdult: $isAdult) {
+    media(id: $id, type: ANIME, season: $season, format_in:[TV, ONA], status: $status, seasonYear: $seasonYear, startDate_like: $year, search: $search, genre_in: $genres, sort: $sort, isAdult: $isAdult) {
       id
       idMal
       title {

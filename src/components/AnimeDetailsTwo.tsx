@@ -407,7 +407,8 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                     {anime.relations.edges
                       .filter(
                         (rel) =>
-                          rel.node.format === "TV" &&
+                          (rel.node.format === "TV" ||
+                            rel.node.format === "ONA") &&
                           rel.relationType !== "CHARACTER"
                       )
                       .map((rec) => (
@@ -448,7 +449,8 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                     {anime.recommendations.nodes
                       .filter(
                         (rec) =>
-                          rec.mediaRecommendation.format === "TV" &&
+                          (rec.mediaRecommendation.format === "TV" ||
+                            rec.mediaRecommendation.format === "ONA") &&
                           rec.mediaRecommendation.type === "ANIME"
                       )
                       .map((rec) => (

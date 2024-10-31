@@ -17,7 +17,7 @@ const WeeklyCalendar = async () => {
   let airingSchedules = response.data.Page.airingSchedules.filter(
     (schedule) =>
       schedule.media.popularity >= MIN_MEMBERS &&
-      schedule.media.format === "TV" &&
+      (schedule.media.format === "TV" || schedule.media.format === "ONA") &&
       schedule.media.type === "ANIME"
   );
 
