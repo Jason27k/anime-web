@@ -1,11 +1,23 @@
 export interface AnimeData {
   data: {
-    one: Anime;
-    two: Anime;
-    three: Anime;
-    four: Anime;
-    five: Anime;
-    six: Anime;
+    one: {
+      media: [Anime];
+    };
+    two: {
+      media: [Anime];
+    };
+    three: {
+      media: [Anime];
+    };
+    four: {
+      media: [Anime];
+    };
+    five: {
+      media: [Anime];
+    };
+    six: {
+      media: [Anime];
+    };
   };
 }
 

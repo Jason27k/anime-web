@@ -121,7 +121,7 @@ export default function MyAnimePage({ animes }: MyAnimeProps) {
                   <Badge
                     variant="default"
                     className={`mb-2 ${
-                      anime.id % 2 == 0 ? "bg-green-600" : "bg-blue-600"
+                      anime.id % 2 == 0 ? "bg-blue-600" : "bg-green-600"
                     }`}
                   >
                     {anime.id % 2 == 0 ? "Watching" : "Finished"}
