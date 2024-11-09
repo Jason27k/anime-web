@@ -144,7 +144,7 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
   return (
     <Link
       href={"/anime/" + anime.id}
-      className="flex w-full bg-[#1f232d] rounded-lg p-2 h-32"
+      className="flex w-full bg-[#1f232d] rounded-lg p-2 h-32 min-w-[330px] overflow-x-clip"
     >
       <div className="relative h-28 w-[75px] max-w-[75px] min-w-[75px]">
         <img src={image} alt={title} className="bg-[#191d26]" />

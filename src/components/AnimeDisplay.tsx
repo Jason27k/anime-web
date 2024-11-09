@@ -25,7 +25,7 @@ const AnimeDisplay = ({
       <div className="flex flex-col items-center justify-center overflow-x-auto overflow-y-clip h-full w-full">
         <div className="w-full mx-auto">
           {display == 0 ? (
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[3120px]:grid-cols-5 gap-5 justify-center justify-self-center mx-auto">
+            <div className="grid w-full grid-cols-1 min-[725px]:grid-cols-2 min-[1120px]:grid-cols-3 min-[2000px]:grid-cols-4 min-[3120px]:grid-cols-5 gap-5 justify-center justify-self-center mx-auto">
               {airingSchedules
                 ? airingSchedules.map((schedule) => (
                     <AnimeLongCard
