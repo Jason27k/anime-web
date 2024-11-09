@@ -18,7 +18,8 @@ const WeeklyCalendar = async () => {
     (schedule) =>
       schedule.media.popularity >= MIN_MEMBERS &&
       (schedule.media.format === "TV" || schedule.media.format === "ONA") &&
-      schedule.media.type === "ANIME"
+      schedule.media.type === "ANIME" &&
+      schedule.media.popularity >= MIN_MEMBERS
   );
 
   while (response.data.Page.pageInfo.hasNextPage) {
@@ -26,7 +27,13 @@ const WeeklyCalendar = async () => {
     console.log("Calling page: ", page);
     response = await fetchSchedule(startOfWeek, endOfWeek, page);
     airingSchedules = airingSchedules.concat(
-      response.data.Page.airingSchedules
+      response.data.Page.airingSchedules.filter(
+        (schedule) =>
+          schedule.media.popularity >= MIN_MEMBERS &&
+          (schedule.media.format === "TV" || schedule.media.format === "ONA") &&
+          schedule.media.type === "ANIME" &&
+          schedule.media.popularity >= MIN_MEMBERS
+      )
     );
   }
 

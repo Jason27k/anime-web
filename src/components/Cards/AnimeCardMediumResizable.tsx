@@ -50,7 +50,12 @@ const AnimeMediumResizable = ({
     >
       <div className="flex flex-col gap-2 justify-start w-full">
         <div className="relative w-full aspect-w-3 aspect-h-4">
-          <img src={image} alt={title} />
+          <img
+            src={image}
+            alt={title}
+            loading="lazy"
+            className="bg-[#191d26]"
+          />
         </div>
         <h2 className="text-white line-clamp-2 text-start text-base w-full h-12">
           {title}

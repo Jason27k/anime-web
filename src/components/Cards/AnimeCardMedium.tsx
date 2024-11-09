@@ -46,8 +46,8 @@ const AnimeCardMedium = ({ anime, airing }: AnimeCardMediumProps) => {
           <img
             src={image}
             alt={title}
-            className="mx-auto"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            loading="lazy"
+            className="bg-[#191d26] mx-auto h-72 w-52"
           />
         </div>
         <h2 className="w-52 text-white line-clamp-2 text-start text-base h-[3rem]">

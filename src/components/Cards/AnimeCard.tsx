@@ -133,6 +133,7 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
           <img
             src={image}
             alt={title}
+            className="bg-[#191d26]"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>

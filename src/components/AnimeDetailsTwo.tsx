@@ -68,13 +68,14 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
 
   return (
     <div className="container mx-auto px-4 py-8 ">
-      <div className="relative h-64 md:h-96 mb-8 rounded-xl overflow-hidden">
+      <div className="relative h-64 md:h-96 mb-8 rounded-xl overflow-hidden object-fill">
         <img
           src={anime.bannerImage || anime.coverImage.extraLarge}
           alt={title}
-          className="brightness-50"
+          className="brightness-50 h-full w-full bg-[#191d26]"
+          loading="lazy"
         />
-        <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
+        <div className="absolute inset-0 flex flex-col justify-end px-6 text-white h-full">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">{title}</h1>
           <p className="text-xl md:text-2xl">{subTitle}</p>
         </div>
@@ -89,7 +90,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                 alt={title}
                 width={350}
                 height={500}
-                className="w-full max-w-56 max-h-96 aspect-auto sm:h-auto rounded-lg mx-auto"
+                className="w-full max-w-56 max-h-96 aspect-auto sm:h-auto rounded-lg mx-auto bg-[#191d26]"
               />
               <div className="mt-4 flex items-center justify-center space-x-2 text-white">
                 <StarIcon className="w-6 h-6 text-yellow-400" />
@@ -268,7 +269,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                         <img
                           src={selectedEpisode.thumbnail}
                           alt={selectedEpisode.title}
-                          className="rounded-lg"
+                          className="rounded-lg bg-[#191d26]"
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <Button asChild>
@@ -305,7 +306,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                               alt={episode.title}
                               width={160}
                               height={90}
-                              className="rounded"
+                              className="rounded bg-[#191d26]"
                             />
                             <p className="text-sm font-medium mt-2 text-center">
                               {episode.title}
@@ -335,7 +336,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                           alt={character.node.name.userPreferred}
                           width={150}
                           height={200}
-                          className="rounded-lg"
+                          className="rounded-lg bg-[#191d26]"
                         />
                         <h3 className="mt-2 font-semibold text-center">
                           {character.node.name.userPreferred}
@@ -366,7 +367,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                           alt={person.node.name.userPreferred}
                           width={150}
                           height={200}
-                          className="rounded-lg"
+                          className="rounded-lg bg-[#191d26]"
                         />
                         <h3 className="mt-2 font-semibold text-center">
                           {person.node.name.userPreferred}
@@ -417,7 +418,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                             alt={rec.node.title.userPreferred}
                             width={100}
                             height={150}
-                            className="rounded-md"
+                            className="rounded-md bg-[#191d26]"
                           />
                           <p className="text-sm text-center mt-2">
                             {rec.node.title.userPreferred}
@@ -459,7 +460,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                             alt={rec.mediaRecommendation.title.userPreferred}
                             width={100}
                             height={150}
-                            className="rounded-md"
+                            className="rounded-md bg-[#191d26]"
                           />
                           <p className="text-sm text-center mt-2">
                             {rec.mediaRecommendation.title.userPreferred}

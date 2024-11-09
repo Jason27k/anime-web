@@ -348,10 +348,16 @@ const SearchFields = ({
         display={display}
         setDisplay={setDisplay}
         scroll={false}
-        className="pb-2"
+        className="pb-2 min-[990px]:mt-10 min-[1024px]:mt-0"
       />
       <AnimeDisplay display={display} animeData={animes} />
-      <div ref={ref}></div>
+      <div ref={ref}>
+        {hasNextPage && page !== -1 && (
+          <div className="flex justify-center items-center w-full h-16">
+            <p className="text-white">Loading...</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -19,17 +19,18 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
   const router = useRouter();
   const languageContext = useContext(LanguageContext);
   const [visibleGenres, setVisibleGenres] = useState(1);
-  const [maxWidth, setMaxWidth] = useState(window.innerWidth - 40);
-  const genreContainerRef = useRef<HTMLAnchorElement>(null);
+  const genreContainerRef = useRef<HTMLDivElement>(null);
 
   const genres = anime.genres;
   const CHAR_SIZE = 14.6;
   const PLUS_BUTTON_WIDTH = 50;
 
   const updateVisibleGenres = () => {
+    console.log("updateVisibleGenres");
     if (genreContainerRef.current) {
       let containerWidth =
         genreContainerRef.current.getBoundingClientRect().width - 60;
+      console.log(genreContainerRef.current.getBoundingClientRect().width);
       if (genres.length === 0) {
         setVisibleGenres(0);
         return;
@@ -58,7 +59,6 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
 
   useEffect(() => {
     const handleResize = () => {
-      setMaxWidth(window.innerWidth - 40); // Update max width on window resize
       updateVisibleGenres();
     };
 
@@ -67,7 +67,9 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [genreContainerRef.current, genres]);
+  }, [window.innerWidth]);
+
+  console.log(window.innerWidth);
 
   const image = anime.coverImage.extraLarge;
   const title =
@@ -142,16 +144,14 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
   return (
     <Link
       href={"/anime/" + anime.id}
-      className="flex w-full md:w-[22rem] xl:w-96 bg-[#1f232d] rounded-lg p-2 h-32"
-      style={{ maxWidth: maxWidth + "px" }}
-      ref={genreContainerRef}
+      className="flex w-full bg-[#1f232d] rounded-lg p-2 h-32"
     >
       <div className="relative h-28 w-[75px] max-w-[75px] min-w-[75px]">
-        <img src={image} alt={title} />
+        <img src={image} alt={title} className="bg-[#191d26]" />
       </div>
-      <div className="flex flex-col justify-evenly items-start w-full px-2 max-w-48 min-[380px]:max-w-none">
+      <div className="flex flex-col justify-evenly items-start w-full px-2">
         <div className="flex justify-start pl-1">
-          <h1 className="text-white text-sm line-clamp-2 text-start max-w-48">
+          <h1 className="text-white text-sm line-clamp-2 text-start">
             {title}
           </h1>
         </div>
@@ -183,7 +183,10 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center justify-start overflow-hidden w-full">
+        <div
+          className="flex items-center justify-start overflow-hidden w-full"
+          ref={genreContainerRef}
+        >
           {genres.slice(0, visibleGenres).map((genre, index) => (
             <Button
               key={index}

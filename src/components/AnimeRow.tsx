@@ -16,7 +16,7 @@ const AnimeRow = ({ title, animes, link }: AnimeRowProps) => {
           <h1 className="text-2xl">{title}</h1>
           <Link href={link}>View All</Link>
         </div>
-        <div className="grid grid-cols-2 min-[670px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center">
+        <div className="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center">
           {animes &&
             animes
               .slice(0, 5)

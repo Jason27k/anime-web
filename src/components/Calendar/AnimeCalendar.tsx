@@ -27,7 +27,7 @@ const AnimeCalendar = ({
   return (
     <div className="flex flex-col w-full">
       <TabOptions display={display} setDisplay={setDisplay} scroll />
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full">
         {days.map((_, index) => (
           <AnimeDay
             key={index}

@@ -22,10 +22,10 @@ const AnimeDisplay = ({
 
   return (
     <ScrollArea className="pt-2 flex justify-center w-full">
-      <div className="flex flex-col items-center">
-        <div className="">
+      <div className="flex flex-col items-center justify-center overflow-x-auto overflow-y-clip h-full w-full">
+        <div className="w-full mx-auto">
           {display == 0 ? (
-            <div className="flex flex-wrap gap-5 justify-center">
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[3120px]:grid-cols-5 gap-5 justify-center justify-self-center mx-auto">
               {airingSchedules
                 ? airingSchedules.map((schedule) => (
                     <AnimeLongCard

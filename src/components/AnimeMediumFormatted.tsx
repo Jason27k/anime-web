@@ -35,7 +35,7 @@ export const AnimeMediumFormatted = ({
   }
   return (
     <div
-      className="grid grid-cols-2 min-[670px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center"
+      className="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center"
       key="non-scroll"
     >
       {airingSchedules
