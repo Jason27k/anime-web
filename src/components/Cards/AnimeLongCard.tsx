@@ -26,11 +26,9 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
   const PLUS_BUTTON_WIDTH = 50;
 
   const updateVisibleGenres = () => {
-    console.log("updateVisibleGenres");
     if (genreContainerRef.current) {
       let containerWidth =
         genreContainerRef.current.getBoundingClientRect().width - 30;
-      console.log(containerWidth);
       if (genres.length === 0) {
         setVisibleGenres(0);
         return;
@@ -71,8 +69,6 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
       }
     };
   }, []);
-
-  console.log(window.innerWidth);
 
   const image = anime.coverImage.extraLarge;
   const title =
