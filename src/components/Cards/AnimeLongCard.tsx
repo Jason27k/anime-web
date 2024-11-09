@@ -29,8 +29,8 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
     console.log("updateVisibleGenres");
     if (genreContainerRef.current) {
       let containerWidth =
-        genreContainerRef.current.getBoundingClientRect().width - 60;
-      console.log(genreContainerRef.current.getBoundingClientRect().width);
+        genreContainerRef.current.getBoundingClientRect().width - 30;
+      console.log(containerWidth);
       if (genres.length === 0) {
         setVisibleGenres(0);
         return;
@@ -42,6 +42,7 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
         currentSize += anime.genres[index].length * CHAR_SIZE;
         index++;
       }
+
       const containerMinusButtonWidth = containerWidth - PLUS_BUTTON_WIDTH;
       if (currentSize > containerWidth) {
         setVisibleGenres(index - 1);
@@ -58,16 +59,18 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
   };
 
   useEffect(() => {
-    const handleResize = () => {
-      updateVisibleGenres();
-    };
+    const observer = new ResizeObserver(updateVisibleGenres);
 
-    window.addEventListener("resize", handleResize);
+    if (genreContainerRef.current) {
+      observer.observe(genreContainerRef.current);
+    }
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      if (genreContainerRef.current) {
+        observer.unobserve(genreContainerRef.current);
+      }
     };
-  }, [window.innerWidth]);
+  }, []);
 
   console.log(window.innerWidth);
 
@@ -149,7 +152,7 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
       <div className="relative h-28 w-[75px] max-w-[75px] min-w-[75px]">
         <img src={image} alt={title} className="bg-[#191d26]" />
       </div>
-      <div className="flex flex-col justify-evenly items-start w-full px-2">
+      <div className="flex flex-col justify-evenly items-start w-full px-4">
         <div className="flex justify-start pl-1">
           <h1 className="text-white text-sm line-clamp-2 text-start">
             {title}
