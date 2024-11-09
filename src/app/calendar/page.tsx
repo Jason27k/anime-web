@@ -24,7 +24,6 @@ const WeeklyCalendar = async () => {
 
   while (response.data.Page.pageInfo.hasNextPage) {
     page++;
-    console.log("Calling page: ", page);
     response = await fetchSchedule(startOfWeek, endOfWeek, page);
     airingSchedules = airingSchedules.concat(
       response.data.Page.airingSchedules.filter(
