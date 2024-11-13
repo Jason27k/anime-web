@@ -150,14 +150,6 @@ const SearchFields = ({
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
   const [animes, setAnimes] = useState(animeData);
-  const optionsMap = {
-    "Title (English)": "Title (English)",
-    "Title (Native)": "Title (Native)",
-    "Title (Romaji)": "Title (Romaji)",
-    Popularity: "Popularity",
-    Score: "Score",
-    Trending: "Trending",
-  };
 
   useEffect(() => {
     setAnimes(animeData);
@@ -177,7 +169,7 @@ const SearchFields = ({
             ? Number(selectedYear)
             : new Date().getFullYear()
           : undefined,
-        sort: sort ? [optionsMap[sort as keyof typeof optionsMap]] : undefined,
+        sort: sort ? [sort] : undefined,
         page,
       });
 

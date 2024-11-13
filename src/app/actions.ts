@@ -439,6 +439,7 @@ export async function animeSearch(variables: SearchQueryVariables) {
   if (variables.year) {
     variables.year = variables.year + "%";
   }
+  console.log(variables);
   const query = searchQuery;
   const response = await fetch("https://graphql.anilist.co", {
     method: "POST",
