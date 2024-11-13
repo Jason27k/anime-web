@@ -22,7 +22,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
-import TurndownService from "turndown";
 
 interface AnimeDetailPropsTwo {
   anime: Media;
@@ -63,8 +62,6 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   );
 
   const score = anime.averageScore ? anime.averageScore / 10 : "N/A";
-  const turndownService = new TurndownService();
-  const synopsis = turndownService.turndown(anime.description || "");
 
   return (
     <div className="container mx-auto px-4 py-2 sm:py-4 ">
@@ -262,7 +259,12 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-1">
                       <div className="flex items-center mb-4"></div>
-                      <p className="mb-4">{synopsis}</p>
+                      <div
+                        className="mb-4"
+                        dangerouslySetInnerHTML={{
+                          __html: anime.description || "",
+                        }}
+                      />
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <strong>Episodes:</strong> {anime.episodes}

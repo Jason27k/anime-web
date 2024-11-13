@@ -29,7 +29,7 @@ query media($id: Int) {
       month
       day
     }
-    description
+    description(asHtml:true)
     season
     seasonYear
     type
@@ -299,7 +299,7 @@ query ($weekStart: Int, $weekEnd: Int, $page: Int) {
         episodes
         type
         averageScore
-        description
+        description(asHtml:true)
         isAdult
         bannerImage
         nextAiringEpisode {
@@ -390,7 +390,7 @@ query ($page: Int = 1, $id: Int, $isAdult: Boolean = false, $search: String, $st
       episodes
       type
       averageScore
-      description
+      description(asHtml:true)
       isAdult
       bannerImage
       nextAiringEpisode {

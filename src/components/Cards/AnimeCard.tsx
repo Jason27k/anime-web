@@ -10,7 +10,6 @@ import { MediaDisplay } from "@/utils/anilistTypes";
 import { convertUTCToLocal } from "@/utils/date";
 import { useRouter } from "next/navigation";
 import { capitalize } from "@/utils/formatting";
-import TurndownService from "turndown";
 
 interface AnimeCardProps {
   anime: MediaDisplay;
@@ -22,7 +21,7 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
   const languageContext = useContext(LanguageContext);
   const [visibleGenres, setVisibleGenres] = useState(3);
   const genreContainerRef = useRef<HTMLDivElement>(null);
-  const turndownService = new TurndownService();
+  const [description, setDescription] = useState<string>("");
 
   const updateVisibleGenres = () => {
     if (genreContainerRef.current) {
@@ -41,6 +40,12 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
 
   useEffect(() => {
     const observer = new ResizeObserver(updateVisibleGenres);
+    function stripHtml(html: string) {
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = html;
+      return tempDiv.innerText || tempDiv.textContent;
+    }
+    setDescription(stripHtml(anime.description || "") || "");
     if (genreContainerRef.current) {
       observer.observe(genreContainerRef.current);
     }
@@ -120,7 +125,6 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
       ? ""
       : anime.averageScore / 10;
   const members = anime.popularity;
-  const synopsis = turndownService.turndown(anime.description || "");
   const genres = anime.genres;
 
   return (
@@ -166,7 +170,12 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
           </div>
         </div>
         <div className="text-[#7c8793] pl-3 w-[98%]">
-          <p className="line-clamp-5 text-sm w-[98%]">{synopsis}</p>
+          <div
+            className="line-clamp-5 text-sm w-[98%]"
+            dangerouslySetInnerHTML={{
+              __html: description,
+            }}
+          />
         </div>
         <div className="flex flex-row-reverse items-center bg-[#191d26] justify-start mt-auto h-12 px-1 overflow-hidden w-full">
           <div className="ml-auto pl-1">
