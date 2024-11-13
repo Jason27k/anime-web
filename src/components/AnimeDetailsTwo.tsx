@@ -67,7 +67,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   const synopsis = turndownService.turndown(anime.description || "");
 
   return (
-    <div className="container mx-auto px-4 py-2 sm:py-8 ">
+    <div className="container mx-auto px-4 py-2 sm:py-4 ">
       {anime.bannerImage ? (
         <>
           <div className="hidden sm:block">
@@ -103,7 +103,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
           </div>
         </>
       ) : (
-        <div className="flex flex-col justify-end px-6 text-white h-full">
+        <div className="flex flex-col justify-centert text-center sm:text-start sm:justify-end px-6 text-white h-full">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">{title}</h1>
           <p className="text-xl md:text-2xl">{subTitle}</p>
           <div className="h-6"></div>
