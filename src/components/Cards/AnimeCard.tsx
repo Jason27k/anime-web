@@ -130,12 +130,7 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
     >
       <div className="flex flex-col relative h-full w-[185px]">
         <div className="relative h-[265px] w-full min-w-[135px]">
-          <img
-            src={image}
-            alt={title}
-            className="bg-[#191d26]"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
+          <img src={image} alt={title} className="bg-[#191d26] w-full h-full" />
         </div>
         <div className="bg-[#000000b3] flex flex-col justify-around items-start absolute bottom-0 w-full min-h-20 p-2">
           <p className="text-white line-clamp-3 my-autotext-sm text-start">
