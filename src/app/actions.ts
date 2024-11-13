@@ -10,7 +10,6 @@ query media($id: Int) {
     id
     idMal
     title {
-      userPreferred
       romaji
       english
       native
@@ -70,7 +69,9 @@ query media($id: Int) {
           id
           idMal
           title {
-            userPreferred
+            english
+            native
+            romaji
           }
           format
           type
@@ -162,7 +163,9 @@ query media($id: Int) {
         mediaRecommendation {
           id
           title {
-            userPreferred
+            romaji
+            english
+            native
           }
           idMal
           format

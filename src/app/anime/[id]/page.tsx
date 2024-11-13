@@ -1,7 +1,6 @@
 import { fetchAniListAnime } from "@/app/actions";
 import AnimeDetailsTwo from "@/components/AnimeDetailsTwo";
 import { MediaResponse } from "@/utils/anilistTypes";
-import { resolve } from "path";
 
 const DetailsPage = async ({ params }: { params: { id: string } }) => {
   const id = parseInt(params.id);

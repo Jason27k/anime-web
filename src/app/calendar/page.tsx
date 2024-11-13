@@ -14,6 +14,7 @@ const WeeklyCalendar = async () => {
     page
   );
 
+  console.log(response);
   let airingSchedules = response.data.Page.airingSchedules.filter(
     (schedule) =>
       schedule.media.popularity >= MIN_MEMBERS &&

@@ -67,19 +67,48 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   const synopsis = turndownService.turndown(anime.description || "");
 
   return (
-    <div className="container mx-auto px-4 py-8 ">
-      <div className="relative h-64 md:h-96 mb-8 rounded-xl overflow-hidden object-fill">
-        <img
-          src={anime.bannerImage || anime.coverImage.extraLarge}
-          alt={title}
-          className="brightness-50 h-full w-full bg-[#191d26]"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 flex flex-col justify-end px-6 text-white h-full">
+    <div className="container mx-auto px-4 py-2 sm:py-8 ">
+      {anime.bannerImage ? (
+        <>
+          <div className="hidden sm:block">
+            <div className="relative h-64 sm:h-96 mb-8 rounded-xl overflow-hidden">
+              <img
+                src={anime.bannerImage}
+                alt={title}
+                className="brightness-50 h-full w-full bg-[#191d26] mx-auto"
+                loading="lazy"
+                crossOrigin="use-credentials"
+              />
+              <div className="absolute inset-0 flex flex-col justify-end px-6 text-white h-full">
+                <h1 className="text-4xl md:text-5xl font-bold mb-2">{title}</h1>
+                <p className="text-xl md:text-2xl">{subTitle}</p>
+                <div className="h-6"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="block sm:hidden">
+            <div className="text-white mb-4 text-center">
+              <h1 className="text-4xl md:text-5xl font-bold mb-2">{title}</h1>
+              <p className="text-xl md:text-2xl">{subTitle}</p>
+            </div>
+            <div className="relative h-full mb-4 rounded-xl overflow-hidden">
+              <img
+                src={anime.bannerImage}
+                alt={title}
+                className="brightness-50 aspect-video bg-[#191d26] mx-auto"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col justify-end px-6 text-white h-full">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">{title}</h1>
           <p className="text-xl md:text-2xl">{subTitle}</p>
+          <div className="h-6"></div>
         </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
         <div className="sm:col-span-1 flex flex-col gap-8">
@@ -158,10 +187,9 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                           ? "https://www.youtube.com/embed/" + anime.trailer.id
                           : ""
                       }
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       className="w-full h-full rounded-lg"
-                    ></iframe>
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -212,15 +240,19 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
             <TabsList
               className={cn(
                 `w-full bg-[#1f232d] text-[#7c8793] border-0 flex flex-col h-auto min-[380px]:mb-0 min-[380px]:grid`,
-                selectedEpisode
+                selectedEpisode &&
+                  anime.status &&
+                  anime.status !== "NOT_YET_RELEASED"
                   ? "min-[380px]:grid-cols-4"
                   : "min-[380px]:grid-cols-3"
               )}
             >
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              {selectedEpisode && (
-                <TabsTrigger value="episodes">Episodes</TabsTrigger>
-              )}
+              {selectedEpisode &&
+                anime.status &&
+                anime.status !== "NOT_YET_RELEASED" && (
+                  <TabsTrigger value="episodes">Episodes</TabsTrigger>
+                )}
               <TabsTrigger value="characters">Characters</TabsTrigger>
               <TabsTrigger value="staff">Staff</TabsTrigger>
             </TabsList>
@@ -393,13 +425,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                   <CardTitle className="text-white">Related Anime</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div
-                    className="grid justify-evenly gap-4 w-full"
-                    style={{
-                      gridTemplateColumns:
-                        "repeat(auto-fit, minmax(130px, 1fr))",
-                    }}
-                  >
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 justify-evenly gap-4 w-full">
                     {anime.relations.edges
                       .filter(
                         (rel) =>
@@ -415,13 +441,20 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                         >
                           <img
                             src={rec.node.coverImage.large}
-                            alt={rec.node.title.userPreferred}
-                            width={100}
-                            height={150}
+                            alt={
+                              rec.node.title.english ?? rec.node.title.romaji
+                            }
+                            width={150}
+                            height={200}
                             className="rounded-md bg-[#191d26]"
                           />
                           <p className="text-sm text-center mt-2">
-                            {rec.node.title.userPreferred}
+                            {(languageContext.language === LanguageType.English
+                              ? rec.node.title.english
+                              : languageContext.language ===
+                                LanguageType.Romanji
+                              ? rec.node.title.romaji
+                              : rec.node.title.native) ?? rec.node.title.romaji}
                           </p>
                         </Link>
                       ))}
@@ -435,13 +468,7 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                   <CardTitle className="text-white">Recommendations</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div
-                    className="grid justify-evenly gap-4 w-full"
-                    style={{
-                      gridTemplateColumns:
-                        "repeat(auto-fit, minmax(130px, 1fr))",
-                    }}
-                  >
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 justify-evenly gap-4 w-full">
                     {anime.recommendations.nodes
                       .filter(
                         (rec) =>
@@ -457,13 +484,22 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                         >
                           <img
                             src={rec.mediaRecommendation.coverImage.large}
-                            alt={rec.mediaRecommendation.title.userPreferred}
-                            width={100}
-                            height={150}
+                            alt={
+                              rec.mediaRecommendation.title.english ??
+                              rec.mediaRecommendation.title.romaji
+                            }
+                            width={150}
+                            height={200}
                             className="rounded-md bg-[#191d26]"
                           />
                           <p className="text-sm text-center mt-2">
-                            {rec.mediaRecommendation.title.userPreferred}
+                            {(languageContext.language === LanguageType.English
+                              ? rec.mediaRecommendation.title.english
+                              : languageContext.language ===
+                                LanguageType.Romanji
+                              ? rec.mediaRecommendation.title.romaji
+                              : rec.mediaRecommendation.title.native) ??
+                              rec.mediaRecommendation.title.romaji}
                           </p>
                         </Link>
                       ))}

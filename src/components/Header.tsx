@@ -62,9 +62,9 @@ const Header = ({ children }: { children: ReactNode }) => {
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
-                    <Link href="/liked" className="flex gap-2">
+                    <Link href="/my-anime" className="flex gap-2">
                       <Heart size={24} />
-                      <span className="text-lg">Liked</span>{" "}
+                      <span className="text-lg">My Anime</span>{" "}
                       {/* Replaced <p> with <span> */}
                     </Link>
                   </SheetClose>

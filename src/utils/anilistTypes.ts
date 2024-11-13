@@ -3,15 +3,15 @@ export type MediaResponse = {
     Media: Media;
   };
 };
+type Title = {
+  romaji: string;
+  english: string;
+  native: string;
+};
 
 export type Media = {
   id: number;
-  title: {
-    userPreferred: string;
-    romaji: string;
-    english: string;
-    native: string;
-  };
+  title: Title;
   coverImage: {
     extraLarge: string;
     large: string;
@@ -97,7 +97,7 @@ type RelationEdge = {
   node: {
     id: number;
     idMal: number;
-    title: { userPreferred: string };
+    title: Title;
     format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
     type: "ANIME" | "MANGA";
     status: "FINISHED" | "RELEASING" | "NOT_YET_RELEASED" | "CANCELLED";
@@ -163,7 +163,7 @@ type RecommendationNode = {
   mediaRecommendation: {
     id: number;
     idMal: number;
-    title: { userPreferred: string };
+    title: Title;
     format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
     type: "ANIME" | "MANGA";
     status: "FINISHED" | "RELEASING" | "NOT_YET_RELEASED" | "CANCELLED";
