@@ -23,12 +23,15 @@ const Search = async ({
   const selectedSeason = searchParams?.season;
   const selectedYear = searchParams?.year;
   const query = searchParams?.query;
+  const sort = searchParams?.sort;
 
   if (selectedSeason && !selectedYear) {
     const currentYear = new Date().getFullYear();
     redirect(
       `/search/?${query ? "query=" + query + "&" : ""}${
         selectedGenres ? "genres=" + selectedGenres + "&" : ""
+      }${
+        sort ? "sort=" + sort + "&" : ":"
       }season=${selectedSeason}&year=${currentYear}`
     );
   }
@@ -48,6 +51,7 @@ const Search = async ({
         : currentYear
       : undefined,
     page: 1,
+    sort: sort ? [sort] : undefined,
   };
 
   const response: SearchQueryResponse = await animeSearch(variables);

@@ -18,25 +18,37 @@ const TabOptions = ({
   setDisplay,
   scroll,
   className,
+  defaultValue,
+  tabTriggers,
+  tabContents,
 }: {
   display: 0 | 1 | 2 | 3;
   setDisplay: Dispatch<SetStateAction<0 | 1 | 2 | 3>>;
   scroll: boolean;
   className?: string;
+  defaultValue?: string;
+  tabTriggers?: React.ReactNode;
+  tabContents?: React.ReactNode;
 }) => {
   const languageContext = useContext(LanguageContext);
   return (
     <>
       <Tabs
-        defaultValue="layout"
+        defaultValue={defaultValue || "layout"}
         className={cn(
           className,
           "flex flex-col md:flex-row md:justify-between md:items-center mx-auto w-full sm:mr-0 sm:ml-auto pt-4"
         )}
       >
-        <TabsList className="grid w-full md:max-w-[400px] grid-cols-2 bg-transparent text-[#9fa7b0]">
+        <TabsList
+          className={cn(
+            "grid w-full md:max-w-[400px] bg-transparent text-[#9fa7b0]",
+            tabTriggers ? "grid-cols-3" : "grid-cols-2"
+          )}
+        >
+          {tabTriggers}
           <TabsTrigger value="layout">Layout</TabsTrigger>
-          <TabsTrigger value="options">Options</TabsTrigger>
+          <TabsTrigger value="options">Language</TabsTrigger>
         </TabsList>
         <TabsContent value="layout">
           <Card className="bg-transparent text-white border-0">
@@ -146,6 +158,7 @@ const TabOptions = ({
             </CardContent>
           </Card>
         </TabsContent>
+        {tabContents}
         <TabsContent value="hide"></TabsContent>
       </Tabs>
     </>

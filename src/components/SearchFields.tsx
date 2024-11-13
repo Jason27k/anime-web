@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "./ui/label";
 import { SearchIcon, X } from "lucide-react";
@@ -36,6 +36,8 @@ import { useInView } from "react-intersection-observer";
 import { animeSearch } from "@/app/actions";
 import { MediaDisplay } from "@/utils/anilistTypes";
 import { capitalize } from "@/utils/formatting";
+import { TabsTrigger, TabsContent } from "./ui/tabs";
+import { LanguageContext, LanguageType } from "@/app/Provider";
 
 interface SearchFieldsProps {
   genres: String[];
@@ -45,6 +47,83 @@ interface SearchFieldsProps {
   animeData: MediaDisplay[];
   hasNextPage: boolean;
 }
+
+const TabTriggerFilters = () => {
+  return <TabsTrigger value="filters">Filters</TabsTrigger>;
+};
+
+const TabContentFilters = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const options = [
+    "Title (English)",
+    "Title (Native)",
+    "Title (Romaji)",
+    "Popularity",
+    "Score",
+    "Trending",
+  ];
+  const optionsMap = {
+    "Title (English)": "TITLE_ENGLISH",
+    "Title (Native)": "TITLE_NATIVE",
+    "Title (Romaji)": "TITLE_ROMAJI",
+    Popularity: "POPULARITY_DESC",
+    Score: "SCORE_DESC",
+    Trending: "TRENDING_DESC",
+  };
+  const sort = searchParams.get("sort");
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value === "") {
+        params.delete(name);
+        return params.toString();
+      }
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const handleClearFilters = () => {
+    const newParams = new URLSearchParams();
+    router.push(pathname + "?" + newParams.toString());
+  };
+
+  const handleSortSelect = (sort: string) => {
+    router.push(pathname + "?" + createQueryString("sort", sort));
+  };
+
+  return (
+    <TabsContent value="filters" className="border-0 py-2 md:py-0">
+      <div className="flex justify-center items-center gap-2">
+        <Select onValueChange={handleSortSelect} value={sort || undefined}>
+          <SelectTrigger className="text-muted-foreground border-input">
+            <SelectValue placeholder="Select Sort..." />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem
+                key={option}
+                value={optionsMap[option as keyof typeof optionsMap]}
+              >
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          className="bg-[#d67900] text-white px-2 py-1 rounded-md"
+          onClick={handleClearFilters}
+        >
+          Clear Filters
+        </Button>
+      </div>
+    </TabsContent>
+  );
+};
 
 const SearchFields = ({
   genres,
@@ -63,6 +142,7 @@ const SearchFields = ({
   const selectedYear = searchParams.get("year");
   const selectedSeason = searchParams.get("season");
   const selectedGenres = searchParams.get("genres")?.split(",");
+  const sort = searchParams.get("sort");
   const [yearsPopOpen, setYearsPopOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("query") || ""
@@ -70,6 +150,14 @@ const SearchFields = ({
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
   const [animes, setAnimes] = useState(animeData);
+  const optionsMap = {
+    "Title (English)": "Title (English)",
+    "Title (Native)": "Title (Native)",
+    "Title (Romaji)": "Title (Romaji)",
+    Popularity: "Popularity",
+    Score: "Score",
+    Trending: "Trending",
+  };
 
   useEffect(() => {
     setAnimes(animeData);
@@ -89,6 +177,7 @@ const SearchFields = ({
             ? Number(selectedYear)
             : new Date().getFullYear()
           : undefined,
+        sort: sort ? [optionsMap[sort as keyof typeof optionsMap]] : undefined,
         page,
       });
 
@@ -349,6 +438,9 @@ const SearchFields = ({
         setDisplay={setDisplay}
         scroll={false}
         className="pb-2 min-[990px]:mt-10 min-[1024px]:mt-0"
+        defaultValue="filters"
+        tabTriggers={<TabTriggerFilters />}
+        tabContents={<TabContentFilters />}
       />
       <AnimeDisplay display={display} animeData={animes} />
       <div ref={ref}>
