@@ -1,6 +1,7 @@
 "use server";
 import {
   CalendarQueryResponse,
+  MediaDisplay,
   SearchQueryResponse,
 } from "@/utils/anilistTypes";
 
@@ -348,7 +349,13 @@ export const fetchSchedule = async (
     }),
     cache: "force-cache",
   });
-  const json: CalendarQueryResponse = await response.json();
+  let json: CalendarQueryResponse = await response.json();
+  const deduplicatedAnimes = Array.from(
+    new Map(
+      json.data.Page.airingSchedules.map((anime) => [anime.id, anime])
+    ).values()
+  );
+  json.data.Page.airingSchedules = deduplicatedAnimes;
   return json;
 };
 
@@ -435,7 +442,10 @@ type SearchQueryVariables = {
   sort?: string[];
 };
 
-export async function animeSearch(variables: SearchQueryVariables) {
+export async function animeSearch(
+  variables: SearchQueryVariables,
+  uniqueIds?: Number[]
+) {
   if (variables.year) {
     variables.year = variables.year + "%";
   }
@@ -453,7 +463,20 @@ export async function animeSearch(variables: SearchQueryVariables) {
     }),
     cache: "force-cache",
   });
-  const json: SearchQueryResponse = await response.json();
+  let json: SearchQueryResponse = await response.json();
+
+  const deduplicatedAnimes = Array.from(
+    new Map(json.data.Page.media.map((anime) => [anime.id, anime])).values()
+  );
+
+  const uniqueSet = new Set(uniqueIds);
+  if (uniqueIds) {
+    json.data.Page.media = deduplicatedAnimes.filter(
+      (anime) => !uniqueSet.has(anime.id)
+    );
+  } else {
+    json.data.Page.media = deduplicatedAnimes;
+  }
   return json;
 }
 

@@ -150,6 +150,7 @@ const SearchFields = ({
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
   const [animes, setAnimes] = useState(animeData);
+  const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
     setAnimes(animeData);
@@ -157,35 +158,36 @@ const SearchFields = ({
 
   useEffect(() => {
     const fetchMore = async () => {
-      const response = await animeSearch({
-        genres: selectedGenres ?? undefined,
-        year: selectedSeason ? undefined : selectedYear ?? undefined,
-        search: searchQuery === "" ? undefined : searchQuery ?? undefined,
-        season:
-          (selectedSeason as "WINTER" | "SPRING" | "SUMMER" | "FALL") ??
-          undefined,
-        seasonYear: selectedSeason
-          ? selectedYear
-            ? Number(selectedYear)
-            : new Date().getFullYear()
-          : undefined,
-        sort: sort ? [sort] : undefined,
-        page,
-      });
-
+      if (fetching) return;
+      setFetching(true);
+      const response = await animeSearch(
+        {
+          genres: selectedGenres ?? undefined,
+          year: selectedSeason ? undefined : selectedYear ?? undefined,
+          search: searchQuery === "" ? undefined : searchQuery ?? undefined,
+          season:
+            (selectedSeason as "WINTER" | "SPRING" | "SUMMER" | "FALL") ??
+            undefined,
+          seasonYear: selectedSeason
+            ? selectedYear
+              ? Number(selectedYear)
+              : new Date().getFullYear()
+            : undefined,
+          sort: sort ? [sort] : undefined,
+          page,
+        },
+        animes.map((anime) => anime.id)
+      );
       setAnimes((prev) => [...prev, ...response.data.Page.media]);
       setHasNext(response.data.Page.pageInfo.hasNextPage);
       setPage(response.data.Page.pageInfo.hasNextPage ? page + 1 : -1);
+      setFetching(false);
     };
 
     let timer: NodeJS.Timeout;
 
-    if (inView) {
-      timer = setTimeout(() => {
-        if (hasNext) {
-          fetchMore();
-        }
-      }, 333);
+    if (inView && hasNext && page !== -1 && !fetching) {
+      fetchMore();
     }
 
     return () => clearTimeout(timer);
