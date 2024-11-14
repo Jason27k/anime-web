@@ -1,5 +1,5 @@
 import React from "react";
-import { animeSearch } from "./actions";
+import { animeSearch } from "@/app/actions";
 import AnimeHomeRows from "@/components/AnimeHomeRows";
 
 const page = async () => {

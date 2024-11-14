@@ -428,38 +428,41 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 justify-evenly gap-4 w-full">
-                    {anime.relations.edges
-                      .filter(
-                        (rel) =>
-                          (rel.node.format === "TV" ||
-                            rel.node.format === "ONA") &&
-                          rel.relationType !== "CHARACTER"
-                      )
-                      .map((rec) => (
-                        <Link
-                          href={"/anime/" + rec.node.id}
-                          key={rec.id}
-                          className="flex flex-col items-center"
-                        >
-                          <img
-                            src={rec.node.coverImage.large}
-                            alt={
-                              rec.node.title.english ?? rec.node.title.romaji
-                            }
-                            width={150}
-                            height={200}
-                            className="rounded-md bg-[#191d26]"
-                          />
-                          <p className="text-sm text-center mt-2">
-                            {(languageContext.language === LanguageType.English
-                              ? rec.node.title.english
-                              : languageContext.language ===
-                                LanguageType.Romanji
-                              ? rec.node.title.romaji
-                              : rec.node.title.native) ?? rec.node.title.romaji}
-                          </p>
-                        </Link>
-                      ))}
+                    {anime.relations &&
+                      anime.relations.edges
+                        .filter(
+                          (rel) =>
+                            (rel.node.format === "TV" ||
+                              rel.node.format === "ONA") &&
+                            rel.relationType !== "CHARACTER"
+                        )
+                        .map((rec) => (
+                          <Link
+                            href={"/anime/" + rec.node.id}
+                            key={rec.id}
+                            className="flex flex-col items-center"
+                          >
+                            <img
+                              src={rec.node.coverImage.large}
+                              alt={
+                                rec.node.title.english ?? rec.node.title.romaji
+                              }
+                              width={150}
+                              height={200}
+                              className="rounded-md bg-[#191d26]"
+                            />
+                            <p className="text-sm text-center mt-2">
+                              {(languageContext.language ===
+                              LanguageType.English
+                                ? rec.node.title.english
+                                : languageContext.language ===
+                                  LanguageType.Romanji
+                                ? rec.node.title.romaji
+                                : rec.node.title.native) ??
+                                rec.node.title.romaji}
+                            </p>
+                          </Link>
+                        ))}
                   </div>
                 </CardContent>
               </Card>
@@ -471,40 +474,42 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 justify-evenly gap-4 w-full">
-                    {anime.recommendations.nodes
-                      .filter(
-                        (rec) =>
-                          (rec.mediaRecommendation.format === "TV" ||
-                            rec.mediaRecommendation.format === "ONA") &&
-                          rec.mediaRecommendation.type === "ANIME"
-                      )
-                      .map((rec) => (
-                        <Link
-                          href={"/anime/" + rec.mediaRecommendation.id}
-                          key={rec.id}
-                          className="flex flex-col items-center"
-                        >
-                          <img
-                            src={rec.mediaRecommendation.coverImage.large}
-                            alt={
-                              rec.mediaRecommendation.title.english ??
-                              rec.mediaRecommendation.title.romaji
-                            }
-                            width={150}
-                            height={200}
-                            className="rounded-md bg-[#191d26]"
-                          />
-                          <p className="text-sm text-center mt-2">
-                            {(languageContext.language === LanguageType.English
-                              ? rec.mediaRecommendation.title.english
-                              : languageContext.language ===
-                                LanguageType.Romanji
-                              ? rec.mediaRecommendation.title.romaji
-                              : rec.mediaRecommendation.title.native) ??
-                              rec.mediaRecommendation.title.romaji}
-                          </p>
-                        </Link>
-                      ))}
+                    {anime.recommendations &&
+                      anime.recommendations.nodes
+                        .filter(
+                          (rec) =>
+                            (rec.mediaRecommendation.format === "TV" ||
+                              rec.mediaRecommendation.format === "ONA") &&
+                            rec.mediaRecommendation.type === "ANIME"
+                        )
+                        .map((rec) => (
+                          <Link
+                            href={"/anime/" + rec.mediaRecommendation.id}
+                            key={rec.id}
+                            className="flex flex-col items-center"
+                          >
+                            <img
+                              src={rec.mediaRecommendation.coverImage.large}
+                              alt={
+                                rec.mediaRecommendation.title.english ??
+                                rec.mediaRecommendation.title.romaji
+                              }
+                              width={150}
+                              height={200}
+                              className="rounded-md bg-[#191d26]"
+                            />
+                            <p className="text-sm text-center mt-2">
+                              {(languageContext.language ===
+                              LanguageType.English
+                                ? rec.mediaRecommendation.title.english
+                                : languageContext.language ===
+                                  LanguageType.Romanji
+                                ? rec.mediaRecommendation.title.romaji
+                                : rec.mediaRecommendation.title.native) ??
+                                rec.mediaRecommendation.title.romaji}
+                            </p>
+                          </Link>
+                        ))}
                   </div>
                 </CardContent>
               </Card>
