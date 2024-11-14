@@ -8,6 +8,8 @@ interface AnimeHomeRowsProps {
   popular: MediaDisplay[];
   top: MediaDisplay[];
   romance: MediaDisplay[];
+  nextSeason: string;
+  nextSeasonYear: number;
 }
 
 const AnimeHomeRows = ({
@@ -16,6 +18,8 @@ const AnimeHomeRows = ({
   popular,
   top,
   romance,
+  nextSeason,
+  nextSeasonYear,
 }: AnimeHomeRowsProps) => {
   return (
     <div className="flex flex-col gap-4 h-full">
@@ -30,7 +34,11 @@ const AnimeHomeRows = ({
           animes={top}
           link="/search?sort=SCORE_DESC"
         />
-        <AnimeRow title="Upcoming Season" animes={upcoming} link="/upcoming" />
+        <AnimeRow
+          title="Upcoming Season"
+          animes={upcoming}
+          link={`/search?year=${nextSeasonYear}&season=${nextSeason}`}
+        />
         <AnimeRow
           title="Popular Anime"
           animes={popular}

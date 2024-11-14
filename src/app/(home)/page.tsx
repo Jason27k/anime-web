@@ -66,6 +66,8 @@ const page = async () => {
         trending={trending}
         popular={popular}
         romance={romance}
+        nextSeason={nextSeason}
+        nextSeasonYear={nextSeasonYear}
       />
     </div>
   );

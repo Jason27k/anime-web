@@ -37,7 +37,6 @@ import { animeSearch } from "@/app/actions";
 import { MediaDisplay } from "@/utils/anilistTypes";
 import { capitalize } from "@/utils/formatting";
 import { TabsTrigger, TabsContent } from "./ui/tabs";
-import { LanguageContext, LanguageType } from "@/app/Provider";
 
 interface SearchFieldsProps {
   genres: String[];
@@ -96,9 +95,22 @@ const TabContentFilters = () => {
     router.push(pathname + "?" + createQueryString("sort", sort));
   };
 
+  const handleSortRemove = () => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.delete("sort");
+    router.push(pathname + "?" + newParams.toString());
+  };
+  //disable button when no sort is added
   return (
     <TabsContent value="filters" className="border-0 py-2 md:py-0">
       <div className="flex justify-center items-center gap-2">
+        <Button
+          onClick={handleSortRemove}
+          className="bg-white hover:bg-white"
+          disabled={!sort}
+        >
+          <X className="h-4 w-4 text-[#d67900]" size={16} />
+        </Button>
         <Select onValueChange={handleSortSelect} value={sort || undefined}>
           <SelectTrigger className="text-muted-foreground border-input">
             <SelectValue placeholder="Select Sort..." />
