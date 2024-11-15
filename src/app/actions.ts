@@ -1,4 +1,6 @@
 "use server";
+import { db } from "@/db";
+import { MyAnimesTable } from "@/db/schema";
 import {
   CalendarQueryResponse,
   MediaDisplay,
@@ -594,4 +596,36 @@ export async function getLikedAnimesList(
     )[0];
   }
   return likedAnimes;
+}
+
+import { currentUser } from "@clerk/nextjs/server";
+import { and, eq } from "drizzle-orm";
+export async function test(animeId: number) {
+  const user = await currentUser();
+  if (!user) {
+    return;
+  }
+
+  const alreadyLiked = await db.$count(
+    MyAnimesTable,
+    and(eq(MyAnimesTable.anime_id, animeId), eq(MyAnimesTable.user_id, user.id))
+  );
+
+  if (alreadyLiked) {
+    return;
+  }
+
+  let result = await db
+    .insert(MyAnimesTable)
+    .values({
+      anime_id: animeId,
+      user_id: user.id,
+    })
+    .returning({ id: MyAnimesTable.id });
+
+  if (result) {
+    console.log("Anime liked");
+  }
+
+  return result;
 }

@@ -1,6 +1,10 @@
 import { fetchAniListAnime } from "@/app/actions";
 import AnimeDetailsTwo from "@/components/AnimeDetailsTwo";
+import { db } from "@/db";
+import { MyAnimesTable } from "@/db/schema";
 import { MediaResponse } from "@/utils/anilistTypes";
+import { currentUser } from "@clerk/nextjs/server";
+import { and, eq } from "drizzle-orm";
 
 const DetailsPage = async ({ params }: { params: { id: string } }) => {
   const id = parseInt(params.id);
@@ -12,9 +16,22 @@ const DetailsPage = async ({ params }: { params: { id: string } }) => {
 
   const animeResponse: MediaResponse = await aniListDetailsQuery.json();
   const anime = animeResponse.data.Media;
+
+  const user = await currentUser();
+
+  let liked = false;
+  let userId = undefined;
+  if (user) {
+    userId = user.id;
+    liked =
+      (await db.$count(
+        MyAnimesTable,
+        and(eq(MyAnimesTable.user_id, userId), eq(MyAnimesTable.anime_id, id))
+      )) > 0;
+  }
   return (
     <>
-      <AnimeDetailsTwo anime={anime} />
+      <AnimeDetailsTwo anime={anime} userId={userId} liked={liked} />
     </>
   );
 };

@@ -22,12 +22,20 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
+import { test } from "@/app/actions";
+import { User as ClerkUser } from "@clerk/nextjs/server";
 
 interface AnimeDetailPropsTwo {
   anime: Media;
+  userId?: string;
+  liked: boolean;
 }
 
-export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
+export default function AnimeDetailsTwo({
+  anime,
+  userId,
+  liked,
+}: AnimeDetailPropsTwo) {
   const languageContext = useContext(LanguageContext);
   const [linkCollapsed, setLinkCollapsed] = useState(false);
   const title =
@@ -62,6 +70,8 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
   );
 
   const score = anime.averageScore ? anime.averageScore / 10 : "N/A";
+
+  const testWithID = test.bind(null, anime.id);
 
   return (
     <div className="container mx-auto px-4 py-2 sm:py-4 ">
@@ -166,6 +176,20 @@ export default function AnimeDetailsTwo({ anime }: AnimeDetailPropsTwo) {
                     <ExternalLinkIcon className="mr-2 h-4 w-4" /> Official Site
                   </a>
                 </Button>
+                {userId && !liked && (
+                  <form action={testWithID}>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      disabled={
+                        officialSiteLink == null ||
+                        officialSiteLink == undefined
+                      }
+                    >
+                      Add to My List
+                    </Button>
+                  </form>
+                )}
               </div>
             </CardContent>
           </Card>
