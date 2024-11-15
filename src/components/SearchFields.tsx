@@ -100,7 +100,6 @@ const TabContentFilters = () => {
     newParams.delete("sort");
     router.push(pathname + "?" + newParams.toString());
   };
-  //disable button when no sort is added
   return (
     <TabsContent value="filters" className="border-0 py-2 md:py-0">
       <div className="flex justify-center items-center gap-2">

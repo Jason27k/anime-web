@@ -1,12 +1,12 @@
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { Anime } from "@/utils/myAnimeTypes";
+import { AnimeInfo } from "../page";
 import MyAnimePage from "@/components/WatchingFinishedPage";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db";
 import { MyAnimesTable } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
-import { getLikedAnimesList } from "../actions";
+import { desc, eq, and } from "drizzle-orm";
+import { getLikedAnimesList } from "@/app/actions";
 import NoUserFound from "@/components/NoUserFound";
 import NoLikedAnime from "@/components/NoLikedAnime";
 
@@ -43,7 +43,9 @@ export default async function Page({
   let likedAnimesList = await db
     .select()
     .from(MyAnimesTable)
-    .where(eq(MyAnimesTable.user_id, user.id))
+    .where(
+      and(eq(MyAnimesTable.user_id, user.id), eq(MyAnimesTable.finished, false))
+    )
     .orderBy(desc(MyAnimesTable.created_at))
     .limit(PER_PAGE)
     .offset(PER_PAGE * pageNumber);
@@ -63,7 +65,7 @@ export default async function Page({
     <div className="h-full w-full">
       <div className="container mx-auto p-4 text-white ">
         <h1 className="text-2xl font-bold mb-4">My Anime List</h1>
-        <MyAnimePage animeInfoList={likedAnimes} route={"all"} />
+        <MyAnimePage animeInfoList={likedAnimes} route={"watching"} />
       </div>
       <div className="flex justify-between items-center w-full">
         <Button
@@ -85,10 +87,3 @@ export default async function Page({
     </div>
   );
 }
-
-export type AnimeInfo = {
-  id: number;
-  finished: boolean;
-  episode: number | null;
-  anime: Anime;
-};

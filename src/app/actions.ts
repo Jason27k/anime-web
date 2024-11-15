@@ -507,3 +507,91 @@ export async function fetchGenres() {
   const json: GenreQueryResponse = await response.json();
   return json.data.GenreCollection.filter((genre) => genre !== "Hentai");
 }
+
+const MyAnimeQuery = `
+fragment media on Media {
+  id
+  title {
+    userPreferred
+    romaji
+    english
+    native
+  }
+  coverImage {
+    extraLarge
+  }
+  episodes
+  streamingEpisodes {
+    title
+  }
+  nextAiringEpisode {
+    id
+    airingAt
+    episode
+  }
+  season
+  seasonYear
+}
+
+query ($ids: [Int]) {
+  Page(page: 1, perPage: PER_PAGE) {
+    media(id_in: $ids, type:ANIME) {
+      ...media
+    }
+  }
+}
+`;
+
+export async function fetchMyAnimeList(ids: number[], PER_PAGE: number) {
+  const query = MyAnimeQuery.replace("PER_PAGE", PER_PAGE.toString());
+  const response = await fetch("https://graphql.anilist.co", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      variables: { ids, PER_PAGE },
+    }),
+    cache: "force-cache",
+  });
+  const json = await response.json();
+  return json;
+}
+
+type LikedAnime = {
+  anime_id: number;
+  finished: boolean;
+  episode: number | null;
+  id: number;
+  user_id: string;
+  created_at: Date;
+};
+import { Anime, AnimeData } from "@/utils/myAnimeTypes";
+
+export async function getLikedAnimesList(
+  likedAnimesList: LikedAnime[],
+  PER_PAGE: number
+) {
+  let likedAnimes = [];
+  let ids = [];
+  for (let i = 0; i < likedAnimesList.length; i++) {
+    likedAnimes.push({
+      id: likedAnimesList[i].anime_id,
+      finished: likedAnimesList[i].finished,
+      episode: likedAnimesList[i].episode,
+      anime: {} as Anime,
+    });
+    ids.push(likedAnimesList[i].anime_id);
+  }
+
+  const data: AnimeData = await fetchMyAnimeList(ids, PER_PAGE);
+  const animes = data.data;
+  for (let i = 0; i < likedAnimes.length; i++) {
+    likedAnimes[i].anime = animes.Page.media.filter(
+      (anime) => anime.id === likedAnimes[i].id
+    )[0];
+  }
+  return likedAnimes;
+}

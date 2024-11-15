@@ -1,22 +1,7 @@
 export interface AnimeData {
   data: {
-    one: {
-      media: [Anime];
-    };
-    two: {
-      media: [Anime];
-    };
-    three: {
-      media: [Anime];
-    };
-    four: {
-      media: [Anime];
-    };
-    five: {
-      media: [Anime];
-    };
-    six: {
-      media: [Anime];
+    Page: {
+      media: Anime[];
     };
   };
 }
@@ -26,28 +11,28 @@ export interface Anime {
   title: Title;
   coverImage: CoverImage;
   episodes: number;
-  streamingEpisodes: StreamingEpisode[];
+  streamingEpisodes?: StreamingEpisode[]; // Optional if empty arrays need handling: `streamingEpisodes?: StreamingEpisode[]`
   nextAiringEpisode: NextAiringEpisode | null;
   season: "WINTER" | "SPRING" | "SUMMER" | "FALL";
   seasonYear: number;
 }
 
-interface Title {
+export interface Title {
   userPreferred: string;
   romaji: string;
   english: string;
   native: string;
 }
 
-interface CoverImage {
+export interface CoverImage {
   extraLarge: string;
 }
 
-interface StreamingEpisode {
+export interface StreamingEpisode {
   title: string;
 }
 
-interface NextAiringEpisode {
+export interface NextAiringEpisode {
   id: number;
   airingAt: number;
   episode: number;
