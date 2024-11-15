@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import Provider from "./Provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 
 const robo = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
@@ -38,6 +40,8 @@ export default function RootLayout({
           <Header>
             <Provider>{children}</Provider>
           </Header>
+          <SpeedInsights />
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>

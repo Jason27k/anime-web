@@ -23,7 +23,14 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import { test } from "@/app/actions";
-import { User as ClerkUser } from "@clerk/nextjs/server";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AnimeDetailPropsTwo {
   anime: Media;
@@ -71,7 +78,8 @@ export default function AnimeDetailsTwo({
 
   const score = anime.averageScore ? anime.averageScore / 10 : "N/A";
 
-  const testWithID = test.bind(null, anime.id);
+  const testWithIDWatching = test.bind(null, anime.id, "watching");
+  const testWithIDFinished = test.bind(null, anime.id, "finished");
 
   return (
     <div className="container mx-auto px-4 py-2 sm:py-4 ">
@@ -177,18 +185,46 @@ export default function AnimeDetailsTwo({
                   </a>
                 </Button>
                 {userId && !liked && (
-                  <form action={testWithID}>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      disabled={
-                        officialSiteLink == null ||
-                        officialSiteLink == undefined
-                      }
-                    >
-                      Add to My List
-                    </Button>
-                  </form>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        className="w-full bg-[#d67900] hover:bg-[#d67900]"
+                        disabled={liked}
+                      >
+                        Add to My List
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem>
+                        <form action={testWithIDWatching}>
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            disabled={
+                              officialSiteLink == null ||
+                              officialSiteLink == undefined
+                            }
+                          >
+                            Add as Watching
+                          </Button>
+                        </form>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <form action={testWithIDFinished}>
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            disabled={
+                              officialSiteLink == null ||
+                              officialSiteLink == undefined
+                            }
+                          >
+                            Add as Finished
+                          </Button>
+                        </form>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
             </CardContent>

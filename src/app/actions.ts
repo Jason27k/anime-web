@@ -600,7 +600,7 @@ export async function getLikedAnimesList(
 
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-export async function test(animeId: number) {
+export async function test(animeId: number, status: "watching" | "finished") {
   const user = await currentUser();
   if (!user) {
     return;
@@ -620,6 +620,7 @@ export async function test(animeId: number) {
     .values({
       anime_id: animeId,
       user_id: user.id,
+      finished: status === "finished",
     })
     .returning({ id: MyAnimesTable.id });
 
