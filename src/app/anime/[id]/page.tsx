@@ -17,8 +17,8 @@ const DetailsPage = async ({ params }: { params: { id: string } }) => {
   const animeResponse: MediaResponse = await aniListDetailsQuery.json();
   const anime = animeResponse.data.Media;
 
+  console.log("BEFORE FETCHING ANIME !!!!!!");
   const user = await currentUser();
-
   let liked = false;
   let userId = undefined;
   if (user) {
@@ -29,6 +29,8 @@ const DetailsPage = async ({ params }: { params: { id: string } }) => {
         and(eq(MyAnimesTable.user_id, userId), eq(MyAnimesTable.anime_id, id))
       )) > 0;
   }
+  console.log("AFTER FETCHING ANIME !!!!!!");
+
   return (
     <>
       <AnimeDetailsTwo anime={anime} userId={userId} liked={liked} />
