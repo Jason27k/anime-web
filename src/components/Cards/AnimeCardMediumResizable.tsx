@@ -61,7 +61,11 @@ const AnimeMediumResizable = ({
           {title}
         </h2>
         <div className="flex flex-wrap min-[450px]:flex-nowrap text-[#8c8c8c] gap-2 text-sm items-end justify-between -mt-1">
-          <div className="justify-start items-center gap-1 hidden min-[450px]:flex">
+          <div
+            className={`justify-start items-center gap-1 ${
+              airingString ? "hidden" : "flex"
+            } min-[450px]:flex`}
+          >
             <User size={17} />
             <p>
               {" "}
@@ -71,7 +75,11 @@ const AnimeMediumResizable = ({
             </p>
           </div>
           <p className="text-start">{airingString}</p>
-          <div className="justify-start items-center gap-1 hidden min-[450px]:flex">
+          <div
+            className={`justify-start items-center gap-1 ${
+              airingString ? "hidden" : "flex"
+            } min-[450px]:flex`}
+          >
             {score && <Star size={17} />}
             <p>{score}</p>
           </div>
