@@ -22,29 +22,41 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
-import { test } from "@/app/actions";
+import { removefromMyList, test } from "@/app/actions";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectLabel,
+  SelectGroup,
+} from "@radix-ui/react-select";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 interface AnimeDetailPropsTwo {
   anime: Media;
-  userId?: string;
+  loggedIn: boolean;
   liked: boolean;
 }
 
 export default function AnimeDetailsTwo({
   anime,
-  userId,
+  loggedIn,
   liked,
 }: AnimeDetailPropsTwo) {
   const languageContext = useContext(LanguageContext);
   const [linkCollapsed, setLinkCollapsed] = useState(false);
+  const [episodeNumber, setEpisodeNumber] = useState(anime.episodes ? 1 : null);
   const title =
     (languageContext.language === LanguageType.English
       ? anime.title.english
@@ -80,6 +92,8 @@ export default function AnimeDetailsTwo({
 
   const testWithIDWatching = test.bind(null, anime.id, "watching");
   const testWithIDFinished = test.bind(null, anime.id, "finished");
+  const removeWithId = removefromMyList.bind(null, anime.id);
+  console.log(anime.episodes);
 
   return (
     <div className="container mx-auto px-4 py-2 sm:py-4 ">
@@ -184,47 +198,77 @@ export default function AnimeDetailsTwo({
                     <ExternalLinkIcon className="mr-2 h-4 w-4" /> Official Site
                   </a>
                 </Button>
-                {userId && !liked && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                {loggedIn && !liked ? (
+                  <Dialog>
+                    <DialogTrigger asChild>
                       <Button
                         className="w-full bg-[#d67900] hover:bg-[#d67900]"
                         disabled={liked}
                       >
                         Add to My List
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>
-                        <form action={testWithIDWatching}>
-                          <Button
-                            variant="outline"
-                            className="w-full"
-                            disabled={
-                              officialSiteLink == null ||
-                              officialSiteLink == undefined
-                            }
+                    </DialogTrigger>
+                    <DialogContent className="bg-[#1f232d] border-0 text-white">
+                      <DialogHeader>
+                        <DialogTitle className="line-clamp-2">
+                          {title}
+                        </DialogTitle>
+                        <DialogDescription>
+                          Do you want to add this anime to your list?
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Tabs defaultValue="watching">
+                        <TabsList className="flex gap-2 w-min">
+                          <TabsTrigger value="watching">Watching</TabsTrigger>
+                          <TabsTrigger value="finished">Finished</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="watching" className="w-full mt-2">
+                          <form
+                            className="flex justify-between items-center w-full"
+                            action={testWithIDWatching}
                           >
-                            Add as Watching
-                          </Button>
-                        </form>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <form action={testWithIDFinished}>
-                          <Button
-                            variant="outline"
-                            className="w-full"
-                            disabled={
-                              officialSiteLink == null ||
-                              officialSiteLink == undefined
-                            }
-                          >
-                            Add as Finished
-                          </Button>
-                        </form>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                            {anime.episodes && anime.episodes > 1 && (
+                              <div className="flex flex-col w-[60%] gap-2">
+                                <Label htmlFor="episodeNumber">Episode</Label>
+                                <Input
+                                  name="episodeNumber"
+                                  type="number"
+                                  min={1}
+                                  max={anime.episodes || 12}
+                                  className="text-black"
+                                  defaultValue={1}
+                                />
+                              </div>
+                            )}
+                            <div className="flex justify-end space-x-2 mt-4">
+                              <Button
+                                className="bg-blue-600 hover:bg-blue-600"
+                                type="submit"
+                              >
+                                Add to Watching
+                              </Button>
+                            </div>
+                          </form>
+                        </TabsContent>
+                        <TabsContent value="finished" className="w-full mt-2">
+                          <form className="" action={testWithIDFinished}>
+                            <Button
+                              className="bg-green-600 hover:bg-green-600"
+                              type="submit"
+                            >
+                              Finished
+                            </Button>
+                          </form>
+                        </TabsContent>
+                      </Tabs>
+                    </DialogContent>
+                  </Dialog>
+                ) : (
+                  <form action={removeWithId}>
+                    <Button className="w-full bg-red-600 hover:bg-red-600">
+                      Remove from My List
+                    </Button>
+                  </form>
                 )}
               </div>
             </CardContent>

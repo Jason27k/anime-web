@@ -600,7 +600,13 @@ export async function getLikedAnimesList(
 
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
-export async function test(animeId: number, status: "watching" | "finished") {
+import { revalidatePath } from "next/cache";
+
+export async function test(
+  animeId: number,
+  status: "watching" | "finished",
+  formData: FormData
+) {
   const user = await currentUser();
   if (!user) {
     return;
@@ -614,19 +620,39 @@ export async function test(animeId: number, status: "watching" | "finished") {
   if (alreadyLiked) {
     return;
   }
+  console.log(
+    formData.get("episodeNumber"),
+    typeof formData.get("episodeNumber")
+  );
+  let result = await db.insert(MyAnimesTable).values({
+    anime_id: animeId,
+    user_id: user.id,
+    episode: formData.get("episodeNumber")
+      ? parseInt(formData.get("episodeNumber") as string)
+      : null,
+    finished: status === "finished",
+  });
+
+  revalidatePath(`/anime/${animeId}`);
+  return result;
+}
+
+export async function removefromMyList(animeId: number) {
+  const user = await currentUser();
+  if (!user) {
+    return;
+  }
 
   let result = await db
-    .insert(MyAnimesTable)
-    .values({
-      anime_id: animeId,
-      user_id: user.id,
-      finished: status === "finished",
-    })
-    .returning({ id: MyAnimesTable.id });
+    .delete(MyAnimesTable)
+    .where(
+      and(
+        eq(MyAnimesTable.anime_id, animeId),
+        eq(MyAnimesTable.user_id, user.id)
+      )
+    );
 
-  if (result) {
-    console.log("Anime liked");
-  }
+  revalidatePath(`/anime/${animeId}`);
 
   return result;
 }

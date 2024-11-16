@@ -17,23 +17,21 @@ const DetailsPage = async ({ params }: { params: { id: string } }) => {
   const animeResponse: MediaResponse = await aniListDetailsQuery.json();
   const anime = animeResponse.data.Media;
 
-  console.log("BEFORE FETCHING ANIME !!!!!!");
   const user = await currentUser();
   let liked = false;
-  let userId = undefined;
+  let loggedIn = false;
   if (user) {
-    userId = user.id;
+    loggedIn = true;
     liked =
       (await db.$count(
         MyAnimesTable,
-        and(eq(MyAnimesTable.user_id, userId), eq(MyAnimesTable.anime_id, id))
+        and(eq(MyAnimesTable.user_id, user.id), eq(MyAnimesTable.anime_id, id))
       )) > 0;
   }
-  console.log("AFTER FETCHING ANIME !!!!!!");
 
   return (
     <>
-      <AnimeDetailsTwo anime={anime} userId={userId} liked={liked} />
+      <AnimeDetailsTwo anime={anime} loggedIn={loggedIn} liked={liked} />
     </>
   );
 };
