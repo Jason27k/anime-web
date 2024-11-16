@@ -32,10 +32,7 @@ export default function RootLayout({
     >
       <html lang="en">
         <body
-          className={cn(
-            "bg-[#141414] h-screen overflow-x-hidden",
-            robo.className
-          )}
+          className={cn("bg-black h-screen overflow-x-hidden", robo.className)}
         >
           <Header>
             <Provider>{children}</Provider>
