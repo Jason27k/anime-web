@@ -59,26 +59,31 @@ export default async function Page({
 
   return (
     <div className="h-full w-full">
-      <div className="container mx-auto p-4 text-white ">
+      <div className="container mx-auto p-4 text-white">
         <h1 className="text-2xl font-bold mb-4">My Anime List</h1>
         <MyAnimePage animeInfoList={likedAnimes} route={"all"} />
       </div>
       <div className="flex justify-between items-center w-full">
-        <Button
-          asChild
-          className="bg-[#d67900] text-white"
-          disabled={pageNumber === 0}
-        >
-          <Link href={`/my-anime?page=${pageNumber - 1}`}>Previous</Link>
-        </Button>
+        {pageNumber > 1 ? (
+          <Button asChild className="bg-[#d67900] text-white">
+            <Link href={`/my-anime?page=${pageNumber - 1}`}>Previous</Link>
+          </Button>
+        ) : (
+          <Button className="bg-[#d67900] text-white" disabled={true}>
+            Previous
+          </Button>
+        )}
+
         <span className="mx-2 text-white">{pageNumber + 1}</span>
-        <Button
-          asChild
-          className="bg-[#d67900] text-white"
-          disabled={pageNumber === pageCount - 1}
-        >
-          <Link href={`/my-anime?page=${pageNumber + 1}`}>Next</Link>
-        </Button>
+        {pageCount > pageNumber + 1 ? (
+          <Button asChild className="bg-[#d67900] text-white">
+            <Link href={`/my-anime?page=${pageNumber + 1}`}>Next</Link>
+          </Button>
+        ) : (
+          <Button className="bg-[#d67900] text-white" disabled={true}>
+            Next
+          </Button>
+        )}
       </div>
     </div>
   );
