@@ -24,20 +24,20 @@ import {
 const Header = ({ children }: { children: ReactNode }) => {
   return (
     <div className="">
-      <div className="bg-[#212529] h-20 flex flex-row xs:flex-row items-center justify-between px-5 lg:px-20 xl:px-30 2xl:px-[15vw] sticky top-0 z-50 w-screen">
+      <div className="bg-[#212529] h-16 flex flex-row xs:flex-row items-center justify-between px-5 lg:px-20 xl:px-30 2xl:px-[15vw] sticky top-0 z-50 w-screen">
         <Link href="/" className="flex items-center justify-between">
           <Image
             src="./dragon.svg"
             alt="Dragon"
-            width={40}
-            height={40}
+            width={32}
+            height={32}
             className="hidden min-[395px]:block"
           />
-          <h1 className="text-2xl pl-5 text-white">AnimeTrove</h1>
+          <h1 className="text-2xl pl-2 text-white">AnimeTrove</h1>
         </Link>
         <div className="md:hidden flex gap-3">
           <SignedIn>
-            <UserButton showName />
+            <UserButton />
           </SignedIn>
           <Sheet>
             <Button
@@ -55,29 +55,38 @@ const Header = ({ children }: { children: ReactNode }) => {
                 </SheetTitle>
                 <SheetDescription className="flex flex-col items-end gap-2 text-white">
                   <SheetClose asChild>
-                    <Link href="/search" className="flex gap-2">
+                    <Link
+                      href="/search"
+                      className="flex gap-2 hover:text-[#D67900]"
+                    >
                       <Search size={24} />
-                      <span className="text-lg">Search</span>{" "}
-                      {/* Replaced <p> with <span> */}
+                      <span className="text-lg">Search</span>
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
-                    <Link href="/my-anime" className="flex gap-2">
+                    <Link
+                      href="/my-anime"
+                      className="flex gap-2 hover:text-[#D67900]"
+                    >
                       <Heart size={24} />
-                      <span className="text-lg">My Anime</span>{" "}
-                      {/* Replaced <p> with <span> */}
+                      <span className="text-lg">My Anime</span>
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
-                    <Link href="/calendar" className="flex gap-2">
+                    <Link
+                      href="/calendar"
+                      className="flex gap-2 hover:text-[#D67900]"
+                    >
                       <Calendar size={24} />
-                      <span className="text-lg">Calendar</span>{" "}
-                      {/* Replaced <p> with <span> */}
+                      <span className="text-lg">Calendar</span>
                     </Link>
                   </SheetClose>
                   <SignedOut>
                     <SheetClose asChild>
-                      <Link href="/sign-up" className="flex gap-2 text-lg">
+                      <Link
+                        href="/sign-up"
+                        className="flex gap-2 text-lg hover:text-[#D67900]"
+                      >
                         <UserPen size={24} />
                         <SignUpButton />
                       </Link>
@@ -87,11 +96,9 @@ const Header = ({ children }: { children: ReactNode }) => {
                         className="w-24 bg-[#D67900] text-lg hover:bg-white hover:text-[#D67900]"
                         asChild
                       >
-                        {/* Changed <div> to <span> */}
-                        <span className="text-lg">
-                          <LogIn size={24} />
+                        <div className="">
                           <SignInButton />
-                        </span>
+                        </div>
                       </Button>
                     </SheetClose>
                   </SignedOut>
@@ -100,23 +107,23 @@ const Header = ({ children }: { children: ReactNode }) => {
             </SheetContent>
           </Sheet>
         </div>
-        <div className="items-center gap-4 hidden md:flex">
+        <div className="items-center gap-4 hidden md:flex h-full">
           <Button
-            className="w-20 text-white hover:bg-[#d679009d] hover:text-white"
+            className="w-20 text-white hover:bg-[#d67900] hover:text-white h-full rounded-none"
             variant={"ghost"}
             asChild
           >
             <Link href="/search">Search</Link>
           </Button>
           <Button
-            className="w-20 text-white hover:bg-[#d679009d] hover:text-white"
+            className="w-20 text-white hover:bg-[#d67900] h-full rounded-none hover:text-white"
             variant={"ghost"}
             asChild
           >
             <Link href="/my-anime">My Anime</Link>
           </Button>
           <Button
-            className="w-20 text-white hover:bg-[#d679009d] hover:text-white"
+            className="w-20 text-white hover:bg-[#d67900] h-full rounded-none hover:text-white"
             variant={"ghost"}
             asChild
           >
@@ -124,7 +131,7 @@ const Header = ({ children }: { children: ReactNode }) => {
           </Button>
           <SignedOut>
             <Button
-              className="w-20 text-white hover:bg-[#d679009d] hover:text-white"
+              className="w-20 text-white hover:bg-[#d67900] h-full rounded-none hover:text-white"
               variant={"ghost"}
               asChild
             >
@@ -138,7 +145,9 @@ const Header = ({ children }: { children: ReactNode }) => {
             </Button>
           </SignedOut>
           <SignedIn>
-            <UserButton showName />
+            <div className="px-4 hover:bg-[#d67900] h-full rounded-none flex items-center justify-center">
+              <UserButton />
+            </div>
           </SignedIn>
         </div>
       </div>
