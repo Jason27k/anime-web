@@ -50,10 +50,6 @@ export default async function Page({
     .limit(PER_PAGE)
     .offset(PER_PAGE * pageNumber);
 
-  if (likedAnimesList.length === 0) {
-    return <NoLikedAnime />;
-  }
-
   const likedAnimes: AnimeInfo[] = await getLikedAnimesList(
     likedAnimesList,
     PER_PAGE

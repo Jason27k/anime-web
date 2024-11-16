@@ -146,7 +146,7 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
         </div>
       </div>
       <div className="flex flex-col bg-[#1f232d] w-[98%] max-w-[500px]">
-        <div className="flex justify-between text-[#9fa7b0] p-3">
+        <div className="flex justify-between text-white p-3">
           {airingString ? (
             <p className="text-lg">{airingString}</p>
           ) : (
@@ -169,7 +169,7 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
             </div>
           </div>
         </div>
-        <div className="text-[#7c8793] pl-3 w-[98%]">
+        <div className="text-[#c0cfe0] pl-3 w-[98%]">
           <div
             className="line-clamp-5 text-sm w-[98%]"
             dangerouslySetInnerHTML={{
@@ -177,35 +177,38 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
             }}
           />
         </div>
-        <div className="flex flex-row-reverse items-center bg-[#191d26] justify-start mt-auto h-12 px-1 overflow-hidden w-full">
-          <div className="ml-auto pl-1">
-            <CirclePlus size={24} className="text-[#7c8793] ml-auto" />
-          </div>
+        <div className="flex = items-center bg-[#191d26] justify-start mt-auto h-12 px-1 overflow-hidden w-full">
           <div
             ref={genreContainerRef}
-            className="flex items-center justify-start overflow-hidden w-full"
+            className="flex items-center justify-between overflow-hidden w-full"
           >
-            {genres.slice(0, visibleGenres).map((genre, index) => (
-              <Button
-                key={index}
-                className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push("/search/?genres=" + genre);
-                }}
-                asChild
-              >
-                <p>{genre}</p>
-              </Button>
-            ))}
-            {genres.length > visibleGenres && (
-              <Button
-                className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
-                asChild
-              >
-                <p>+{genres.length - visibleGenres}</p>
-              </Button>
-            )}
+            <div className="w-full">
+              {genres.slice(0, visibleGenres).map((genre, index) => (
+                <Button
+                  key={index}
+                  className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push("/search/?genres=" + genre);
+                  }}
+                  asChild
+                >
+                  <p>{genre}</p>
+                </Button>
+              ))}
+              {genres.length > visibleGenres && (
+                <Button
+                  className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
+                  asChild
+                >
+                  <p>+{genres.length - visibleGenres}</p>
+                </Button>
+              )}
+            </div>
+
+            <div className="">
+              <CirclePlus size={24} className="text-[#7c8793] pr-1" />
+            </div>
           </div>
         </div>
       </div>

@@ -263,12 +263,14 @@ export default function AnimeDetailsTwo({
                       </Tabs>
                     </DialogContent>
                   </Dialog>
-                ) : (
+                ) : loggedIn && liked ? (
                   <form action={removeWithId}>
                     <Button className="w-full bg-red-600 hover:bg-red-600">
                       Remove from My List
                     </Button>
                   </form>
+                ) : (
+                  <></>
                 )}
               </div>
             </CardContent>
