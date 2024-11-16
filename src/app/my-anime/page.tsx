@@ -47,8 +47,6 @@ export default async function Page({
     .orderBy(desc(MyAnimesTable.created_at))
     .limit(PER_PAGE)
     .offset(PER_PAGE * pageNumber);
-  console.log(user.id);
-  console.log(likedAnimesList);
 
   if (likedAnimesList.length === 0) {
     return <NoLikedAnime />;
