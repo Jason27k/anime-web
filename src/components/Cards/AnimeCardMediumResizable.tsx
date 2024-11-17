@@ -12,12 +12,14 @@ interface AnimeMediumResizableProps {
   anime: MediaDisplay;
   className?: string;
   airing?: number;
+  loggedIn: boolean;
 }
 
 const AnimeMediumResizable = ({
   anime,
   className,
   airing,
+  loggedIn,
 }: AnimeMediumResizableProps) => {
   const languageContext = useContext(LanguageContext);
 

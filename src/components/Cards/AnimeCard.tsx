@@ -1,6 +1,6 @@
 "use client";
 
-import { CirclePlus, Star, User } from "lucide-react";
+import { CirclePlus, MinusCircleIcon, Star, User } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { LanguageContext, LanguageType } from "@/app/Provider";
@@ -8,44 +8,80 @@ import { useContext } from "react";
 import { useEffect, useState, useRef } from "react";
 import { MediaDisplay } from "@/utils/anilistTypes";
 import { convertUTCToLocal } from "@/utils/date";
-import { useRouter } from "next/navigation";
 import { capitalize } from "@/utils/formatting";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { test } from "@/app/actions";
+import { removefromMyList } from "@/app/actions";
 
 interface AnimeCardProps {
   anime: MediaDisplay;
   airing?: number;
+  loggedIn: boolean;
+  ids: number[];
 }
 
-const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
-  const router = useRouter();
+const CHAR_SIZE = 14.6;
+const PLUS_BUTTON_WIDTH = 50;
+
+const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
   const languageContext = useContext(LanguageContext);
-  const [visibleGenres, setVisibleGenres] = useState(3);
+  const [genres, setGenres] = useState<string[]>([]);
   const genreContainerRef = useRef<HTMLDivElement>(null);
   const [description, setDescription] = useState<string>("");
+  const [showDialog, setShowDialog] = useState(false);
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+
+  const genresList = anime.genres;
 
   const updateVisibleGenres = () => {
     if (genreContainerRef.current) {
-      const containerWidth = genreContainerRef.current.offsetWidth;
-      const buttonWidth = 100; // Approximate width of each genre button
-      const additionalButtonWidth = 50; // Approximate width of the "+X" button
-
-      // Calculate how many genres can fit based on the container width
-      let maxGenres = Math.floor(containerWidth / buttonWidth) - 1;
-      if (visibleGenres < maxGenres) {
-        maxGenres -= additionalButtonWidth;
+      let containerWidth =
+        genreContainerRef.current.getBoundingClientRect().width - 50;
+      if (genresList.length === 0) {
+        return;
       }
-      setVisibleGenres(Math.max(1, maxGenres));
+
+      let currentSize = CHAR_SIZE * genresList[0].length;
+      let index = 1;
+      while (currentSize < containerWidth && index < genresList.length - 1) {
+        if (
+          currentSize + anime.genres[index].length * CHAR_SIZE >
+          containerWidth
+        ) {
+          while (currentSize > containerWidth - PLUS_BUTTON_WIDTH) {
+            currentSize -= anime.genres[index].length * CHAR_SIZE;
+            index -= 1;
+          }
+          break;
+        }
+        currentSize += anime.genres[index].length * CHAR_SIZE;
+        index++;
+      }
+
+      setGenres(genresList.slice(0, index));
     }
   };
 
   useEffect(() => {
     const observer = new ResizeObserver(updateVisibleGenres);
+
     function stripHtml(html: string) {
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = html;
       return tempDiv.innerText || tempDiv.textContent;
     }
     setDescription(stripHtml(anime.description || "") || "");
+
     if (genreContainerRef.current) {
       observer.observe(genreContainerRef.current);
     }
@@ -125,14 +161,17 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
       ? ""
       : anime.averageScore / 10;
   const members = anime.popularity;
-  const genres = anime.genres;
+
+  const testWithIDWatching = test.bind(null, anime.id, "watching");
+  const testWithIDFinished = test.bind(null, anime.id, "finished");
+  const removeWithId = removefromMyList.bind(null, anime.id);
 
   return (
-    <Link
-      href={"/anime/" + anime.id}
-      className="flex h-[265px] justify-center w-full"
-    >
-      <div className="flex flex-col relative h-full w-[185px]">
+    <div className="flex h-[265px] justify-center w-full">
+      <Link
+        href={"/anime/" + anime.id}
+        className="flex flex-col relative h-full w-[185px]"
+      >
         <div className="relative h-[265px] w-full min-w-[135px]">
           <img src={image} alt={title} className="bg-[#191d26] w-full h-full" />
         </div>
@@ -144,9 +183,12 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
             {producer}
           </p>
         </div>
-      </div>
-      <div className="flex flex-col bg-[#1f232d] w-[98%] max-w-[500px]">
-        <div className="flex justify-between text-white p-3">
+      </Link>
+      <div className="flex flex-col justify-between bg-[#1f232d] w-[98%] max-w-[500px]">
+        <Link
+          href={"/anime/" + anime.id}
+          className="flex justify-between text-white p-3"
+        >
           {airingString ? (
             <p className="text-lg">{airingString}</p>
           ) : (
@@ -168,51 +210,151 @@ const AnimeCard = ({ anime, airing }: AnimeCardProps) => {
               </p>
             </div>
           </div>
-        </div>
-        <div className="text-[#c0cfe0] pl-3 w-[98%]">
-          <div
-            className="line-clamp-5 text-sm w-[98%]"
-            dangerouslySetInnerHTML={{
-              __html: description,
-            }}
-          />
-        </div>
-        <div className="flex = items-center bg-[#191d26] justify-start mt-auto h-12 px-1 overflow-hidden w-full">
-          <div
-            ref={genreContainerRef}
-            className="flex items-center justify-between overflow-hidden w-full"
-          >
-            <div className="w-full">
-              {genres.slice(0, visibleGenres).map((genre, index) => (
+        </Link>
+        <Link
+          href={"/anime/" + anime.id}
+          className="text-gray-400 pl-3 w-[98%] flex-1"
+        >
+          <div className="line-clamp-5 text-sm w-[98%]" ref={genreContainerRef}>
+            {description}
+          </div>
+        </Link>
+        <div className="flex items-center bg-[#191d26] justify-start h-[46px] px-1 overflow-hidden w-full">
+          <div className="flex items-center justify-between overflow-hidden w-full h-full">
+            <div className="w-full h-full flex items-center">
+              {genres.map((genre) => (
                 <Button
-                  key={index}
+                  key={genre}
                   className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    router.push("/search/?genres=" + genre);
-                  }}
                   asChild
                 >
-                  <p>{genre}</p>
+                  <Link href={"/search/?genres=" + genre}>{genre}</Link>
                 </Button>
               ))}
-              {genres.length > visibleGenres && (
-                <Button
-                  className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
-                  asChild
-                >
-                  <p>+{genres.length - visibleGenres}</p>
+              {genresList.length > genres.length && (
+                <Button className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1">
+                  <p>+{genresList.length - genres.length}</p>
                 </Button>
               )}
             </div>
 
-            <div className="">
-              <CirclePlus size={24} className="text-[#7c8793] pr-1" />
-            </div>
+            {loggedIn && !ids.includes(anime.id) ? (
+              <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                <DialogTrigger asChild>
+                  <CirclePlus
+                    size={24}
+                    className="text-[#7c8793]"
+                    onClick={() => {
+                      setShowDialog(true);
+                    }}
+                  />
+                </DialogTrigger>
+                <DialogContent className="bg-[#1f232d] border-0 text-white">
+                  <DialogHeader>
+                    <DialogTitle className="line-clamp-2">{title}</DialogTitle>
+                    <DialogDescription>
+                      Do you want to add this anime to your list?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Tabs defaultValue="watching">
+                    <TabsList className="flex gap-2 w-min">
+                      <TabsTrigger value="watching">Watching</TabsTrigger>
+                      <TabsTrigger value="finished">Finished</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="watching" className="w-full mt-2">
+                      <form
+                        className="flex justify-between items-center w-full"
+                        action={testWithIDWatching}
+                      >
+                        {anime.episodes && anime.episodes > 1 && (
+                          <div className="flex flex-col w-[60%] gap-2">
+                            <Label htmlFor="episodeNumber">Episode</Label>
+                            <Input
+                              name="episodeNumber"
+                              type="number"
+                              min={1}
+                              max={anime.episodes || 12}
+                              className="text-black"
+                              defaultValue={1}
+                            />
+                          </div>
+                        )}
+                        <div className="flex justify-end space-x-2 mt-4">
+                          <Button
+                            className="bg-blue-600 hover:bg-blue-600"
+                            onClick={() => setShowDialog(false)}
+                            type="submit"
+                          >
+                            Add to Watching
+                          </Button>
+                        </div>
+                      </form>
+                    </TabsContent>
+                    <TabsContent value="finished" className="w-full mt-2">
+                      <form className="" action={testWithIDFinished}>
+                        <Button
+                          className="bg-green-600 hover:bg-green-600"
+                          type="submit"
+                          onClick={() => setShowDialog(false)}
+                        >
+                          Finished
+                        </Button>
+                      </form>
+                    </TabsContent>
+                  </Tabs>
+                </DialogContent>
+              </Dialog>
+            ) : loggedIn ? (
+              <Dialog
+                open={showRemoveDialog}
+                onOpenChange={setShowRemoveDialog}
+              >
+                <DialogTrigger asChild>
+                  <MinusCircleIcon size={24} className="text-[#7c8793]" />
+                </DialogTrigger>
+                <DialogContent className="bg-[#1f232d] border-0 text-white">
+                  <DialogHeader>
+                    <DialogTitle className="line-clamp-2">{title}</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to remove this from your list?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form
+                    className="flex justify-between items-center w-full"
+                    action={removeWithId}
+                  >
+                    {anime.episodes && anime.episodes > 1 && (
+                      <div className="flex flex-col w-[60%] gap-2">
+                        <Label htmlFor="episodeNumber">Episode</Label>
+                        <Input
+                          name="episodeNumber"
+                          type="number"
+                          min={1}
+                          max={anime.episodes || 12}
+                          className="text-black"
+                          defaultValue={1}
+                        />
+                      </div>
+                    )}
+                    <div className="flex justify-end space-x-2 mt-4">
+                      <Button
+                        className="bg-red-600 hover:bg-red-600"
+                        onClick={() => setShowRemoveDialog(false)}
+                        type="submit"
+                      >
+                        Remove from List
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

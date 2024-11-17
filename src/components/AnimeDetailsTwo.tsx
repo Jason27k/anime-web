@@ -31,15 +31,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectLabel,
-  SelectGroup,
-} from "@radix-ui/react-select";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
@@ -56,7 +47,6 @@ export default function AnimeDetailsTwo({
 }: AnimeDetailPropsTwo) {
   const languageContext = useContext(LanguageContext);
   const [linkCollapsed, setLinkCollapsed] = useState(false);
-  const [episodeNumber, setEpisodeNumber] = useState(anime.episodes ? 1 : null);
   const title =
     (languageContext.language === LanguageType.English
       ? anime.title.english
@@ -106,7 +96,6 @@ export default function AnimeDetailsTwo({
                 alt={title}
                 className="brightness-50 h-full w-full bg-[#191d26] mx-auto"
                 loading="lazy"
-                crossOrigin="use-credentials"
               />
               <div className="absolute inset-0 flex flex-col justify-end px-6 text-white h-full">
                 <h1 className="text-4xl md:text-5xl font-bold mb-2">{title}</h1>

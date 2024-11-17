@@ -656,3 +656,19 @@ export async function removefromMyList(animeId: number) {
 
   return result;
 }
+
+let ids = [];
+
+export async function fetchMyAnimeIds() {
+  const user = await currentUser();
+  if (!user) {
+    return;
+  }
+  const likedAnimes = await db
+    .select({ id: MyAnimesTable.anime_id })
+    .from(MyAnimesTable)
+    .where(eq(MyAnimesTable.user_id, user.id));
+
+  ids = likedAnimes.map((anime) => anime.id);
+  return ids;
+}

@@ -1,8 +1,9 @@
-import { animeSearch, fetchGenres } from "@/app/actions";
+import { animeSearch, fetchGenres, fetchMyAnimeIds } from "@/app/actions";
 import SearchFields from "@/components/SearchFields";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { SearchQueryResponse } from "@/utils/anilistTypes";
+import { currentUser } from "@clerk/nextjs/server";
 
 const Search = async ({
   searchParams,
@@ -24,6 +25,14 @@ const Search = async ({
   const selectedYear = searchParams?.year;
   const query = searchParams?.query;
   const sort = searchParams?.sort;
+
+  const user = await currentUser();
+  let loggedIn = false;
+  if (user && user.id) {
+    loggedIn = true;
+  }
+
+  const ids = (await fetchMyAnimeIds()) || [];
 
   if (selectedSeason && !selectedYear) {
     const currentYear = new Date().getFullYear();
@@ -68,6 +77,8 @@ const Search = async ({
         years={years.reverse()}
         animeData={animeData}
         hasNextPage={response.data.Page.pageInfo.hasNextPage}
+        loggedIn={loggedIn}
+        ids={ids}
       />
     </Suspense>
   );

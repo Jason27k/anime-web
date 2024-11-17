@@ -7,8 +7,12 @@ import { convertUTCToLocal } from "@/utils/date";
 
 const AnimeCalendar = ({
   airingSchedules,
+  loggedIn,
+  ids,
 }: {
   airingSchedules: AiringSchedule[];
+  loggedIn: boolean;
+  ids: number[];
 }) => {
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
 
@@ -33,6 +37,8 @@ const AnimeCalendar = ({
             key={index}
             day={days[(index + offset) % 7]}
             display={display}
+            loggedIn={loggedIn}
+            ids={ids}
             airingSchedules={airingSchedules.filter(
               (schedule) =>
                 convertUTCToLocal(schedule.airingAt).getDay() ===

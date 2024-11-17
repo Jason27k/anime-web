@@ -13,46 +13,45 @@ import { capitalize } from "@/utils/formatting";
 interface AnimeLongCardProps {
   anime: MediaDisplay;
   airing?: number;
+  loggedIn: boolean;
 }
 
-const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
+const AnimeLongCard = ({ anime, airing, loggedIn }: AnimeLongCardProps) => {
   const router = useRouter();
   const languageContext = useContext(LanguageContext);
-  const [visibleGenres, setVisibleGenres] = useState(1);
+  const [genres, setGenres] = useState<string[]>([]);
   const genreContainerRef = useRef<HTMLDivElement>(null);
 
-  const genres = anime.genres;
+  const genresList = anime.genres;
   const CHAR_SIZE = 14.6;
   const PLUS_BUTTON_WIDTH = 50;
 
   const updateVisibleGenres = () => {
     if (genreContainerRef.current) {
       let containerWidth =
-        genreContainerRef.current.getBoundingClientRect().width - 30;
-      if (genres.length === 0) {
-        setVisibleGenres(0);
+        genreContainerRef.current.getBoundingClientRect().width - 50;
+      if (genresList.length === 0) {
         return;
       }
 
-      let currentSize = CHAR_SIZE * genres[0].length;
+      let currentSize = CHAR_SIZE * genresList[0].length;
       let index = 1;
-      while (currentSize < containerWidth && index < genres.length - 1) {
+      while (currentSize < containerWidth && index < genresList.length - 1) {
+        if (
+          currentSize + anime.genres[index].length * CHAR_SIZE >
+          containerWidth
+        ) {
+          while (currentSize > containerWidth - PLUS_BUTTON_WIDTH) {
+            currentSize -= anime.genres[index].length * CHAR_SIZE;
+            index -= 1;
+          }
+          break;
+        }
         currentSize += anime.genres[index].length * CHAR_SIZE;
         index++;
       }
 
-      const containerMinusButtonWidth = containerWidth - PLUS_BUTTON_WIDTH;
-      if (currentSize > containerWidth) {
-        setVisibleGenres(index - 1);
-      } else if (currentSize < containerMinusButtonWidth) {
-        setVisibleGenres(index);
-      } else {
-        if (currentSize >= containerMinusButtonWidth) {
-          setVisibleGenres(index - 1);
-        } else {
-          setVisibleGenres(index - 1);
-        }
-      }
+      setGenres(genresList.slice(0, index));
     }
   };
 
@@ -186,9 +185,9 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
           className="flex items-center justify-start overflow-hidden w-full"
           ref={genreContainerRef}
         >
-          {genres.slice(0, visibleGenres).map((genre, index) => (
+          {genres.map((genre) => (
             <Button
-              key={index}
+              key={genre}
               className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
               onClick={(e) => {
                 e.stopPropagation(); // Prevent triggering the outer link
@@ -198,17 +197,9 @@ const AnimeLongCard = ({ anime, airing }: AnimeLongCardProps) => {
               {genre}
             </Button>
           ))}
-          {genres.length > visibleGenres && (
-            <Button
-              className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(
-                  `/search?genres=${genres.slice(visibleGenres).join(",")}`
-                );
-              }}
-            >
-              +{genres.length - visibleGenres}
+          {genresList.length > genres.length && (
+            <Button className="rounded-xl bg-[#d67900] hover:bg-[#d67900] h-6 mx-1">
+              <p>+{genresList.length - genres.length}</p>
             </Button>
           )}
         </div>

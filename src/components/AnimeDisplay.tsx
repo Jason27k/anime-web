@@ -10,11 +10,15 @@ const AnimeDisplay = ({
   scroll,
   animeData,
   airingSchedules,
+  loggedIn,
+  ids,
 }: {
   display: number;
   scroll?: boolean;
   animeData?: MediaDisplay[];
   airingSchedules?: AiringSchedule[];
+  loggedIn: boolean;
+  ids: number[];
 }) => {
   if (!airingSchedules && !animeData) {
     return <></>;
@@ -32,11 +36,18 @@ const AnimeDisplay = ({
                       anime={schedule.media}
                       key={schedule.media.id}
                       airing={schedule.airingAt}
+                      loggedIn={loggedIn}
+                      ids={ids}
                     />
                   ))
                 : animeData &&
                   animeData.map((anime: MediaDisplay) => (
-                    <AnimeLongCard anime={anime} key={anime.id} />
+                    <AnimeLongCard
+                      anime={anime}
+                      key={anime.id}
+                      loggedIn={loggedIn}
+                      ids={ids}
+                    />
                   ))}
             </div>
           ) : display == 1 && scroll ? (
@@ -46,6 +57,8 @@ const AnimeDisplay = ({
                   scroll={scroll}
                   airingSchedules={airingSchedules}
                   animeData={animeData}
+                  loggedIn={loggedIn}
+                  ids={ids}
                 />
               </div>
               <ScrollBar orientation="horizontal" />
@@ -55,6 +68,8 @@ const AnimeDisplay = ({
               <AnimeMediumFormatted
                 airingSchedules={airingSchedules}
                 animeData={animeData}
+                loggedIn={loggedIn}
+                ids={ids}
               />
             </div>
           ) : (
@@ -63,6 +78,8 @@ const AnimeDisplay = ({
                 <AnimeMediumFormatted
                   airingSchedules={airingSchedules}
                   animeData={animeData}
+                  loggedIn={loggedIn}
+                  ids={ids}
                 />
               </div>
               <div className="hidden min-[465px]:grid w-full grid-cols-1 min-[975px]:grid-cols-2 min-[2000px]:grid-cols-3 gap-4 justify-center">
@@ -72,11 +89,18 @@ const AnimeDisplay = ({
                         anime={schedule.media}
                         key={schedule.media.id}
                         airing={schedule.airingAt}
+                        loggedIn={loggedIn}
+                        ids={ids}
                       />
                     ))
                   : animeData &&
                     animeData.map((anime: MediaDisplay) => (
-                      <AnimeCard anime={anime} key={anime.id} />
+                      <AnimeCard
+                        anime={anime}
+                        key={anime.id}
+                        loggedIn={loggedIn}
+                        ids={ids}
+                      />
                     ))}
               </div>
             </div>

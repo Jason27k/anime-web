@@ -1,12 +1,21 @@
 import AnimeCalendar from "@/components/Calendar/AnimeCalendar";
-import { fetchSchedule } from "../actions";
+import { fetchMyAnimeIds, fetchSchedule } from "../actions";
 import { getWeekRangeFromToday } from "@/utils/date";
 import { CalendarQueryResponse } from "@/utils/anilistTypes";
+import { currentUser } from "@clerk/nextjs/server";
 
 const WeeklyCalendar = async () => {
   const MIN_MEMBERS = 2000;
   let page = 1;
   const { startOfWeek, endOfWeek } = getWeekRangeFromToday();
+
+  const user = await currentUser();
+  let loggedIn = false;
+  if (user && user.id) {
+    loggedIn = true;
+  }
+
+  const ids = (await fetchMyAnimeIds()) || [];
 
   let response: CalendarQueryResponse = await fetchSchedule(
     startOfWeek,
@@ -38,7 +47,11 @@ const WeeklyCalendar = async () => {
 
   return (
     <div className="">
-      <AnimeCalendar airingSchedules={airingSchedules} />
+      <AnimeCalendar
+        airingSchedules={airingSchedules}
+        loggedIn={loggedIn}
+        ids={ids}
+      />
     </div>
   );
 };

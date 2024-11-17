@@ -9,9 +9,17 @@ interface AnimeDayProps {
   day: String;
   airingSchedules: AiringSchedule[];
   display: 0 | 1 | 2 | 3;
+  loggedIn: boolean;
+  ids: number[];
 }
 
-const AnimeDay = ({ day, airingSchedules, display }: AnimeDayProps) => {
+const AnimeDay = ({
+  day,
+  airingSchedules,
+  display,
+  loggedIn,
+  ids,
+}: AnimeDayProps) => {
   const [collapse, setCollapse] = useState(false);
 
   const handleCollapse = () => {
@@ -35,6 +43,8 @@ const AnimeDay = ({ day, airingSchedules, display }: AnimeDayProps) => {
           display={display}
           airingSchedules={airingSchedules}
           scroll
+          loggedIn={loggedIn}
+          ids={ids}
         />
       )}
     </>

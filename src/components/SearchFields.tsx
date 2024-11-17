@@ -45,6 +45,8 @@ interface SearchFieldsProps {
   className?: string;
   animeData: MediaDisplay[];
   hasNextPage: boolean;
+  loggedIn: boolean;
+  ids: number[];
 }
 
 const TabTriggerFilters = () => {
@@ -143,6 +145,8 @@ const SearchFields = ({
   className,
   animeData,
   hasNextPage,
+  loggedIn,
+  ids,
 }: SearchFieldsProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -447,7 +451,12 @@ const SearchFields = ({
         tabTriggers={<TabTriggerFilters />}
         tabContents={<TabContentFilters />}
       />
-      <AnimeDisplay display={display} animeData={animes} />
+      <AnimeDisplay
+        display={display}
+        animeData={animes}
+        loggedIn={loggedIn}
+        ids={ids}
+      />
       <div ref={ref}>
         {hasNextPage && page !== -1 && (
           <div className="flex justify-center items-center w-full h-16">
