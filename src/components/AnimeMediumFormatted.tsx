@@ -8,11 +8,13 @@ export const AnimeMediumFormatted = ({
   animeData,
   airingSchedules,
   loggedIn,
+  ids,
 }: {
   scroll?: boolean;
   animeData?: MediaDisplay[];
   airingSchedules?: AiringSchedule[];
   loggedIn: boolean;
+  ids: number[];
 }) => {
   if (scroll) {
     return (
@@ -27,6 +29,7 @@ export const AnimeMediumFormatted = ({
                 key={schedule.media.id}
                 airing={schedule.airingAt}
                 loggedIn={loggedIn}
+                ids={ids}
               />
             ))
           : animeData &&
@@ -35,6 +38,7 @@ export const AnimeMediumFormatted = ({
                 anime={anime}
                 key={anime.id}
                 loggedIn={loggedIn}
+                ids={ids}
               />
             ))}
       </div>
@@ -52,6 +56,7 @@ export const AnimeMediumFormatted = ({
               key={schedule.media.id}
               airing={schedule.airingAt}
               loggedIn={loggedIn}
+              ids={ids}
             />
           ))
         : animeData &&
@@ -60,6 +65,7 @@ export const AnimeMediumFormatted = ({
               anime={anime}
               key={anime.id}
               loggedIn={loggedIn}
+              ids={ids}
             />
           ))}
     </div>

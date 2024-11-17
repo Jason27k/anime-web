@@ -10,9 +10,15 @@ interface AnimeCardMediumProps {
   anime: MediaDisplay;
   airing?: number;
   loggedIn: boolean;
+  ids: number[];
 }
 
-const AnimeCardMedium = ({ anime, airing, loggedIn }: AnimeCardMediumProps) => {
+const AnimeCardMedium = ({
+  anime,
+  airing,
+  loggedIn,
+  ids,
+}: AnimeCardMediumProps) => {
   const languageContext = useContext(LanguageContext);
 
   const image = anime.coverImage.extraLarge;

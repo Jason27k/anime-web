@@ -1,6 +1,7 @@
 import React from "react";
-import { animeSearch } from "@/app/actions";
+import { animeSearch, fetchMyAnimeIds } from "@/app/actions";
 import AnimeHomeRows from "@/components/AnimeHomeRows";
+import { currentUser } from "@clerk/nextjs/server";
 
 const page = async () => {
   let year = new Date().getFullYear();
@@ -21,6 +22,14 @@ const page = async () => {
   } else {
     nextSeasonYear += 1;
   }
+
+  const user = await currentUser();
+  let loggedIn = false;
+  if (user && user.id) {
+    loggedIn = true;
+  }
+
+  const ids = (await fetchMyAnimeIds()) || [];
 
   const upcomingResponse = await animeSearch({
     seasonYear: nextSeasonYear,
@@ -68,6 +77,8 @@ const page = async () => {
         romance={romance}
         nextSeason={nextSeason}
         nextSeasonYear={nextSeasonYear}
+        loggedIn={loggedIn}
+        ids={ids}
       />
     </div>
   );

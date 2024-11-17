@@ -13,6 +13,7 @@ interface AnimeMediumResizableProps {
   className?: string;
   airing?: number;
   loggedIn: boolean;
+  ids: number[];
 }
 
 const AnimeMediumResizable = ({
@@ -20,6 +21,7 @@ const AnimeMediumResizable = ({
   className,
   airing,
   loggedIn,
+  ids,
 }: AnimeMediumResizableProps) => {
   const languageContext = useContext(LanguageContext);
 

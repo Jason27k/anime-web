@@ -14,9 +14,15 @@ interface AnimeLongCardProps {
   anime: MediaDisplay;
   airing?: number;
   loggedIn: boolean;
+  ids: number[];
 }
 
-const AnimeLongCard = ({ anime, airing, loggedIn }: AnimeLongCardProps) => {
+const AnimeLongCard = ({
+  anime,
+  airing,
+  loggedIn,
+  ids,
+}: AnimeLongCardProps) => {
   const router = useRouter();
   const languageContext = useContext(LanguageContext);
   const [genres, setGenres] = useState<string[]>([]);
