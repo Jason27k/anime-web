@@ -22,7 +22,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
-import { removefromMyList, test } from "@/app/actions";
+import { removefromMyList, addToMyList } from "@/app/actions";
 import {
   Dialog,
   DialogContent,
@@ -80,9 +80,9 @@ export default function AnimeDetailsTwo({
 
   const score = anime.averageScore ? anime.averageScore / 10 : "N/A";
 
-  const testWithIDWatching = test.bind(null, anime.id, "watching");
-  const testWithIDFinished = test.bind(null, anime.id, "finished");
-  const removeWithId = removefromMyList.bind(null, anime.id);
+  const testWithIDWatching = addToMyList.bind(null, anime.id, "watching", true);
+  const testWithIDFinished = addToMyList.bind(null, anime.id, "finished", true);
+  const removeWithId = removefromMyList.bind(null, anime.id, true);
   console.log(anime.episodes);
 
   return (

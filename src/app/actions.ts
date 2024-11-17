@@ -602,9 +602,10 @@ import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function test(
+export async function addToMyList(
   animeId: number,
   status: "watching" | "finished",
+  refresh: boolean,
   formData: FormData
 ) {
   const user = await currentUser();
@@ -620,10 +621,7 @@ export async function test(
   if (alreadyLiked) {
     return;
   }
-  console.log(
-    formData.get("episodeNumber"),
-    typeof formData.get("episodeNumber")
-  );
+
   let result = await db.insert(MyAnimesTable).values({
     anime_id: animeId,
     user_id: user.id,
@@ -633,11 +631,13 @@ export async function test(
     finished: status === "finished",
   });
 
-  revalidatePath(`/anime/${animeId}`);
+  if (refresh) {
+    revalidatePath(`/anime/${animeId}`);
+  }
   return result;
 }
 
-export async function removefromMyList(animeId: number) {
+export async function removefromMyList(animeId: number, refresh: boolean) {
   const user = await currentUser();
   if (!user) {
     return;
@@ -652,12 +652,12 @@ export async function removefromMyList(animeId: number) {
       )
     );
 
-  revalidatePath(`/anime/${animeId}`);
+  if (refresh) {
+    revalidatePath(`/anime/${animeId}`);
+  }
 
   return result;
 }
-
-let ids = [];
 
 export async function fetchMyAnimeIds() {
   const user = await currentUser();
@@ -669,6 +669,5 @@ export async function fetchMyAnimeIds() {
     .from(MyAnimesTable)
     .where(eq(MyAnimesTable.user_id, user.id));
 
-  ids = likedAnimes.map((anime) => anime.id);
-  return ids;
+  return likedAnimes.map((anime) => anime.id);
 }

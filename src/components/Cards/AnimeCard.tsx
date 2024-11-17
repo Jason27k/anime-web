@@ -20,7 +20,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { test } from "@/app/actions";
+import { addToMyList } from "@/app/actions";
 import { removefromMyList } from "@/app/actions";
 
 interface AnimeCardProps {
@@ -40,6 +40,7 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
   const [description, setDescription] = useState<string>("");
   const [showDialog, setShowDialog] = useState(false);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+  const [newLiked, setNewLiked] = useState(false);
 
   const genresList = anime.genres;
 
@@ -162,9 +163,19 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
       : anime.averageScore / 10;
   const members = anime.popularity;
 
-  const testWithIDWatching = test.bind(null, anime.id, "watching");
-  const testWithIDFinished = test.bind(null, anime.id, "finished");
-  const removeWithId = removefromMyList.bind(null, anime.id);
+  const testWithIDWatching = addToMyList.bind(
+    null,
+    anime.id,
+    "watching",
+    false
+  );
+  const testWithIDFinished = addToMyList.bind(
+    null,
+    anime.id,
+    "finished",
+    false
+  );
+  const removeWithId = removefromMyList.bind(null, anime.id, false);
 
   return (
     <div className="flex h-[265px] justify-center w-full">
@@ -238,7 +249,7 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
               )}
             </div>
 
-            {loggedIn && !ids.includes(anime.id) ? (
+            {loggedIn && !ids.includes(anime.id) && !newLiked ? (
               <Dialog open={showDialog} onOpenChange={setShowDialog}>
                 <DialogTrigger asChild>
                   <CirclePlus
@@ -282,7 +293,10 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
                         <div className="flex justify-end space-x-2 mt-4">
                           <Button
                             className="bg-blue-600 hover:bg-blue-600"
-                            onClick={() => setShowDialog(false)}
+                            onClick={() => {
+                              setShowDialog(false);
+                              setNewLiked(true);
+                            }}
                             type="submit"
                           >
                             Add to Watching
@@ -295,7 +309,10 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
                         <Button
                           className="bg-green-600 hover:bg-green-600"
                           type="submit"
-                          onClick={() => setShowDialog(false)}
+                          onClick={() => {
+                            setShowDialog(false);
+                            setNewLiked(true);
+                          }}
                         >
                           Finished
                         </Button>
@@ -304,7 +321,7 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
                   </Tabs>
                 </DialogContent>
               </Dialog>
-            ) : loggedIn ? (
+            ) : newLiked || loggedIn ? (
               <Dialog
                 open={showRemoveDialog}
                 onOpenChange={setShowRemoveDialog}
@@ -323,23 +340,13 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
                     className="flex justify-between items-center w-full"
                     action={removeWithId}
                   >
-                    {anime.episodes && anime.episodes > 1 && (
-                      <div className="flex flex-col w-[60%] gap-2">
-                        <Label htmlFor="episodeNumber">Episode</Label>
-                        <Input
-                          name="episodeNumber"
-                          type="number"
-                          min={1}
-                          max={anime.episodes || 12}
-                          className="text-black"
-                          defaultValue={1}
-                        />
-                      </div>
-                    )}
                     <div className="flex justify-end space-x-2 mt-4">
                       <Button
                         className="bg-red-600 hover:bg-red-600"
-                        onClick={() => setShowRemoveDialog(false)}
+                        onClick={() => {
+                          setShowRemoveDialog(false);
+                          setNewLiked(false);
+                        }}
                         type="submit"
                       >
                         Remove from List
