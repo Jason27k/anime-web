@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useContext } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "./ui/label";
 import { SearchIcon, X } from "lucide-react";
@@ -45,6 +45,7 @@ interface SearchFieldsProps {
   className?: string;
   loggedIn: boolean;
   ids: number[];
+  searchParams: { [key: string]: string | undefined } | undefined;
 }
 
 const TabTriggerFilters = () => {
@@ -143,25 +144,23 @@ const SearchFields = ({
   className,
   loggedIn,
   ids,
+  searchParams,
 }: SearchFieldsProps) => {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { ref, inView } = useInView();
-  const selectedYear = searchParams.get("year");
-  const selectedSeason = searchParams.get("season");
-  const selectedGenres = searchParams.get("genres")?.split(",");
-  const sort = searchParams.get("sort");
+  const selectedYear = searchParams?.year;
+  const selectedSeason = searchParams?.season;
+  const selectedGenres = searchParams?.genres?.split(",");
+  const sort = searchParams?.sort;
   const [yearsPopOpen, setYearsPopOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("query") || ""
-  );
+  const [searchQuery, setSearchQuery] = useState(searchParams?.query || "");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
 
-  const { data, error, fetchNextPage, hasNextPage, isFetching } =
+  const { data, error, fetchNextPage, hasNextPage, isFetching, isPending } =
     useInfiniteQuery({
-      queryKey: ["animes", searchParams.toString()],
+      queryKey: ["animes", searchParams],
       queryFn: ({ pageParam }) => {
         const newVars: SearchQueryVariables = {
           page: pageParam,
@@ -199,6 +198,14 @@ const SearchFields = ({
     }
   }, [inView]);
 
+  if (isPending) {
+    console.log("pending");
+  }
+
+  if (isFetching) {
+    console.log("fetching");
+  }
+
   if (error) {
     return (
       <div>
@@ -209,7 +216,7 @@ const SearchFields = ({
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams?.toString());
       if (value === "") {
         params.delete(name);
         return params.toString();
@@ -222,7 +229,7 @@ const SearchFields = ({
 
   const createQueryStringPair = useCallback(
     (nameOne: string, valueOne: string, nameTwo: string, valueTwo: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams?.toString());
       if (valueOne === "" || valueTwo === "") {
         params.delete(nameOne);
         params.delete(nameTwo);
@@ -237,7 +244,7 @@ const SearchFields = ({
 
   const returnParamsExcepts = useCallback(
     (name: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams?.toString());
       params.delete(name);
       return params.toString();
     },
@@ -258,7 +265,7 @@ const SearchFields = ({
       router.push(pathname + "?" + createQueryString("query", debouncedQuery));
       router.refresh();
     } else {
-      if (searchParams.has("query")) {
+      if (searchParams?.query) {
         const params = new URLSearchParams(searchParams.toString());
         params.delete("query");
         router.push(pathname + "?" + params.toString());
@@ -272,7 +279,7 @@ const SearchFields = ({
   };
 
   const handleSeasonSelect = (season: string) => {
-    if (searchParams.has("year")) {
+    if (searchParams?.year) {
       router.push(
         pathname + "?" + createQueryString("season", season).toString()
       );

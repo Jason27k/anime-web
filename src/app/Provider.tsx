@@ -1,11 +1,20 @@
 "use client";
 import { createContext, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export enum LanguageType {
   English = "en",
   Romanji = "ro",
   Japanese = "jp",
 }
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 10,
+    },
+  },
+});
 
 export const LanguageContext = createContext({
   language: LanguageType.English,
@@ -21,7 +30,7 @@ export default function Provider({ children }: { children: React.ReactNode }) {
         setLanguage,
       }}
     >
-      {children}
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </LanguageContext.Provider>
   );
 }

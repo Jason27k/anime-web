@@ -1,9 +1,8 @@
-import { animeSearch, fetchGenres, fetchMyAnimeIds } from "@/app/actions";
+import { fetchGenres, fetchMyAnimeIds } from "@/app/actions";
 import SearchFields from "@/components/SearchFields";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { currentUser } from "@clerk/nextjs/server";
-import ClientProvider from "./ClientProvider";
 
 const Search = async ({
   searchParams,
@@ -45,35 +44,18 @@ const Search = async ({
     );
   }
 
-  const variables = {
-    genres: selectedGenres?.split(","),
-    year: selectedSeason ? undefined : selectedYear,
-    search: query,
-    season: selectedSeason?.toUpperCase() as
-      | "WINTER"
-      | "SPRING"
-      | "SUMMER"
-      | "FALL",
-    seasonYear: selectedSeason
-      ? selectedYear
-        ? Number(selectedYear)
-        : currentYear
-      : undefined,
-    page: 1,
-    sort: sort ? [sort] : undefined,
-  };
+  console.log(await searchParams);
 
   return (
     <Suspense>
-      <ClientProvider>
-        <SearchFields
-          genres={genres}
-          seasons={seasons}
-          years={years.reverse()}
-          loggedIn={loggedIn}
-          ids={ids}
-        />
-      </ClientProvider>
+      <SearchFields
+        genres={genres}
+        seasons={seasons}
+        years={years.reverse()}
+        loggedIn={loggedIn}
+        ids={ids}
+        searchParams={searchPar}
+      />
     </Suspense>
   );
 };
