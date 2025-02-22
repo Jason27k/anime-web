@@ -19,12 +19,12 @@ const Search = async ({
     );
   const years = range(1940, currentYear, 1);
   const seasons = ["WINTER", "SPRING", "SUMMER", "FALL"];
-
-  const selectedGenres = searchParams?.genres;
-  const selectedSeason = searchParams?.season;
-  const selectedYear = searchParams?.year;
-  const query = searchParams?.query;
-  const sort = searchParams?.sort;
+  const searchPar = await searchParams;
+  const selectedGenres = searchPar?.genres;
+  const selectedSeason = searchPar?.season;
+  const selectedYear = searchPar?.year;
+  const query = searchPar?.query;
+  const sort = searchPar?.sort;
 
   const user = await currentUser();
   let loggedIn = false;

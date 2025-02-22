@@ -23,7 +23,7 @@ export default async function Page({
     return <NoUserFound />;
   }
 
-  const page = searchParams?.page;
+  const page = (await searchParams)?.page;
   if (page && isNaN(parseInt(page))) {
     return <div className="">Page not found</div>;
   }
