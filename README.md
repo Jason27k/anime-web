@@ -1,36 +1,10 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Work In Progress
 
-## Getting Started
+## Trove Web Version (Built with Next.js, TypeScript, TailwindCSS, Clerk, ShadCN, Jikan API)
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+![Screenshot 2024-10-01 at 10-35-25 AnimeTrove](https://github.com/user-attachments/assets/e2557745-239c-4392-82fd-92fa12e621ac)
+![Screenshot 2024-10-01 at 10-35-44 AnimeTrove](https://github.com/user-attachments/assets/817d0054-c9d5-487d-b70c-1d1256fc2e76)
+![Screenshot 2024-10-01 at 10-37-43 AnimeTrove](https://github.com/user-attachments/assets/6744cf0e-25e5-49c6-b61b-96ec11b56814)
+![Screenshot 2024-10-01 at 10-37-56 AnimeTrove](https://github.com/user-attachments/assets/93e8b003-c1e5-4bef-b78f-fa92f7628c58)
+![Screenshot 2024-10-01 at 11-03-19 AnimeTrove](https://github.com/user-attachments/assets/20c1ba59-7840-40aa-8fe7-090a28b705e8)
+![Screenshot 2024-10-01 at 11-03-04 AnimeTrove](https://github.com/user-attachments/assets/4d3e1c74-98d1-46da-a447-4a357e58ba38)
