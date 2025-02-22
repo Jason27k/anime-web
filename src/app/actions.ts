@@ -431,7 +431,7 @@ query ($page: Int = 1, $id: Int, $isAdult: Boolean = false, $search: String, $st
 
 // $page: Int = 1, $id: Int, $isAdult: Boolean = false, $search: String, $status: MediaStatus, $season: MediaSeason, $seasonYear: Int, $year: String, $genres: [String], $sort
 
-type SearchQueryVariables = {
+export type SearchQueryVariables = {
   page?: number;
   id?: number;
   isAdult?: boolean;
@@ -442,6 +442,11 @@ type SearchQueryVariables = {
   year?: string;
   genres?: string[];
   sort?: string[];
+};
+
+export const fetchSearch = async (variables: SearchQueryVariables) => {
+  const response = await animeSearch(variables);
+  return response;
 };
 
 export async function animeSearch(
@@ -478,6 +483,7 @@ export async function animeSearch(
   } else {
     json.data.Page.media = deduplicatedAnimes;
   }
+
   return json;
 }
 
@@ -634,7 +640,7 @@ export async function addToMyList(
   if (refresh) {
     revalidatePath(`/anime/${animeId}`);
   }
-  return result;
+  return;
 }
 
 export async function removefromMyList(animeId: number, refresh: boolean) {
@@ -656,7 +662,7 @@ export async function removefromMyList(animeId: number, refresh: boolean) {
     revalidatePath(`/anime/${animeId}`);
   }
 
-  return result;
+  return;
 }
 
 export async function fetchMyAnimeIds() {

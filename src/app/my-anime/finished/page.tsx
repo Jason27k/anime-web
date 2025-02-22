@@ -8,14 +8,13 @@ import { MyAnimesTable } from "@/db/schema";
 import { desc, eq, and } from "drizzle-orm";
 import { getLikedAnimesList } from "@/app/actions";
 import NoUserFound from "@/components/NoUserFound";
-import NoLikedAnime from "@/components/NoLikedAnime";
 
 const PER_PAGE = 20;
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | undefined };
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
   const user = await currentUser();
 

@@ -33,18 +33,16 @@ import { useRouter } from "next/navigation";
 import { usePathname, useSearchParams } from "next/navigation";
 import AnimeDisplay from "./AnimeDisplay";
 import { useInView } from "react-intersection-observer";
-import { animeSearch } from "@/app/actions";
-import { MediaDisplay } from "@/utils/anilistTypes";
+import { fetchSearch, SearchQueryVariables } from "@/app/actions";
 import { capitalize } from "@/utils/formatting";
 import { TabsTrigger, TabsContent } from "./ui/tabs";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 interface SearchFieldsProps {
   genres: String[];
   seasons: string[];
   years: number[];
   className?: string;
-  animeData: MediaDisplay[];
-  hasNextPage: boolean;
   loggedIn: boolean;
   ids: number[];
 }
@@ -143,8 +141,6 @@ const SearchFields = ({
   seasons,
   years,
   className,
-  animeData,
-  hasNextPage,
   loggedIn,
   ids,
 }: SearchFieldsProps) => {
@@ -152,8 +148,6 @@ const SearchFields = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { ref, inView } = useInView();
-  const [page, setPage] = useState(hasNextPage ? 2 : -1);
-  const [hasNext, setHasNext] = useState(hasNextPage);
   const selectedYear = searchParams.get("year");
   const selectedSeason = searchParams.get("season");
   const selectedGenres = searchParams.get("genres")?.split(",");
@@ -164,19 +158,13 @@ const SearchFields = ({
   );
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
-  const [animes, setAnimes] = useState(animeData);
-  const [fetching, setFetching] = useState(false);
 
-  useEffect(() => {
-    setAnimes(animeData);
-  }, [animeData]);
-
-  useEffect(() => {
-    const fetchMore = async () => {
-      if (fetching) return;
-      setFetching(true);
-      const response = await animeSearch(
-        {
+  const { data, error, fetchNextPage, hasNextPage, isFetching } =
+    useInfiniteQuery({
+      queryKey: ["animes", searchParams.toString()],
+      queryFn: ({ pageParam }) => {
+        const newVars: SearchQueryVariables = {
+          page: pageParam,
           genres: selectedGenres ?? undefined,
           year: selectedSeason ? undefined : selectedYear ?? undefined,
           search: searchQuery === "" ? undefined : searchQuery ?? undefined,
@@ -189,24 +177,35 @@ const SearchFields = ({
               : new Date().getFullYear()
             : undefined,
           sort: sort ? [sort] : undefined,
-          page,
-        },
-        animes.map((anime) => anime.id)
-      );
-      setAnimes((prev) => [...prev, ...response.data.Page.media]);
-      setHasNext(response.data.Page.pageInfo.hasNextPage);
-      setPage(response.data.Page.pageInfo.hasNextPage ? page + 1 : -1);
-      setFetching(false);
-    };
+        };
+        return fetchSearch(newVars);
+      },
+      initialPageParam: 1,
+      getNextPageParam: (lastPage, pages) => {
+        if (lastPage.data.Page.pageInfo.hasNextPage) {
+          return pages.length + 1;
+        }
+      },
+      getPreviousPageParam: (firstPage, pages) => {
+        if (firstPage.data.Page.pageInfo.currentPage > 1) {
+          return pages.length - 1;
+        }
+      },
+    });
 
-    let timer: NodeJS.Timeout;
-
-    if (inView && hasNext && page !== -1 && !fetching) {
-      fetchMore();
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
     }
+  }, [inView]);
 
-    return () => clearTimeout(timer);
-  }, [inView, page]);
+  if (error) {
+    return (
+      <div>
+        <p>Error</p>
+      </div>
+    );
+  }
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -453,12 +452,12 @@ const SearchFields = ({
       />
       <AnimeDisplay
         display={display}
-        animeData={animes}
+        animeData={data?.pages.flatMap((page) => page.data.Page.media) || []}
         loggedIn={loggedIn}
         ids={ids}
       />
       <div ref={ref}>
-        {hasNextPage && page !== -1 && (
+        {hasNextPage && (
           <div className="flex justify-center items-center w-full h-16">
             <p className="text-white">Loading...</p>
           </div>

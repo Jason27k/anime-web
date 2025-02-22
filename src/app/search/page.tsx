@@ -2,13 +2,13 @@ import { animeSearch, fetchGenres, fetchMyAnimeIds } from "@/app/actions";
 import SearchFields from "@/components/SearchFields";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { SearchQueryResponse } from "@/utils/anilistTypes";
 import { currentUser } from "@clerk/nextjs/server";
+import ClientProvider from "./ClientProvider";
 
 const Search = async ({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | undefined };
+  searchParams?: Promise<{ [key: string]: string | undefined }>;
 }) => {
   const genres: String[] = await fetchGenres();
   const currentYear = new Date().getFullYear();
@@ -63,23 +63,17 @@ const Search = async ({
     sort: sort ? [sort] : undefined,
   };
 
-  const response: SearchQueryResponse = await animeSearch(variables);
-  const animeData = response.data.Page.media;
-  if (!animeData) {
-    return <div>Error loading data</div>;
-  }
-
   return (
     <Suspense>
-      <SearchFields
-        genres={genres}
-        seasons={seasons}
-        years={years.reverse()}
-        animeData={animeData}
-        hasNextPage={response.data.Page.pageInfo.hasNextPage}
-        loggedIn={loggedIn}
-        ids={ids}
-      />
+      <ClientProvider>
+        <SearchFields
+          genres={genres}
+          seasons={seasons}
+          years={years.reverse()}
+          loggedIn={loggedIn}
+          ids={ids}
+        />
+      </ClientProvider>
     </Suspense>
   );
 };

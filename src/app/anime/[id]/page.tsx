@@ -6,7 +6,7 @@ import { MediaResponse } from "@/utils/anilistTypes";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 
-const DetailsPage = async ({ params }: { params: { id: string } }) => {
+const DetailsPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = parseInt((await params).id);
   if (isNaN(id)) {
     return <div>Invalid ID</div>;
