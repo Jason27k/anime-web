@@ -1,0 +1,14 @@
+.aspect-w-3 {
+    position: relative;
+    width: 100%;
+    padding-bottom: calc(265/185 * 100%);
+  }
+  
+  .aspect-w-3 > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
