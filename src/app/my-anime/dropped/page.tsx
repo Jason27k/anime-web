@@ -16,7 +16,7 @@ const PER_PAGE = 20;
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: Promise<{ [key: string]: string | undefined }>;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
   const user = await currentUser();
 
@@ -32,12 +32,12 @@ export default async function Page({
   const pageNumber = page ? parseInt(page) : 0;
 
   const [savedAnimeResponse, stats] = await Promise.all([
-    fetchSavedAnime("WATCHING", pageNumber, PER_PAGE),
+    fetchSavedAnime("DROPPED", pageNumber, PER_PAGE),
     fetchAnimeStats(),
   ]);
 
-  const watchingCount = stats?.watching || 0;
-  const pageCount = Math.ceil(watchingCount / PER_PAGE);
+  const droppedCount = stats?.dropped || 0;
+  const pageCount = Math.ceil(droppedCount / PER_PAGE);
 
   if (pageNumber > pageCount || pageNumber < 0) {
     return <div className="">Page not found</div>;
@@ -50,13 +50,13 @@ export default async function Page({
   return (
     <ProfileLayout stats={stats || undefined}>
       <div className="space-y-4">
-        <AnimeList animeInfoList={likedAnimes} route="watching" />
+        <AnimeList animeInfoList={likedAnimes} route="dropped" />
 
         {pageCount > 1 && (
           <div className="flex justify-center items-center gap-4 pt-4">
             {pageNumber > 0 ? (
               <Button asChild variant="outline" size="sm">
-                <Link href={`/my-anime/watching?page=${pageNumber - 1}`}>
+                <Link href={`/my-anime/dropped?page=${pageNumber - 1}`}>
                   Previous
                 </Link>
               </Button>
@@ -72,7 +72,7 @@ export default async function Page({
 
             {pageCount > pageNumber + 1 ? (
               <Button asChild variant="outline" size="sm">
-                <Link href={`/my-anime/watching?page=${pageNumber + 1}`}>
+                <Link href={`/my-anime/dropped?page=${pageNumber + 1}`}>
                   Next
                 </Link>
               </Button>

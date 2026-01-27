@@ -80,10 +80,9 @@ export default function AnimeDetailsTwo({
 
   const score = anime.averageScore ? anime.averageScore / 10 : "N/A";
 
-  const testWithIDWatching = addToMyList.bind(null, anime.id, "watching", true);
-  const testWithIDFinished = addToMyList.bind(null, anime.id, "finished", true);
+  const testWithIDWatching = addToMyList.bind(null, anime.id, "watching", anime.episodes ?? null, true);
+  const testWithIDFinished = addToMyList.bind(null, anime.id, "completed", anime.episodes ?? null, true);
   const removeWithId = removefromMyList.bind(null, anime.id, true);
-  console.log(anime.episodes);
 
   return (
     <div className="container mx-auto px-4 py-2 sm:py-4 ">
@@ -216,19 +215,22 @@ export default function AnimeDetailsTwo({
                             className="flex justify-between items-center w-full"
                             action={testWithIDWatching}
                           >
-                            {anime.episodes && anime.episodes > 1 && (
-                              <div className="flex flex-col w-[60%] gap-2">
-                                <Label htmlFor="episodeNumber">Episode</Label>
-                                <Input
-                                  name="episodeNumber"
-                                  type="number"
-                                  min={1}
-                                  max={anime.episodes || 12}
-                                  className="text-black"
-                                  defaultValue={1}
-                                />
-                              </div>
-                            )}
+                            <div className="flex flex-col w-[60%] gap-2">
+                              <Label htmlFor="episodeNumber">Episode</Label>
+                              <Input
+                                name="episodeNumber"
+                                type="number"
+                                min={1}
+                                max={anime.episodes || undefined}
+                                className="text-black"
+                                defaultValue={1}
+                              />
+                              {!anime.episodes && (
+                                <p className="text-xs text-muted-foreground">
+                                  Ongoing series - no episode limit
+                                </p>
+                              )}
+                            </div>
                             <div className="flex justify-end space-x-2 mt-4">
                               <Button
                                 className="bg-blue-600 hover:bg-blue-600"

@@ -1,6 +1,9 @@
 "use server";
-import { db } from "@/db";
-import { MyAnimesTable } from "@/db/schema";
+import {
+  animeApi,
+  AnimeStatus,
+  SavedAnimeResponse,
+} from "@/lib/api-client";
 import {
   CalendarQueryResponse,
   MediaDisplay,
@@ -568,30 +571,22 @@ export async function fetchMyAnimeList(ids: number[], PER_PAGE: number) {
   return json;
 }
 
-type LikedAnime = {
-  anime_id: number;
-  finished: boolean;
-  episode: number | null;
-  id: number;
-  user_id: string;
-  created_at: Date;
-};
 import { Anime, AnimeData } from "@/utils/myAnimeTypes";
 
 export async function getLikedAnimesList(
-  likedAnimesList: LikedAnime[],
+  savedAnimeList: SavedAnimeResponse[],
   PER_PAGE: number
 ) {
   let likedAnimes = [];
   let ids = [];
-  for (let i = 0; i < likedAnimesList.length; i++) {
+  for (let i = 0; i < savedAnimeList.length; i++) {
     likedAnimes.push({
-      id: likedAnimesList[i].anime_id,
-      finished: likedAnimesList[i].finished,
-      episode: likedAnimesList[i].episode,
+      id: savedAnimeList[i].animeId,
+      status: savedAnimeList[i].status,
+      episode: savedAnimeList[i].episode,
       anime: {} as Anime,
     });
-    ids.push(likedAnimesList[i].anime_id);
+    ids.push(savedAnimeList[i].animeId);
   }
 
   const data: AnimeData = await fetchMyAnimeList(ids, PER_PAGE);
@@ -605,12 +600,12 @@ export async function getLikedAnimesList(
 }
 
 import { currentUser } from "@clerk/nextjs/server";
-import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function addToMyList(
   animeId: number,
-  status: "watching" | "finished",
+  status: "watching" | "completed",
+  totalEpisodes: number | null,
   refresh: boolean,
   formData: FormData
 ) {
@@ -619,28 +614,41 @@ export async function addToMyList(
     return;
   }
 
-  const alreadyLiked = await db.$count(
-    MyAnimesTable,
-    and(eq(MyAnimesTable.anime_id, animeId), eq(MyAnimesTable.user_id, user.id))
-  );
+  try {
+    // Check if already saved
+    const alreadySaved = await animeApi.hasUserSavedAnime(user.id, animeId);
+    if (alreadySaved) {
+      return;
+    }
 
-  if (alreadyLiked) {
-    return;
+    // Add to list
+    await animeApi.addAnimeToList(user.id, animeId);
+
+    // Update with status and episode
+    const apiStatus: AnimeStatus = status === "completed" ? "COMPLETED" : "WATCHING";
+
+    // For completed status, set episode to total if available
+    // For watching status, use the form value
+    let episode: number | null = null;
+    if (status === "completed" && totalEpisodes) {
+      episode = totalEpisodes;
+    } else {
+      const formEpisode = formData.get("episodeNumber");
+      episode = formEpisode ? parseInt(formEpisode as string) : 1;
+    }
+
+    await animeApi.updateAnimeProgress(user.id, animeId, {
+      status: apiStatus,
+      episode,
+    });
+
+    if (refresh) {
+      revalidatePath(`/anime/${animeId}`);
+    }
+  } catch (error) {
+    console.error("Failed to add anime to list:", error);
+    throw error;
   }
-
-  let result = await db.insert(MyAnimesTable).values({
-    anime_id: animeId,
-    user_id: user.id,
-    episode: formData.get("episodeNumber")
-      ? parseInt(formData.get("episodeNumber") as string)
-      : null,
-    finished: status === "finished",
-  });
-
-  if (refresh) {
-    revalidatePath(`/anime/${animeId}`);
-  }
-  return;
 }
 
 export async function removefromMyList(animeId: number, refresh: boolean) {
@@ -649,20 +657,16 @@ export async function removefromMyList(animeId: number, refresh: boolean) {
     return;
   }
 
-  let result = await db
-    .delete(MyAnimesTable)
-    .where(
-      and(
-        eq(MyAnimesTable.anime_id, animeId),
-        eq(MyAnimesTable.user_id, user.id)
-      )
-    );
+  try {
+    await animeApi.removeAnimeFromList(user.id, animeId);
 
-  if (refresh) {
-    revalidatePath(`/anime/${animeId}`);
+    if (refresh) {
+      revalidatePath(`/anime/${animeId}`);
+    }
+  } catch (error) {
+    console.error("Failed to remove anime from list:", error);
+    throw error;
   }
-
-  return;
 }
 
 export async function fetchMyAnimeIds() {
@@ -670,10 +674,123 @@ export async function fetchMyAnimeIds() {
   if (!user) {
     return;
   }
-  const likedAnimes = await db
-    .select({ id: MyAnimesTable.anime_id })
-    .from(MyAnimesTable)
-    .where(eq(MyAnimesTable.user_id, user.id));
 
-  return likedAnimes.map((anime) => anime.id);
+  try {
+    const savedAnime = await animeApi.getAllUserAnime(user.id);
+    return savedAnime.map((anime) => anime.animeId);
+  } catch (error) {
+    console.error("Failed to fetch anime IDs:", error);
+    return [];
+  }
+}
+
+export async function fetchSavedAnime(
+  status?: AnimeStatus,
+  page: number = 0,
+  size: number = 20
+) {
+  const user = await currentUser();
+  if (!user) {
+    return null;
+  }
+
+  try {
+    return await animeApi.getSavedAnime(user.id, {
+      status,
+      page,
+      size,
+      sortBy: "createdAt",
+      sortDirection: "desc",
+    });
+  } catch (error) {
+    console.error("Failed to fetch saved anime:", error);
+    return null;
+  }
+}
+
+export async function fetchSavedAnimeCount(status?: AnimeStatus) {
+  const user = await currentUser();
+  if (!user) {
+    return 0;
+  }
+
+  try {
+    return await animeApi.countUserAnime(user.id, status);
+  } catch (error) {
+    console.error("Failed to fetch anime count:", error);
+    return 0;
+  }
+}
+
+export async function hasUserSavedAnime(animeId: number) {
+  const user = await currentUser();
+  if (!user) {
+    return false;
+  }
+
+  try {
+    return await animeApi.hasUserSavedAnime(user.id, animeId);
+  } catch (error) {
+    console.error("Failed to check if anime is saved:", error);
+    return false;
+  }
+}
+
+export async function updateAnimeProgress(
+  animeId: number,
+  episode: number | null,
+  status: AnimeStatus
+) {
+  const user = await currentUser();
+  if (!user) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  try {
+    await animeApi.updateAnimeProgress(user.id, animeId, {
+      episode,
+      status,
+    });
+    revalidatePath("/my-anime");
+    revalidatePath("/my-anime/watching");
+    revalidatePath("/my-anime/finished");
+    revalidatePath("/my-anime/dropped");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update anime progress:", error);
+    return { success: false, error: "Failed to update" };
+  }
+}
+
+export async function removeFromMyListWithRevalidation(animeId: number) {
+  const user = await currentUser();
+  if (!user) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  try {
+    await animeApi.removeAnimeFromList(user.id, animeId);
+    revalidatePath("/my-anime");
+    revalidatePath("/my-anime/watching");
+    revalidatePath("/my-anime/finished");
+    revalidatePath("/my-anime/dropped");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to remove anime:", error);
+    return { success: false, error: "Failed to remove" };
+  }
+}
+
+export async function fetchAnimeStats() {
+  const user = await currentUser();
+  if (!user) {
+    return null;
+  }
+
+  try {
+    return await animeApi.getUserAnimeStats(user.id);
+  } catch (error) {
+    console.error("Failed to fetch anime stats:", error);
+    return null;
+  }
 }

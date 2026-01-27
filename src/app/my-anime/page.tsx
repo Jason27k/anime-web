@@ -1,14 +1,17 @@
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { Anime } from "@/utils/myAnimeTypes";
-import MyAnimePage from "@/components/WatchingFinishedPage";
+import AnimeList from "@/components/AnimeList";
+import ProfileLayout from "@/components/ProfileLayout";
 import { Button } from "@/components/ui/button";
-import { db } from "@/db";
-import { MyAnimesTable } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
-import { getLikedAnimesList } from "../actions";
+import {
+  fetchSavedAnime,
+  fetchAnimeStats,
+  getLikedAnimesList,
+} from "../actions";
 import NoUserFound from "@/components/NoUserFound";
 import NoLikedAnime from "@/components/NoLikedAnime";
+import { AnimeStatus } from "@/lib/api-client";
 
 const PER_PAGE = 20;
 
@@ -30,68 +33,75 @@ export default async function Page({
 
   const pageNumber = page ? parseInt(page) : 0;
 
-  const likedAnimeCount = await db.$count(
-    MyAnimesTable,
-    eq(MyAnimesTable.user_id, user.id)
-  );
-  const pageCount = Math.ceil(likedAnimeCount / PER_PAGE);
+  const [savedAnimeResponse, stats] = await Promise.all([
+    fetchSavedAnime(undefined, pageNumber, PER_PAGE),
+    fetchAnimeStats(),
+  ]);
+
+  const totalCount = stats?.total || 0;
+  const pageCount = Math.ceil(totalCount / PER_PAGE);
 
   if (pageNumber > pageCount || pageNumber < 0) {
     return <div className="">Page not found</div>;
   }
 
-  let likedAnimesList = await db
-    .select()
-    .from(MyAnimesTable)
-    .where(eq(MyAnimesTable.user_id, user.id))
-    .orderBy(desc(MyAnimesTable.created_at))
-    .limit(PER_PAGE)
-    .offset(PER_PAGE * pageNumber);
-
-  if (likedAnimesList.length === 0) {
-    return <NoLikedAnime />;
+  // Show empty state within the profile layout
+  if (!savedAnimeResponse || savedAnimeResponse.content.length === 0) {
+    if (pageNumber === 0) {
+      return (
+        <ProfileLayout stats={stats || undefined}>
+          <NoLikedAnime />
+        </ProfileLayout>
+      );
+    }
+    return <div className="">Page not found</div>;
   }
 
   const likedAnimes: AnimeInfo[] = await getLikedAnimesList(
-    likedAnimesList,
+    savedAnimeResponse.content,
     PER_PAGE
   );
 
   return (
-    <div className="h-full w-full">
-      <div className="container mx-auto p-4 text-white">
-        <h1 className="text-2xl font-bold mb-4">My Anime List</h1>
-        <MyAnimePage animeInfoList={likedAnimes} route={"all"} />
-      </div>
-      <div className="flex justify-between items-center w-full">
-        {pageNumber > 1 ? (
-          <Button asChild className="bg-primary text-white">
-            <Link href={`/my-anime?page=${pageNumber - 1}`}>Previous</Link>
-          </Button>
-        ) : (
-          <Button className="bg-primary text-white" disabled={true}>
-            Previous
-          </Button>
-        )}
+    <ProfileLayout stats={stats || undefined}>
+      <div className="space-y-4">
+        <AnimeList animeInfoList={likedAnimes} route="all" />
 
-        <span className="mx-2 text-white">{pageNumber + 1}</span>
-        {pageCount > pageNumber + 1 ? (
-          <Button asChild className="bg-primary text-white">
-            <Link href={`/my-anime?page=${pageNumber + 1}`}>Next</Link>
-          </Button>
-        ) : (
-          <Button className="bg-primary text-white" disabled={true}>
-            Next
-          </Button>
+        {pageCount > 1 && (
+          <div className="flex justify-center items-center gap-4 pt-4">
+            {pageNumber > 0 ? (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/my-anime?page=${pageNumber - 1}`}>Previous</Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>
+                Previous
+              </Button>
+            )}
+
+            <span className="text-white text-sm">
+              Page {pageNumber + 1} of {pageCount}
+            </span>
+
+            {pageCount > pageNumber + 1 ? (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/my-anime?page=${pageNumber + 1}`}>Next</Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>
+                Next
+              </Button>
+            )}
+          </div>
         )}
       </div>
-    </div>
+    </ProfileLayout>
   );
 }
 
 export type AnimeInfo = {
   id: number;
-  finished: boolean;
+  status: AnimeStatus;
   episode: number | null;
   anime: Anime;
 };

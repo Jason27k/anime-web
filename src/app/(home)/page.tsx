@@ -1,4 +1,3 @@
-import React from "react";
 import { animeSearch, fetchMyAnimeIds } from "@/app/actions";
 import AnimeHomeRows from "@/components/AnimeHomeRows";
 import { currentUser } from "@clerk/nextjs/server";

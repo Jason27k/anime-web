@@ -1,10 +1,7 @@
-import { fetchAniListAnime } from "@/app/actions";
+import { fetchAniListAnime, hasUserSavedAnime } from "@/app/actions";
 import AnimeDetailsTwo from "@/components/AnimeDetailsTwo";
-import { db } from "@/db";
-import { MyAnimesTable } from "@/db/schema";
 import { MediaResponse } from "@/utils/anilistTypes";
 import { currentUser } from "@clerk/nextjs/server";
-import { and, eq } from "drizzle-orm";
 
 const DetailsPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = parseInt((await params).id);
@@ -22,11 +19,7 @@ const DetailsPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   let loggedIn = false;
   if (user) {
     loggedIn = true;
-    liked =
-      (await db.$count(
-        MyAnimesTable,
-        and(eq(MyAnimesTable.user_id, user.id), eq(MyAnimesTable.anime_id, id))
-      )) > 0;
+    liked = await hasUserSavedAnime(id);
   }
 
   return (

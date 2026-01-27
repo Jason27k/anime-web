@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,23 +19,15 @@ import Link from "next/link";
 import { AnimeInfo } from "@/app/my-anime/page";
 import EditAnimeDialog from "./EditAnimeDialog";
 import { AnimeStatus } from "@/lib/api-client";
+import { SettingsContext } from "@/app/Provider";
 
-interface MyAnimeProps {
+interface AnimeListProps {
   animeInfoList: AnimeInfo[];
   route: "all" | "watching" | "finished" | "dropped";
-  stats?: {
-    watching: number;
-    completed: number;
-    dropped: number;
-    total: number;
-  };
 }
 
-export default function MyAnimePage({
-  animeInfoList,
-  route,
-  stats,
-}: MyAnimeProps) {
+export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
+  const { settings } = useContext(SettingsContext);
   const [editingAnime, setEditingAnime] = useState<{
     id: number;
     title: string;
@@ -46,6 +38,8 @@ export default function MyAnimePage({
   } | null>(null);
 
   function timeOrSeasonString(anime: Anime) {
+    if (!settings.showAiringTime) return null;
+
     if (anime.nextAiringEpisode && anime.nextAiringEpisode.airingAt) {
       const date = convertUTCToLocal(anime.nextAiringEpisode.airingAt);
       const days = [
@@ -109,39 +103,50 @@ export default function MyAnimePage({
     return filter === null || animeInfo.status === filter;
   });
 
-  return (
-    <div className="space-y-6">
-      {stats && (
-        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-blue-500" />
-            <span>{stats.watching} Watching</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span>{stats.completed} Completed</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-gray-500" />
-            <span>{stats.dropped} Dropped</span>
-          </div>
-          <div className="text-white font-medium">
-            {stats.total} Total
-          </div>
-        </div>
-      )}
+  // Grid classes based on settings
+  const gridClasses = {
+    compact: {
+      small: "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2",
+      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3",
+      large: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4",
+    },
+    comfortable: {
+      small: "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3",
+      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4",
+      large: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5",
+    },
+    spacious: {
+      small: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4",
+      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5",
+      large: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+    },
+  };
 
-      <div className="flex flex-wrap justify-center gap-2">
+  const currentGridClass =
+    gridClasses[settings.gridDensity][settings.cardSize];
+
+  // Card image height based on size
+  const imageClasses = {
+    small: "aspect-[3/4]",
+    medium: "aspect-[3/4]",
+    large: "aspect-[2/3]",
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Tab Navigation */}
+      <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = route === tab.route;
           return (
             <Button
               key={tab.route}
+              size="sm"
               className={`${
                 isActive
                   ? "bg-primary text-white"
-                  : "bg-[#1f1f1f] text-primary hover:bg-[#2a2a2a]"
+                  : "bg-[#191d26] text-muted-foreground hover:bg-[#252a36] hover:text-white"
               }`}
               asChild
             >
@@ -154,34 +159,40 @@ export default function MyAnimePage({
         })}
       </div>
 
+      {/* Anime Grid */}
       {filteredList.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <p>No anime in this category yet.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className={`grid ${currentGridClass}`}>
           {filteredList.map((animeInfo: AnimeInfo) => {
             const progressPercent =
               animeInfo.anime.episodes && animeInfo.episode
                 ? (animeInfo.episode / animeInfo.anime.episodes) * 100
                 : 0;
 
+            const airingInfo = timeOrSeasonString(animeInfo.anime);
+
             return (
               <Card
                 key={animeInfo.anime.id}
                 className="overflow-hidden border-0 bg-[#1f232d] flex flex-col group"
               >
-                <div className="relative w-full aspect-[3/4]">
-                  <img
-                    src={animeInfo.anime.coverImage.extraLarge}
-                    alt={animeInfo.anime.title.userPreferred}
-                    className="object-cover h-full w-full"
-                  />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div className={`relative w-full ${imageClasses[settings.cardSize]}`}>
+                  <Link href={"/anime/" + animeInfo.anime.id}>
+                    <img
+                      src={animeInfo.anime.coverImage.extraLarge}
+                      alt={animeInfo.anime.title.userPreferred}
+                      className="object-cover h-full w-full"
+                    />
+                  </Link>
+
+                  {/* Hover Overlay with Edit Button */}
+                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button
                       size="sm"
-                      variant="secondary"
-                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+                      className="bg-primary hover:bg-primary/90 text-white"
                       onClick={() =>
                         setEditingAnime({
                           id: animeInfo.anime.id,
@@ -189,7 +200,8 @@ export default function MyAnimePage({
                           episode: animeInfo.episode,
                           status: animeInfo.status,
                           totalEpisodes: animeInfo.anime.episodes,
-                          isAnimeFinishedAiring: animeInfo.anime.nextAiringEpisode === null,
+                          isAnimeFinishedAiring:
+                            animeInfo.anime.nextAiringEpisode === null,
                         })
                       }
                     >
@@ -197,6 +209,8 @@ export default function MyAnimePage({
                       Edit
                     </Button>
                   </div>
+
+                  {/* Status Badge */}
                   <Badge
                     className={`absolute top-2 right-2 ${
                       animeInfo.status === "WATCHING"
@@ -214,7 +228,9 @@ export default function MyAnimePage({
                   </Badge>
                 </div>
 
-                {animeInfo.status === "WATCHING" &&
+                {/* Progress Bar */}
+                {settings.showEpisodeProgress &&
+                  animeInfo.status === "WATCHING" &&
                   animeInfo.anime.episodes &&
                   animeInfo.anime.episodes > 1 && (
                     <div className="px-2">
@@ -222,28 +238,34 @@ export default function MyAnimePage({
                     </div>
                   )}
 
+                {/* Card Content */}
                 <CardContent className="p-3 flex-1">
-                  <h2
-                    className="font-semibold text-sm mb-1 line-clamp-2 text-white leading-tight"
-                    title={animeInfo.anime.title.userPreferred}
-                  >
-                    {animeInfo.anime.title.userPreferred}
-                  </h2>
+                  <Link href={"/anime/" + animeInfo.anime.id}>
+                    <h2
+                      className="font-semibold text-sm mb-1 line-clamp-2 text-white leading-tight hover:text-primary transition-colors"
+                      title={animeInfo.anime.title.userPreferred}
+                    >
+                      {animeInfo.anime.title.userPreferred}
+                    </h2>
+                  </Link>
                   {animeInfo.anime.episodes && (
                     <p className="text-xs text-muted-foreground">
                       Ep {animeInfo.episode || 1} / {animeInfo.anime.episodes}
                     </p>
                   )}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {timeOrSeasonString(animeInfo.anime)}
-                  </p>
+                  {airingInfo && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {airingInfo}
+                    </p>
+                  )}
                 </CardContent>
 
+                {/* Card Footer */}
                 <CardFooter className="p-3 pt-0">
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="w-full bg-primary/10 border-primary/20 text-primary hover:bg-primary hover:text-white"
+                    className="w-full bg-[#191d26] text-muted-foreground hover:bg-primary hover:text-white"
                     asChild
                   >
                     <Link href={"/anime/" + animeInfo.anime.id}>
@@ -261,6 +283,7 @@ export default function MyAnimePage({
         </div>
       )}
 
+      {/* Edit Dialog */}
       {editingAnime && (
         <EditAnimeDialog
           open={!!editingAnime}

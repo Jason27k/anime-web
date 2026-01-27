@@ -167,12 +167,14 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
     null,
     anime.id,
     "watching",
+    anime.episodes ?? null,
     false
   );
   const testWithIDFinished = addToMyList.bind(
     null,
     anime.id,
-    "finished",
+    "completed",
+    anime.episodes ?? null,
     false
   );
   const removeWithId = removefromMyList.bind(null, anime.id, false);
@@ -277,19 +279,22 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
                         className="flex justify-between items-center w-full"
                         action={testWithIDWatching}
                       >
-                        {anime.episodes && anime.episodes > 1 && (
-                          <div className="flex flex-col w-[60%] gap-2">
-                            <Label htmlFor="episodeNumber">Episode</Label>
-                            <Input
-                              name="episodeNumber"
-                              type="number"
-                              min={1}
-                              max={anime.episodes || 12}
-                              className="text-black"
-                              defaultValue={1}
-                            />
-                          </div>
-                        )}
+                        <div className="flex flex-col w-[60%] gap-2">
+                          <Label htmlFor="episodeNumber">Episode</Label>
+                          <Input
+                            name="episodeNumber"
+                            type="number"
+                            min={1}
+                            max={anime.episodes || undefined}
+                            className="text-black"
+                            defaultValue={1}
+                          />
+                          {!anime.episodes && (
+                            <p className="text-xs text-muted-foreground">
+                              Ongoing - no limit
+                            </p>
+                          )}
+                        </div>
                         <div className="flex justify-end space-x-2 mt-4">
                           <Button
                             className="bg-blue-600 hover:bg-blue-600"
