@@ -1,10 +1,8 @@
 "use client";
 
 import {
-  GalleryHorizontalEnd,
   LayoutGrid,
   LayoutList,
-  List,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +14,6 @@ import { cn } from "@/lib/utils";
 const TabOptions = ({
   display,
   setDisplay,
-  scroll,
   className,
   defaultValue,
   tabTriggers,
@@ -24,7 +21,6 @@ const TabOptions = ({
 }: {
   display: 0 | 1 | 2 | 3;
   setDisplay: Dispatch<SetStateAction<0 | 1 | 2 | 3>>;
-  scroll: boolean;
   className?: string;
   defaultValue?: string;
   tabTriggers?: React.ReactNode;
@@ -63,47 +59,15 @@ const TabOptions = ({
                     } px-2 py-1 rounded-md`}
                     onClick={() => setDisplay(0)}
                   >
-                    <List size={24} className="" />
-                  </Button>
-                  {scroll && (
-                    <Button
-                      className={`${
-                        display === 1
-                          ? "bg-primary text-white"
-                          : "bg-[#1f1f1f] text-primary"
-                      } px-2 py-1 rounded-md`}
-                      onClick={() => setDisplay(1)}
-                    >
-                      <GalleryHorizontalEnd size={24} />
-                    </Button>
-                  )}
-                  <Button
-                    className={`${
-                      display === 2
-                        ? "bg-primary text-white"
-                        : "bg-[#1f1f1f] text-primary"
-                    } px-2 py-1 rounded-md max-[465px]:hidden`}
-                    onClick={() => setDisplay(2)}
-                  >
                     <LayoutGrid size={24} />
                   </Button>
                   <Button
                     className={`${
-                      display === 2 || display === 3
+                      display === 1
                         ? "bg-primary text-white"
                         : "bg-[#1f1f1f] text-primary"
-                    } px-2 py-1 rounded-md min-[465px]:hidden`}
-                    onClick={() => setDisplay(2)}
-                  >
-                    <LayoutGrid size={24} />
-                  </Button>
-                  <Button
-                    className={`${
-                      display === 3
-                        ? "bg-primary text-white"
-                        : "bg-[#1f1f1f] text-primary"
-                    } px-2 py-1 rounded-md max-[465px]:hidden`}
-                    onClick={() => setDisplay(3)}
+                    } px-2 py-1 rounded-md`}
+                    onClick={() => setDisplay(1)}
                   >
                     <LayoutList size={24} />
                   </Button>

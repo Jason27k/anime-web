@@ -451,7 +451,6 @@ const SearchFields = ({
       <TabOptions
         display={display}
         setDisplay={setDisplay}
-        scroll={false}
         className="pb-2 min-[990px]:mt-10 min-[1024px]:mt-0"
         defaultValue="filters"
         tabTriggers={<TabTriggerFilters />}

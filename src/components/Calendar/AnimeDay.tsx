@@ -42,7 +42,6 @@ const AnimeDay = ({
         <AnimeDisplay
           display={display}
           airingSchedules={airingSchedules}
-          scroll
           loggedIn={loggedIn}
           ids={ids}
         />

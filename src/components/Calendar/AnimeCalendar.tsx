@@ -14,7 +14,7 @@ const AnimeCalendar = ({
   loggedIn: boolean;
   ids: number[];
 }) => {
-  const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
+  const [display, setDisplay] = useState<0 | 1 | 2 | 3>(1);
 
   const days = [
     "Sunday",
@@ -30,7 +30,7 @@ const AnimeCalendar = ({
 
   return (
     <div className="flex flex-col w-full">
-      <TabOptions display={display} setDisplay={setDisplay} scroll />
+      <TabOptions display={display} setDisplay={setDisplay} />
       <div className="flex flex-col w-full">
         {days.map((_, index) => (
           <AnimeDay
