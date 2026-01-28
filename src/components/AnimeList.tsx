@@ -181,7 +181,9 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
         <div className={`grid ${currentGridClass}`}>
           {filteredList.map((animeInfo: AnimeInfo) => {
             const progressPercent =
-              animeInfo.anime.episodes && animeInfo.episode
+              animeInfo.status === "COMPLETED"
+                ? 100
+                : animeInfo.anime.episodes && animeInfo.episode
                 ? (animeInfo.episode / animeInfo.anime.episodes) * 100
                 : 0;
 
@@ -219,13 +221,7 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
 
                   {/* Status Badge */}
                   <Badge
-                    className={`absolute top-2 right-2 flex items-center gap-1 border-0 text-white shadow-md ${
-                      animeInfo.status === "WATCHING"
-                        ? "bg-blue-600 hover:bg-blue-600"
-                        : animeInfo.status === "COMPLETED"
-                        ? "bg-green-600 hover:bg-green-600"
-                        : "bg-zinc-600 hover:bg-zinc-600"
-                    }`}
+                    className="absolute top-2 right-2 flex items-center gap-1 border-0 text-white shadow-md bg-orange-500 hover:bg-orange-500"
                   >
                     {animeInfo.status === "WATCHING" ? (
                       <><PlayCircle className="h-3 w-3" /> Watching</>
@@ -235,17 +231,16 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
                       <><XCircle className="h-3 w-3" /> Dropped</>
                     )}
                   </Badge>
-                </div>
 
-                {/* Progress Bar */}
-                {settings.showEpisodeProgress &&
-                  animeInfo.status === "WATCHING" &&
-                  animeInfo.anime.episodes &&
-                  animeInfo.anime.episodes > 1 && (
-                    <div className="px-2">
-                      <Progress value={progressPercent} className="h-1" />
-                    </div>
-                  )}
+                  {/* Progress Bar */}
+                  {settings.showEpisodeProgress &&
+                    animeInfo.anime.episodes &&
+                    animeInfo.anime.episodes > 1 && (
+                      <div className="absolute bottom-0 left-0 right-0">
+                        <Progress value={progressPercent} className="h-1 rounded-none" />
+                      </div>
+                    )}
+                </div>
 
                 {/* Card Content */}
                 <CardContent className="p-3 flex-1">
