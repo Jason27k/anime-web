@@ -3,15 +3,18 @@ import Image from "next/image";
 import React, { ReactNode } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { Calendar, Search, User } from "lucide-react";
+import { Calendar, Search } from "lucide-react";
 import {
   SignInButton,
   SignUpButton,
   SignedIn,
   SignedOut,
+  useUser,
 } from "@clerk/clerk-react";
 
 const Header = ({ children }: { children: ReactNode }) => {
+  const { user } = useUser();
+
   return (
     <div className="">
       <div className="bg-[#212529] h-14 md:h-16 flex flex-row items-center justify-between px-4 md:px-5 lg:px-20 xl:px-30 2xl:px-[15vw] sticky top-0 z-50 w-screen">
@@ -49,16 +52,13 @@ const Header = ({ children }: { children: ReactNode }) => {
             </Link>
           </Button>
           <SignedIn>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-white hover:bg-primary hover:text-white"
-              asChild
-            >
-              <Link href="/my-anime">
-                <User className="h-5 w-5" />
-              </Link>
-            </Button>
+            <Link href="/my-anime" className="ml-1">
+              <img
+                src={user?.imageUrl}
+                alt={user?.fullName || "Profile"}
+                className="h-8 w-8 rounded-full object-cover hover:ring-2 hover:ring-primary transition-all"
+              />
+            </Link>
           </SignedIn>
           <SignedOut>
             <Button
@@ -104,9 +104,13 @@ const Header = ({ children }: { children: ReactNode }) => {
           <SignedIn>
             <Link
               href="/my-anime"
-              className="px-4 hover:bg-primary h-full rounded-none flex items-center justify-center"
+              className="px-4 h-full flex items-center justify-center"
             >
-              <User className="h-5 w-5 text-white" />
+              <img
+                src={user?.imageUrl}
+                alt={user?.fullName || "Profile"}
+                className="h-8 w-8 rounded-full object-cover hover:ring-2 hover:ring-primary transition-all"
+              />
             </Link>
           </SignedIn>
         </div>
