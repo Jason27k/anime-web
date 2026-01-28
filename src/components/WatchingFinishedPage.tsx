@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,13 +11,14 @@ import {
   XCircle,
   LayoutGrid,
 } from "lucide-react";
-import { Anime } from "@/utils/myAnimeTypes";
+import { Anime, Title } from "@/utils/myAnimeTypes";
 import { convertUTCToLocal } from "@/utils/date";
 import { capitalize } from "@/utils/formatting";
 import Link from "next/link";
 import { AnimeInfo } from "@/app/my-anime/page";
 import EditAnimeSheet from "./EditAnimeSheet";
 import { AnimeStatus } from "@/lib/api-client";
+import { SettingsContext, LanguageType } from "@/app/Provider";
 
 interface MyAnimeProps {
   animeInfoList: AnimeInfo[];
@@ -35,6 +36,7 @@ export default function MyAnimePage({
   route,
   stats,
 }: MyAnimeProps) {
+  const { settings } = useContext(SettingsContext);
   const [editingAnime, setEditingAnime] = useState<{
     id: number;
     title: string;
@@ -44,6 +46,19 @@ export default function MyAnimePage({
     isAnimeFinishedAiring: boolean;
     coverImage: string;
   } | null>(null);
+
+  function getTitle(title: Title): string {
+    switch (settings.language) {
+      case LanguageType.English:
+        return title.english || title.romaji || title.userPreferred;
+      case LanguageType.Romanji:
+        return title.romaji || title.english || title.userPreferred;
+      case LanguageType.Japanese:
+        return title.native || title.romaji || title.userPreferred;
+      default:
+        return title.userPreferred;
+    }
+  }
 
   function timeOrSeasonString(anime: Anime) {
     if (anime.nextAiringEpisode && anime.nextAiringEpisode.airingAt) {
@@ -166,6 +181,8 @@ export default function MyAnimePage({
                 ? (animeInfo.episode / animeInfo.anime.episodes) * 100
                 : 0;
 
+            const displayTitle = getTitle(animeInfo.anime.title);
+
             return (
               <Card
                 key={animeInfo.anime.id}
@@ -176,7 +193,7 @@ export default function MyAnimePage({
                     onClick={() =>
                       setEditingAnime({
                         id: animeInfo.anime.id,
-                        title: animeInfo.anime.title.userPreferred,
+                        title: displayTitle,
                         episode: animeInfo.episode,
                         status: animeInfo.status,
                         totalEpisodes: animeInfo.anime.episodes,
@@ -188,12 +205,12 @@ export default function MyAnimePage({
                   >
                     <img
                       src={animeInfo.anime.coverImage.extraLarge}
-                      alt={animeInfo.anime.title.userPreferred}
+                      alt={displayTitle}
                       className="object-cover h-full w-full transition-opacity group-hover:opacity-80"
                     />
                   </button>
                   <Badge
-                    className={`absolute top-2 right-2 ${
+                    className={`absolute top-2 right-2 flex items-center gap-1 ${
                       animeInfo.status === "WATCHING"
                         ? "bg-blue-600"
                         : animeInfo.status === "COMPLETED"
@@ -201,11 +218,13 @@ export default function MyAnimePage({
                         : "bg-gray-600"
                     }`}
                   >
-                    {animeInfo.status === "WATCHING"
-                      ? "Watching"
-                      : animeInfo.status === "COMPLETED"
-                      ? "Completed"
-                      : "Dropped"}
+                    {animeInfo.status === "WATCHING" ? (
+                      <><PlayCircle className="h-3 w-3" /> Watching</>
+                    ) : animeInfo.status === "COMPLETED" ? (
+                      <><CheckCircle2 className="h-3 w-3" /> Completed</>
+                    ) : (
+                      <><XCircle className="h-3 w-3" /> Dropped</>
+                    )}
                   </Badge>
                 </div>
 
@@ -220,9 +239,9 @@ export default function MyAnimePage({
                 <CardContent className="p-3 flex-1">
                   <h2
                     className="font-semibold text-sm mb-1 line-clamp-2 text-white leading-tight"
-                    title={animeInfo.anime.title.userPreferred}
+                    title={displayTitle}
                   >
-                    {animeInfo.anime.title.userPreferred}
+                    {displayTitle}
                   </h2>
                   {animeInfo.anime.episodes && (
                     <p className="text-xs text-muted-foreground">

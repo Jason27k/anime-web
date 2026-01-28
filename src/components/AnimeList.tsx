@@ -11,14 +11,14 @@ import {
   XCircle,
   LayoutGrid,
 } from "lucide-react";
-import { Anime } from "@/utils/myAnimeTypes";
+import { Anime, Title } from "@/utils/myAnimeTypes";
 import { convertUTCToLocal } from "@/utils/date";
 import { capitalize } from "@/utils/formatting";
 import Link from "next/link";
 import { AnimeInfo } from "@/app/my-anime/page";
 import EditAnimeSheet from "./EditAnimeSheet";
 import { AnimeStatus } from "@/lib/api-client";
-import { SettingsContext } from "@/app/Provider";
+import { SettingsContext, LanguageType } from "@/app/Provider";
 
 interface AnimeListProps {
   animeInfoList: AnimeInfo[];
@@ -36,6 +36,19 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
     isAnimeFinishedAiring: boolean;
     coverImage: string;
   } | null>(null);
+
+  function getTitle(title: Title): string {
+    switch (settings.language) {
+      case LanguageType.English:
+        return title.english || title.romaji || title.userPreferred;
+      case LanguageType.Romanji:
+        return title.romaji || title.english || title.userPreferred;
+      case LanguageType.Japanese:
+        return title.native || title.romaji || title.userPreferred;
+      default:
+        return title.userPreferred;
+    }
+  }
 
   function timeOrSeasonString(anime: Anime) {
     if (!settings.showAiringTime) return null;
@@ -174,6 +187,8 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
 
             const airingInfo = timeOrSeasonString(animeInfo.anime);
 
+            const displayTitle = getTitle(animeInfo.anime.title);
+
             return (
               <Card
                 key={animeInfo.anime.id}
@@ -184,7 +199,7 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
                     onClick={() =>
                       setEditingAnime({
                         id: animeInfo.anime.id,
-                        title: animeInfo.anime.title.userPreferred,
+                        title: displayTitle,
                         episode: animeInfo.episode,
                         status: animeInfo.status,
                         totalEpisodes: animeInfo.anime.episodes,
@@ -197,14 +212,14 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
                   >
                     <img
                       src={animeInfo.anime.coverImage.extraLarge}
-                      alt={animeInfo.anime.title.userPreferred}
+                      alt={displayTitle}
                       className="object-cover h-full w-full transition-opacity group-hover:opacity-80"
                     />
                   </button>
 
                   {/* Status Badge */}
                   <Badge
-                    className={`absolute top-2 right-2 ${
+                    className={`absolute top-2 right-2 flex items-center gap-1 ${
                       animeInfo.status === "WATCHING"
                         ? "bg-blue-600"
                         : animeInfo.status === "COMPLETED"
@@ -212,11 +227,13 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
                         : "bg-gray-600"
                     }`}
                   >
-                    {animeInfo.status === "WATCHING"
-                      ? "Watching"
-                      : animeInfo.status === "COMPLETED"
-                      ? "Completed"
-                      : "Dropped"}
+                    {animeInfo.status === "WATCHING" ? (
+                      <><PlayCircle className="h-3 w-3" /> Watching</>
+                    ) : animeInfo.status === "COMPLETED" ? (
+                      <><CheckCircle2 className="h-3 w-3" /> Completed</>
+                    ) : (
+                      <><XCircle className="h-3 w-3" /> Dropped</>
+                    )}
                   </Badge>
                 </div>
 
@@ -235,9 +252,9 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
                   <Link href={"/anime/" + animeInfo.anime.id}>
                     <h2
                       className="font-semibold text-sm mb-1 line-clamp-2 text-white leading-tight hover:text-primary transition-colors"
-                      title={animeInfo.anime.title.userPreferred}
+                      title={displayTitle}
                     >
-                      {animeInfo.anime.title.userPreferred}
+                      {displayTitle}
                     </h2>
                   </Link>
                   {animeInfo.anime.episodes && (
