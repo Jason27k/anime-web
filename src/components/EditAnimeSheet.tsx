@@ -2,6 +2,13 @@
 
 import { useState, useTransition, useEffect } from "react";
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -27,6 +34,21 @@ interface EditAnimeSheetProps {
   coverImage?: string;
 }
 
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    setMatches(media.matches);
+
+    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [query]);
+
+  return matches;
+}
+
 export default function EditAnimeSheet({
   open,
   onOpenChange,
@@ -44,9 +66,10 @@ export default function EditAnimeSheet({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const maxEpisodes = totalEpisodes || 12;
 
-  // Reset state when sheet opens with new values
+  // Reset state when dialog/sheet opens with new values
   useEffect(() => {
     if (open) {
       setEpisode(currentEpisode || 1);
@@ -113,7 +136,7 @@ export default function EditAnimeSheet({
           variant="outline"
           onClick={() => setShowDeleteConfirm(false)}
           disabled={isDeleting}
-          className="flex-1 border-white/20 bg-transparent hover:bg-white/10"
+          className="flex-1 border-[#2a2f3a] bg-transparent hover:bg-[#252a36]"
         >
           Cancel
         </Button>
@@ -140,7 +163,7 @@ export default function EditAnimeSheet({
     <div className="space-y-6 py-4">
       {/* Status Selection */}
       <div className="space-y-3">
-        <Label className="text-sm text-white/70">Status</Label>
+        <Label className="text-sm text-muted-foreground">Status</Label>
         <div className="grid grid-cols-3 gap-2">
           {statusOptions.map((option) => {
             const Icon = option.icon;
@@ -152,7 +175,7 @@ export default function EditAnimeSheet({
                 className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
                   isActive
                     ? option.activeClass
-                    : "border-white/20 bg-white/5 text-white/70 hover:border-white/40 hover:bg-white/10"
+                    : "border-[#2a2f3a] bg-[#1f232d] text-muted-foreground hover:border-[#3a3f4a]"
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -167,21 +190,21 @@ export default function EditAnimeSheet({
       {totalEpisodes && totalEpisodes > 1 && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <Label className="text-sm text-white/70">Episode Progress</Label>
+            <Label className="text-sm text-muted-foreground">Episode Progress</Label>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleEpisodeChange(Math.max(1, episode - 1))}
-                className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors flex items-center justify-center disabled:opacity-50"
+                className="w-8 h-8 rounded-lg bg-[#1f232d] border border-[#2a2f3a] text-white hover:bg-[#252a36] transition-colors flex items-center justify-center disabled:opacity-50"
                 disabled={episode <= 1}
               >
                 −
               </button>
-              <span className="text-lg font-semibold text-white min-w-[4rem] text-center">
+              <span className="text-lg font-semibold text-white min-w-16 text-center">
                 {episode} / {maxEpisodes}
               </span>
               <button
                 onClick={() => handleEpisodeChange(Math.min(maxEpisodes, episode + 1))}
-                className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors flex items-center justify-center disabled:opacity-50"
+                className="w-8 h-8 rounded-lg bg-[#1f232d] border border-[#2a2f3a] text-white hover:bg-[#252a36] transition-colors flex items-center justify-center disabled:opacity-50"
                 disabled={episode >= maxEpisodes}
               >
                 +
@@ -227,40 +250,25 @@ export default function EditAnimeSheet({
     </div>
   );
 
-  // Centered modal with blurred background (both mobile and desktop)
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 border-0 bg-transparent max-w-lg overflow-hidden mx-4 sm:mx-auto">
-        {/* Blurred background image */}
-        <div className="absolute inset-0 -z-10">
-          {coverImage && (
-            <>
-              <img
-                src={coverImage}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40"
-              />
-              <div className="absolute inset-0 bg-black/80" />
-            </>
-          )}
-        </div>
-
-        {/* Content card */}
-        <div className="relative bg-[#1a1d24]/95 backdrop-blur-sm rounded-2xl border border-white/10 p-5 sm:p-6">
+  // Desktop: Centered solid modal
+  if (isDesktop) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="bg-[#1a1d24] border border-[#2a2f3a] max-w-lg p-6 rounded-2xl">
           <DialogHeader className="text-left space-y-4">
             <div className="flex gap-4">
               {coverImage && (
                 <img
                   src={coverImage}
                   alt={animeTitle}
-                  className="w-20 h-30 sm:w-24 sm:h-36 object-cover rounded-xl flex-shrink-0 shadow-lg"
+                  className="w-24 h-36 object-cover rounded-xl shrink-0 shadow-lg"
                 />
               )}
-              <div className="flex-1 min-w-0 pt-1 sm:pt-2">
-                <DialogTitle className="text-white text-lg sm:text-xl leading-tight line-clamp-2">
+              <div className="flex-1 min-w-0 pt-2">
+                <DialogTitle className="text-white text-xl leading-tight line-clamp-2">
                   {animeTitle}
                 </DialogTitle>
-                <DialogDescription className="mt-1 sm:mt-2 text-white/60">
+                <DialogDescription className="mt-2 text-muted-foreground">
                   Update your progress
                 </DialogDescription>
               </div>
@@ -268,8 +276,42 @@ export default function EditAnimeSheet({
           </DialogHeader>
 
           {showDeleteConfirm ? deleteConfirmContent : editContent}
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Mobile: Bottom sheet
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="bottom"
+        className="bg-[#1a1d24] border-t border-[#2a2f3a] rounded-t-2xl max-h-[85vh] overflow-y-auto"
+      >
+        <div className="mx-auto w-12 h-1.5 shrink-0 rounded-full bg-zinc-700 mb-4" />
+
+        <SheetHeader className="text-left pb-4">
+          <div className="flex gap-4">
+            {coverImage && (
+              <img
+                src={coverImage}
+                alt={animeTitle}
+                className="w-16 h-24 object-cover rounded-lg shrink-0"
+              />
+            )}
+            <div className="flex-1 min-w-0">
+              <SheetTitle className="text-white line-clamp-2 text-lg">
+                {animeTitle}
+              </SheetTitle>
+              <SheetDescription className="mt-1">
+                Update your progress
+              </SheetDescription>
+            </div>
+          </div>
+        </SheetHeader>
+
+        {showDeleteConfirm ? deleteConfirmContent : editContent}
+      </SheetContent>
+    </Sheet>
   );
 }
