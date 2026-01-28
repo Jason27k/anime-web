@@ -22,17 +22,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
-import { removefromMyList, addToMyList } from "@/app/actions";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import AnimeSheet from "./AnimeSheet";
 
 interface AnimeDetailPropsTwo {
   anime: Media;
@@ -47,6 +37,7 @@ export default function AnimeDetailsTwo({
 }: AnimeDetailPropsTwo) {
   const languageContext = useContext(LanguageContext);
   const [linkCollapsed, setLinkCollapsed] = useState(false);
+  const [addSheetOpen, setAddSheetOpen] = useState(false);
   const title =
     (languageContext.language === LanguageType.English
       ? anime.title.english
@@ -79,10 +70,6 @@ export default function AnimeDetailsTwo({
   );
 
   const score = anime.averageScore ? anime.averageScore / 10 : "N/A";
-
-  const testWithIDWatching = addToMyList.bind(null, anime.id, "watching", anime.episodes ?? null, true);
-  const testWithIDFinished = addToMyList.bind(null, anime.id, "completed", anime.episodes ?? null, true);
-  const removeWithId = removefromMyList.bind(null, anime.id, true);
 
   return (
     <div className="container mx-auto px-4 py-2 sm:py-4 ">
@@ -186,82 +173,28 @@ export default function AnimeDetailsTwo({
                     <ExternalLinkIcon className="mr-2 h-4 w-4" /> Official Site
                   </a>
                 </Button>
-                {loggedIn && !liked ? (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        className="w-full bg-primary text-primary-foreground hover:bg-primary"
-                        disabled={liked}
-                      >
-                        Add to My List
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-[#1f232d] border-0 text-white">
-                      <DialogHeader>
-                        <DialogTitle className="line-clamp-2">
-                          {title}
-                        </DialogTitle>
-                        <DialogDescription>
-                          Do you want to add this anime to your list?
-                        </DialogDescription>
-                      </DialogHeader>
-                      <Tabs defaultValue="watching">
-                        <TabsList className="flex gap-2 w-min">
-                          <TabsTrigger value="watching">Watching</TabsTrigger>
-                          <TabsTrigger value="finished">Finished</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="watching" className="w-full mt-2">
-                          <form
-                            className="flex justify-between items-center w-full"
-                            action={testWithIDWatching}
-                          >
-                            <div className="flex flex-col w-[60%] gap-2">
-                              <Label htmlFor="episodeNumber">Episode</Label>
-                              <Input
-                                name="episodeNumber"
-                                type="number"
-                                min={1}
-                                max={anime.episodes || undefined}
-                                className="text-black"
-                                defaultValue={1}
-                              />
-                              {!anime.episodes && (
-                                <p className="text-xs text-muted-foreground">
-                                  Ongoing series - no episode limit
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex justify-end space-x-2 mt-4">
-                              <Button
-                                className="bg-blue-600 hover:bg-blue-600"
-                                type="submit"
-                              >
-                                Add to Watching
-                              </Button>
-                            </div>
-                          </form>
-                        </TabsContent>
-                        <TabsContent value="finished" className="w-full mt-2">
-                          <form className="" action={testWithIDFinished}>
-                            <Button
-                              className="bg-green-600 hover:bg-green-600"
-                              type="submit"
-                            >
-                              Finished
-                            </Button>
-                          </form>
-                        </TabsContent>
-                      </Tabs>
-                    </DialogContent>
-                  </Dialog>
-                ) : loggedIn && liked ? (
-                  <form action={removeWithId}>
-                    <Button className="w-full bg-red-600 hover:bg-red-600">
-                      Remove from My List
+                {loggedIn && (
+                  <>
+                    <Button
+                      className={`w-full ${
+                        liked
+                          ? "bg-red-600 hover:bg-red-700"
+                          : "bg-primary text-primary-foreground hover:bg-primary/90"
+                      }`}
+                      onClick={() => setAddSheetOpen(true)}
+                    >
+                      {liked ? "Remove from My List" : "Add to My List"}
                     </Button>
-                  </form>
-                ) : (
-                  <></>
+                    <AnimeSheet
+                      open={addSheetOpen}
+                      onOpenChange={setAddSheetOpen}
+                      animeId={anime.id}
+                      animeTitle={title}
+                      totalEpisodes={anime.episodes ?? null}
+                      coverImage={image}
+                      isInList={liked}
+                    />
+                  </>
                 )}
               </div>
             </CardContent>

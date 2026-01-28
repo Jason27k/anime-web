@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 const NoLikedAnime = () => {
   return (
-    <div className="container mx-auto p-4 flex items-center justify-center min-h-[calc(100vh-100px)]">
+    <div className="flex items-start justify-center pt-8 md:pt-16">
       <Card className="w-full max-w-md bg-[#1f232d] border-0 text-white">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">

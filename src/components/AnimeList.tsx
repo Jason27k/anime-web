@@ -16,7 +16,7 @@ import { convertUTCToLocal } from "@/utils/date";
 import { capitalize } from "@/utils/formatting";
 import Link from "next/link";
 import { AnimeInfo } from "@/app/my-anime/page";
-import EditAnimeSheet from "./EditAnimeSheet";
+import AnimeSheet from "./AnimeSheet";
 import { AnimeStatus } from "@/lib/api-client";
 import { SettingsContext, LanguageType } from "@/app/Provider";
 
@@ -289,7 +289,7 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
 
       {/* Edit Sheet */}
       {editingAnime && (
-        <EditAnimeSheet
+        <AnimeSheet
           open={!!editingAnime}
           onOpenChange={(open) => !open && setEditingAnime(null)}
           animeId={editingAnime.id}
@@ -299,6 +299,7 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
           totalEpisodes={editingAnime.totalEpisodes}
           isAnimeFinishedAiring={editingAnime.isAnimeFinishedAiring}
           coverImage={editingAnime.coverImage}
+          isInList={true}
         />
       )}
     </div>

@@ -31,26 +31,18 @@ const Header = ({ children }: { children: ReactNode }) => {
 
         {/* Mobile Nav - Icons only */}
         <div className="md:hidden flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-primary hover:text-white"
-            asChild
+          <Link
+            href="/search"
+            className="p-2 text-white/70 hover:text-white transition-colors"
           >
-            <Link href="/search">
-              <Search className="h-5 w-5" />
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-primary hover:text-white"
-            asChild
+            <Search className="h-5 w-5" />
+          </Link>
+          <Link
+            href="/calendar"
+            className="p-2 text-white/70 hover:text-white transition-colors"
           >
-            <Link href="/calendar">
-              <Calendar className="h-5 w-5" />
-            </Link>
-          </Button>
+            <Calendar className="h-5 w-5" />
+          </Link>
           <SignedIn>
             <Link href="/my-anime" className="ml-1">
               <img
@@ -71,21 +63,19 @@ const Header = ({ children }: { children: ReactNode }) => {
         </div>
 
         {/* Desktop Nav */}
-        <div className="items-center gap-4 hidden md:flex h-full">
-          <Button
-            className="w-20 text-white hover:bg-primary hover:text-white h-full rounded-none"
-            variant="ghost"
-            asChild
+        <div className="items-center gap-6 hidden md:flex h-full">
+          <Link
+            href="/search"
+            className="text-white/70 hover:text-white border-b-2 border-transparent hover:border-primary h-full flex items-center transition-all"
           >
-            <Link href="/search">Search</Link>
-          </Button>
-          <Button
-            className="w-20 text-white hover:bg-primary h-full rounded-none hover:text-white"
-            variant="ghost"
-            asChild
+            Search
+          </Link>
+          <Link
+            href="/calendar"
+            className="text-white/70 hover:text-white border-b-2 border-transparent hover:border-primary h-full flex items-center transition-all"
           >
-            <Link href="/calendar">Calendar</Link>
-          </Button>
+            Calendar
+          </Link>
           <SignedOut>
             <Button
               className="w-20 text-white hover:bg-primary h-full rounded-none hover:text-white"

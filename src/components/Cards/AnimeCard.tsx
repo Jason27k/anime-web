@@ -1,6 +1,6 @@
 "use client";
 
-import { CirclePlus, MinusCircleIcon, Star, User } from "lucide-react";
+import { CirclePlus, Pencil, Star, User } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { LanguageContext, LanguageType } from "@/app/Provider";
@@ -9,19 +9,7 @@ import { useEffect, useState, useRef } from "react";
 import { MediaDisplay } from "@/utils/anilistTypes";
 import { convertUTCToLocal } from "@/utils/date";
 import { capitalize } from "@/utils/formatting";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { addToMyList } from "@/app/actions";
-import { removefromMyList } from "@/app/actions";
+import AnimeSheet from "../AnimeSheet";
 
 interface AnimeCardProps {
   anime: MediaDisplay;
@@ -38,9 +26,8 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
   const [genres, setGenres] = useState<string[]>([]);
   const genreContainerRef = useRef<HTMLDivElement>(null);
   const [description, setDescription] = useState<string>("");
-  const [showDialog, setShowDialog] = useState(false);
-  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
-  const [newLiked, setNewLiked] = useState(false);
+  const [addSheetOpen, setAddSheetOpen] = useState(false);
+  const [isInList, setIsInList] = useState(ids.includes(anime.id));
 
   const genresList = anime.genres;
 
@@ -163,22 +150,6 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
       : anime.averageScore / 10;
   const members = anime.popularity;
 
-  const testWithIDWatching = addToMyList.bind(
-    null,
-    anime.id,
-    "watching",
-    anime.episodes ?? null,
-    false
-  );
-  const testWithIDFinished = addToMyList.bind(
-    null,
-    anime.id,
-    "completed",
-    anime.episodes ?? null,
-    false
-  );
-  const removeWithId = removefromMyList.bind(null, anime.id, false);
-
   return (
     <div className="flex h-[265px] justify-center w-full">
       <Link
@@ -251,117 +222,34 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
               )}
             </div>
 
-            {loggedIn && !ids.includes(anime.id) && !newLiked ? (
-              <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                <DialogTrigger asChild>
+            {loggedIn && (
+              <>
+                {isInList ? (
+                  <Pencil
+                    size={20}
+                    className="text-[#7c8793] cursor-pointer hover:text-primary transition-colors"
+                    onClick={() => setAddSheetOpen(true)}
+                  />
+                ) : (
                   <CirclePlus
                     size={24}
-                    className="text-[#7c8793]"
-                    onClick={() => {
-                      setShowDialog(true);
-                    }}
+                    className="text-[#7c8793] cursor-pointer hover:text-primary transition-colors"
+                    onClick={() => setAddSheetOpen(true)}
                   />
-                </DialogTrigger>
-                <DialogContent className="bg-[#1f232d] border-0 text-white">
-                  <DialogHeader>
-                    <DialogTitle className="line-clamp-2">{title}</DialogTitle>
-                    <DialogDescription>
-                      Do you want to add this anime to your list?
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Tabs defaultValue="watching">
-                    <TabsList className="flex gap-2 w-min">
-                      <TabsTrigger value="watching">Watching</TabsTrigger>
-                      <TabsTrigger value="finished">Finished</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="watching" className="w-full mt-2">
-                      <form
-                        className="flex justify-between items-center w-full"
-                        action={testWithIDWatching}
-                      >
-                        <div className="flex flex-col w-[60%] gap-2">
-                          <Label htmlFor="episodeNumber">Episode</Label>
-                          <Input
-                            name="episodeNumber"
-                            type="number"
-                            min={1}
-                            max={anime.episodes || undefined}
-                            className="text-black"
-                            defaultValue={1}
-                          />
-                          {!anime.episodes && (
-                            <p className="text-xs text-muted-foreground">
-                              Ongoing - no limit
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex justify-end space-x-2 mt-4">
-                          <Button
-                            className="bg-blue-600 hover:bg-blue-600"
-                            onClick={() => {
-                              setShowDialog(false);
-                              setNewLiked(true);
-                            }}
-                            type="submit"
-                          >
-                            Add to Watching
-                          </Button>
-                        </div>
-                      </form>
-                    </TabsContent>
-                    <TabsContent value="finished" className="w-full mt-2">
-                      <form className="" action={testWithIDFinished}>
-                        <Button
-                          className="bg-green-600 hover:bg-green-600"
-                          type="submit"
-                          onClick={() => {
-                            setShowDialog(false);
-                            setNewLiked(true);
-                          }}
-                        >
-                          Finished
-                        </Button>
-                      </form>
-                    </TabsContent>
-                  </Tabs>
-                </DialogContent>
-              </Dialog>
-            ) : newLiked || loggedIn ? (
-              <Dialog
-                open={showRemoveDialog}
-                onOpenChange={setShowRemoveDialog}
-              >
-                <DialogTrigger asChild>
-                  <MinusCircleIcon size={24} className="text-[#7c8793]" />
-                </DialogTrigger>
-                <DialogContent className="bg-[#1f232d] border-0 text-white">
-                  <DialogHeader>
-                    <DialogTitle className="line-clamp-2">{title}</DialogTitle>
-                    <DialogDescription>
-                      Are you sure you want to remove this from your list?
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form
-                    className="flex justify-between items-center w-full"
-                    action={removeWithId}
-                  >
-                    <div className="flex justify-end space-x-2 mt-4">
-                      <Button
-                        className="bg-red-600 hover:bg-red-600"
-                        onClick={() => {
-                          setShowRemoveDialog(false);
-                          setNewLiked(false);
-                        }}
-                        type="submit"
-                      >
-                        Remove from List
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            ) : (
-              <></>
+                )}
+                <AnimeSheet
+                  open={addSheetOpen}
+                  onOpenChange={setAddSheetOpen}
+                  animeId={anime.id}
+                  animeTitle={title}
+                  totalEpisodes={anime.episodes}
+                  coverImage={anime.coverImage.extraLarge}
+                  isInList={isInList}
+                  onSuccess={(action) => {
+                    setIsInList(action === "added" || action === "updated");
+                  }}
+                />
+              </>
             )}
           </div>
         </div>

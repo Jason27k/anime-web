@@ -18,21 +18,39 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { updateAnimeProgress, removeFromMyListWithRevalidation } from "@/app/actions";
+import {
+  updateAnimeProgress,
+  removeFromMyListWithRevalidation,
+  addToMyList,
+} from "@/app/actions";
 import { AnimeStatus } from "@/lib/api-client";
-import { Loader2, Trash2, Check, Play, X, PartyPopper, AlertCircle } from "lucide-react";
+import {
+  Loader2,
+  Trash2,
+  Check,
+  Play,
+  X,
+  Plus,
+  PartyPopper,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 
-interface EditAnimeSheetProps {
+interface AnimeSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   animeId: number;
   animeTitle: string;
-  currentEpisode: number | null;
-  currentStatus: AnimeStatus;
   totalEpisodes: number | null;
-  isAnimeFinishedAiring: boolean;
   coverImage?: string;
+  // For edit mode (anime already in list)
+  currentEpisode?: number | null;
+  currentStatus?: AnimeStatus;
+  isAnimeFinishedAiring?: boolean;
+  // For add mode (anime not in list)
+  isInList?: boolean;
+  // Callback when anime is added/removed (for updating local state)
+  onSuccess?: (action: "added" | "removed" | "updated") => void;
 }
 
 function useMediaQuery(query: string): boolean {
@@ -50,19 +68,24 @@ function useMediaQuery(query: string): boolean {
   return matches;
 }
 
-export default function EditAnimeSheet({
+export default function AnimeSheet({
   open,
   onOpenChange,
   animeId,
   animeTitle,
+  totalEpisodes,
+  coverImage,
   currentEpisode,
   currentStatus,
-  totalEpisodes,
-  isAnimeFinishedAiring,
-  coverImage,
-}: EditAnimeSheetProps) {
+  isAnimeFinishedAiring = false,
+  isInList = false,
+  onSuccess,
+}: AnimeSheetProps) {
+  // Determine mode: if we have currentStatus, we're editing; otherwise adding
+  const isEditMode = isInList || currentStatus !== undefined;
+
   const [episode, setEpisode] = useState(currentEpisode || 1);
-  const [status, setStatus] = useState<AnimeStatus>(currentStatus);
+  const [status, setStatus] = useState<AnimeStatus>(currentStatus || "WATCHING");
   const [isPending, startTransition] = useTransition();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -74,7 +97,7 @@ export default function EditAnimeSheet({
   useEffect(() => {
     if (open) {
       setEpisode(currentEpisode || 1);
-      setStatus(currentStatus);
+      setStatus(currentStatus || "WATCHING");
       setShowDeleteConfirm(false);
     }
   }, [open, currentEpisode, currentStatus]);
@@ -102,25 +125,57 @@ export default function EditAnimeSheet({
 
   const handleSave = () => {
     startTransition(async () => {
-      const result = await updateAnimeProgress(animeId, episode, status);
-      if (result.success) {
-        onOpenChange(false);
+      if (isEditMode) {
+        // Update existing entry
+        const result = await updateAnimeProgress(animeId, episode, status);
+        if (result.success) {
+          onOpenChange(false);
+          onSuccess?.("updated");
 
-        // Show different toast based on status
-        if (status === "COMPLETED") {
-          toast.success("Completed!", {
-            description: `You finished ${animeTitle}`,
-            icon: <PartyPopper className="h-4 w-4" />,
-          });
-        } else if (status === "DROPPED") {
-          toast("Dropped", {
-            description: `Removed ${animeTitle} from watching`,
-            icon: <AlertCircle className="h-4 w-4 text-zinc-400" />,
-          });
-        } else {
-          toast.success("Progress saved", {
-            description: `Episode ${episode}${totalEpisodes ? ` of ${totalEpisodes}` : ""}`,
-          });
+          if (status === "COMPLETED") {
+            toast.success("Completed!", {
+              description: `You finished ${animeTitle}`,
+              icon: <PartyPopper className="h-4 w-4" />,
+            });
+          } else if (status === "DROPPED") {
+            toast("Dropped", {
+              description: `Removed ${animeTitle} from watching`,
+              icon: <AlertCircle className="h-4 w-4 text-zinc-400" />,
+            });
+          } else {
+            toast.success("Progress saved", {
+              description: `Episode ${episode}${totalEpisodes ? ` of ${totalEpisodes}` : ""}`,
+            });
+          }
+        }
+      } else {
+        // Add new entry
+        const statusMap: Record<AnimeStatus, "watching" | "completed" | "dropped"> = {
+          WATCHING: "watching",
+          COMPLETED: "completed",
+          DROPPED: "dropped",
+        };
+        const result = await addToMyList(animeId, statusMap[status], totalEpisodes, true, episode);
+        if (result.success) {
+          onOpenChange(false);
+          onSuccess?.("added");
+
+          if (status === "COMPLETED") {
+            toast.success("Added as Completed!", {
+              description: animeTitle,
+              icon: <PartyPopper className="h-4 w-4" />,
+            });
+          } else if (status === "DROPPED") {
+            toast("Added as Dropped", {
+              description: animeTitle,
+              icon: <AlertCircle className="h-4 w-4 text-zinc-400" />,
+            });
+          } else {
+            toast.success("Added to Watching", {
+              description: `Episode ${episode}${totalEpisodes ? ` of ${totalEpisodes}` : ""}`,
+              icon: <Plus className="h-4 w-4" />,
+            });
+          }
         }
       }
     });
@@ -132,6 +187,7 @@ export default function EditAnimeSheet({
       const result = await removeFromMyListWithRevalidation(animeId);
       if (result.success) {
         onOpenChange(false);
+        onSuccess?.("removed");
         toast("Removed from list", {
           description: animeTitle,
           icon: <Trash2 className="h-4 w-4 text-red-400" />,
@@ -142,10 +198,30 @@ export default function EditAnimeSheet({
     });
   };
 
-  const statusOptions: { value: AnimeStatus; label: string; icon: typeof Play; activeClass: string }[] = [
-    { value: "WATCHING", label: "Watching", icon: Play, activeClass: "bg-blue-600 text-white border-blue-600" },
-    { value: "COMPLETED", label: "Completed", icon: Check, activeClass: "bg-green-600 text-white border-green-600" },
-    { value: "DROPPED", label: "Dropped", icon: X, activeClass: "bg-zinc-600 text-white border-zinc-600" },
+  const statusOptions: {
+    value: AnimeStatus;
+    label: string;
+    icon: typeof Play;
+    activeClass: string;
+  }[] = [
+    {
+      value: "WATCHING",
+      label: "Watching",
+      icon: Play,
+      activeClass: "bg-blue-600 text-white border-blue-600",
+    },
+    {
+      value: "COMPLETED",
+      label: "Completed",
+      icon: Check,
+      activeClass: "bg-green-600 text-white border-green-600",
+    },
+    {
+      value: "DROPPED",
+      label: "Dropped",
+      icon: X,
+      activeClass: "bg-zinc-600 text-white border-zinc-600",
+    },
   ];
 
   const deleteConfirmContent = (
@@ -181,7 +257,7 @@ export default function EditAnimeSheet({
     </div>
   );
 
-  const editContent = (
+  const mainContent = (
     <div className="space-y-6 py-4">
       {/* Status Selection */}
       <div className="space-y-3">
@@ -212,7 +288,9 @@ export default function EditAnimeSheet({
       {totalEpisodes && totalEpisodes > 1 && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <Label className="text-sm text-muted-foreground">Episode Progress</Label>
+            <Label className="text-sm text-muted-foreground">
+              {isEditMode ? "Episode Progress" : "Starting Episode"}
+            </Label>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleEpisodeChange(Math.max(1, episode - 1))}
@@ -225,7 +303,9 @@ export default function EditAnimeSheet({
                 {episode} / {maxEpisodes}
               </span>
               <button
-                onClick={() => handleEpisodeChange(Math.min(maxEpisodes, episode + 1))}
+                onClick={() =>
+                  handleEpisodeChange(Math.min(maxEpisodes, episode + 1))
+                }
                 className="w-8 h-8 rounded-lg bg-[#1f232d] border border-[#2a2f3a] text-white hover:bg-[#252a36] transition-colors flex items-center justify-center disabled:opacity-50"
                 disabled={episode >= maxEpisodes}
               >
@@ -246,14 +326,16 @@ export default function EditAnimeSheet({
 
       {/* Action Buttons */}
       <div className="flex gap-3 pt-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowDeleteConfirm(true)}
-          className="text-red-400 hover:text-red-300 hover:bg-red-950/50 shrink-0"
-        >
-          <Trash2 className="h-5 w-5" />
-        </Button>
+        {isEditMode && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="text-red-400 hover:text-red-300 hover:bg-red-950/50 shrink-0"
+          >
+            <Trash2 className="h-5 w-5" />
+          </Button>
+        )}
         <Button
           onClick={handleSave}
           disabled={isPending}
@@ -262,15 +344,22 @@ export default function EditAnimeSheet({
           {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
+              {isEditMode ? "Saving..." : "Adding..."}
             </>
-          ) : (
+          ) : isEditMode ? (
             "Save Changes"
+          ) : (
+            <>
+              <Plus className="mr-2 h-4 w-4" />
+              Add to My List
+            </>
           )}
         </Button>
       </div>
     </div>
   );
+
+  const description = isEditMode ? "Update your progress" : "Add to your list";
 
   // Desktop: Centered solid modal
   if (isDesktop) {
@@ -291,13 +380,13 @@ export default function EditAnimeSheet({
                   {animeTitle}
                 </DialogTitle>
                 <DialogDescription className="mt-2 text-muted-foreground">
-                  Update your progress
+                  {description}
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
 
-          {showDeleteConfirm ? deleteConfirmContent : editContent}
+          {showDeleteConfirm ? deleteConfirmContent : mainContent}
         </DialogContent>
       </Dialog>
     );
@@ -326,13 +415,13 @@ export default function EditAnimeSheet({
                 {animeTitle}
               </SheetTitle>
               <SheetDescription className="mt-1">
-                Update your progress
+                {description}
               </SheetDescription>
             </div>
           </div>
         </SheetHeader>
 
-        {showDeleteConfirm ? deleteConfirmContent : editContent}
+        {showDeleteConfirm ? deleteConfirmContent : mainContent}
       </SheetContent>
     </Sheet>
   );

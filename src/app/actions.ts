@@ -604,37 +604,42 @@ import { revalidatePath } from "next/cache";
 
 export async function addToMyList(
   animeId: number,
-  status: "watching" | "completed",
+  status: "watching" | "completed" | "dropped",
   totalEpisodes: number | null,
   refresh: boolean,
-  formData: FormData
+  episodeOrFormData?: number | FormData
 ) {
   const user = await currentUser();
   if (!user) {
-    return;
+    return { success: false, error: "Not authenticated" };
   }
 
   try {
     // Check if already saved
     const alreadySaved = await animeApi.hasUserSavedAnime(user.id, animeId);
     if (alreadySaved) {
-      return;
+      return { success: false, error: "Already in list" };
     }
 
     // Add to list
     await animeApi.addAnimeToList(user.id, animeId);
 
     // Update with status and episode
-    const apiStatus: AnimeStatus = status === "completed" ? "COMPLETED" : "WATCHING";
+    const apiStatus: AnimeStatus =
+      status === "completed" ? "COMPLETED" : status === "dropped" ? "DROPPED" : "WATCHING";
 
     // For completed status, set episode to total if available
-    // For watching status, use the form value
+    // For watching/dropped status, use the provided value
     let episode: number | null = null;
     if (status === "completed" && totalEpisodes) {
       episode = totalEpisodes;
-    } else {
-      const formEpisode = formData.get("episodeNumber");
+    } else if (typeof episodeOrFormData === "number") {
+      episode = episodeOrFormData;
+    } else if (episodeOrFormData instanceof FormData) {
+      const formEpisode = episodeOrFormData.get("episodeNumber");
       episode = formEpisode ? parseInt(formEpisode as string) : 1;
+    } else {
+      episode = 1;
     }
 
     await animeApi.updateAnimeProgress(user.id, animeId, {
@@ -644,17 +649,23 @@ export async function addToMyList(
 
     if (refresh) {
       revalidatePath(`/anime/${animeId}`);
+      revalidatePath("/my-anime");
+      revalidatePath("/my-anime/watching");
+      revalidatePath("/my-anime/finished");
+      revalidatePath("/my-anime/dropped");
     }
+
+    return { success: true };
   } catch (error) {
     console.error("Failed to add anime to list:", error);
-    throw error;
+    return { success: false, error: "Failed to add" };
   }
 }
 
 export async function removefromMyList(animeId: number, refresh: boolean) {
   const user = await currentUser();
   if (!user) {
-    return;
+    return { success: false, error: "Not authenticated" };
   }
 
   try {
@@ -662,10 +673,16 @@ export async function removefromMyList(animeId: number, refresh: boolean) {
 
     if (refresh) {
       revalidatePath(`/anime/${animeId}`);
+      revalidatePath("/my-anime");
+      revalidatePath("/my-anime/watching");
+      revalidatePath("/my-anime/finished");
+      revalidatePath("/my-anime/dropped");
     }
+
+    return { success: true };
   } catch (error) {
     console.error("Failed to remove anime from list:", error);
-    throw error;
+    return { success: false, error: "Failed to remove" };
   }
 }
 
