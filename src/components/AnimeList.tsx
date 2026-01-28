@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   PlayCircle,
   XCircle,
-  Pencil,
   LayoutGrid,
 } from "lucide-react";
 import { Anime } from "@/utils/myAnimeTypes";
@@ -17,7 +16,7 @@ import { convertUTCToLocal } from "@/utils/date";
 import { capitalize } from "@/utils/formatting";
 import Link from "next/link";
 import { AnimeInfo } from "@/app/my-anime/page";
-import EditAnimeDialog from "./EditAnimeDialog";
+import EditAnimeSheet from "./EditAnimeSheet";
 import { AnimeStatus } from "@/lib/api-client";
 import { SettingsContext } from "@/app/Provider";
 
@@ -35,6 +34,7 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
     status: AnimeStatus;
     totalEpisodes: number | null;
     isAnimeFinishedAiring: boolean;
+    coverImage: string;
   } | null>(null);
 
   function timeOrSeasonString(anime: Anime) {
@@ -180,35 +180,27 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
                 className="overflow-hidden border-0 bg-[#1f232d] flex flex-col group"
               >
                 <div className={`relative w-full ${imageClasses[settings.cardSize]}`}>
-                  <Link href={"/anime/" + animeInfo.anime.id}>
+                  <button
+                    onClick={() =>
+                      setEditingAnime({
+                        id: animeInfo.anime.id,
+                        title: animeInfo.anime.title.userPreferred,
+                        episode: animeInfo.episode,
+                        status: animeInfo.status,
+                        totalEpisodes: animeInfo.anime.episodes,
+                        isAnimeFinishedAiring:
+                          animeInfo.anime.nextAiringEpisode === null,
+                        coverImage: animeInfo.anime.coverImage.extraLarge,
+                      })
+                    }
+                    className="w-full h-full cursor-pointer"
+                  >
                     <img
                       src={animeInfo.anime.coverImage.extraLarge}
                       alt={animeInfo.anime.title.userPreferred}
-                      className="object-cover h-full w-full"
+                      className="object-cover h-full w-full transition-opacity group-hover:opacity-80"
                     />
-                  </Link>
-
-                  {/* Hover Overlay with Edit Button */}
-                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button
-                      size="sm"
-                      className="bg-primary hover:bg-primary/90 text-white"
-                      onClick={() =>
-                        setEditingAnime({
-                          id: animeInfo.anime.id,
-                          title: animeInfo.anime.title.userPreferred,
-                          episode: animeInfo.episode,
-                          status: animeInfo.status,
-                          totalEpisodes: animeInfo.anime.episodes,
-                          isAnimeFinishedAiring:
-                            animeInfo.anime.nextAiringEpisode === null,
-                        })
-                      }
-                    >
-                      <Pencil className="h-4 w-4 mr-1" />
-                      Edit
-                    </Button>
-                  </div>
+                  </button>
 
                   {/* Status Badge */}
                   <Badge
@@ -283,9 +275,9 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
         </div>
       )}
 
-      {/* Edit Dialog */}
+      {/* Edit Sheet */}
       {editingAnime && (
-        <EditAnimeDialog
+        <EditAnimeSheet
           open={!!editingAnime}
           onOpenChange={(open) => !open && setEditingAnime(null)}
           animeId={editingAnime.id}
@@ -294,6 +286,7 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
           currentStatus={editingAnime.status}
           totalEpisodes={editingAnime.totalEpisodes}
           isAnimeFinishedAiring={editingAnime.isAnimeFinishedAiring}
+          coverImage={editingAnime.coverImage}
         />
       )}
     </div>

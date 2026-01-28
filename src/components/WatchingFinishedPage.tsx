@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   PlayCircle,
   XCircle,
-  Pencil,
   LayoutGrid,
 } from "lucide-react";
 import { Anime } from "@/utils/myAnimeTypes";
@@ -17,7 +16,7 @@ import { convertUTCToLocal } from "@/utils/date";
 import { capitalize } from "@/utils/formatting";
 import Link from "next/link";
 import { AnimeInfo } from "@/app/my-anime/page";
-import EditAnimeDialog from "./EditAnimeDialog";
+import EditAnimeSheet from "./EditAnimeSheet";
 import { AnimeStatus } from "@/lib/api-client";
 
 interface MyAnimeProps {
@@ -43,6 +42,7 @@ export default function MyAnimePage({
     status: AnimeStatus;
     totalEpisodes: number | null;
     isAnimeFinishedAiring: boolean;
+    coverImage: string;
   } | null>(null);
 
   function timeOrSeasonString(anime: Anime) {
@@ -172,31 +172,26 @@ export default function MyAnimePage({
                 className="overflow-hidden border-0 bg-[#1f232d] flex flex-col group"
               >
                 <div className="relative w-full aspect-[3/4]">
-                  <img
-                    src={animeInfo.anime.coverImage.extraLarge}
-                    alt={animeInfo.anime.title.userPreferred}
-                    className="object-cover h-full w-full"
-                  />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm"
-                      onClick={() =>
-                        setEditingAnime({
-                          id: animeInfo.anime.id,
-                          title: animeInfo.anime.title.userPreferred,
-                          episode: animeInfo.episode,
-                          status: animeInfo.status,
-                          totalEpisodes: animeInfo.anime.episodes,
-                          isAnimeFinishedAiring: animeInfo.anime.nextAiringEpisode === null,
-                        })
-                      }
-                    >
-                      <Pencil className="h-4 w-4 mr-1" />
-                      Edit
-                    </Button>
-                  </div>
+                  <button
+                    onClick={() =>
+                      setEditingAnime({
+                        id: animeInfo.anime.id,
+                        title: animeInfo.anime.title.userPreferred,
+                        episode: animeInfo.episode,
+                        status: animeInfo.status,
+                        totalEpisodes: animeInfo.anime.episodes,
+                        isAnimeFinishedAiring: animeInfo.anime.nextAiringEpisode === null,
+                        coverImage: animeInfo.anime.coverImage.extraLarge,
+                      })
+                    }
+                    className="w-full h-full cursor-pointer"
+                  >
+                    <img
+                      src={animeInfo.anime.coverImage.extraLarge}
+                      alt={animeInfo.anime.title.userPreferred}
+                      className="object-cover h-full w-full transition-opacity group-hover:opacity-80"
+                    />
+                  </button>
                   <Badge
                     className={`absolute top-2 right-2 ${
                       animeInfo.status === "WATCHING"
@@ -262,15 +257,16 @@ export default function MyAnimePage({
       )}
 
       {editingAnime && (
-        <EditAnimeDialog
+        <EditAnimeSheet
           open={!!editingAnime}
-          onOpenChange={(open) => !open && setEditingAnime(null)}
+          onOpenChange={(open: boolean) => !open && setEditingAnime(null)}
           animeId={editingAnime.id}
           animeTitle={editingAnime.title}
           currentEpisode={editingAnime.episode}
           currentStatus={editingAnime.status}
           totalEpisodes={editingAnime.totalEpisodes}
           isAnimeFinishedAiring={editingAnime.isAnimeFinishedAiring}
+          coverImage={editingAnime.coverImage}
         />
       )}
     </div>
