@@ -206,7 +206,7 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
       </Button>
       <Button
         variant="ghost"
-        className="w-full justify-start text-red-400 hover:bg-red-950 hover:text-red-300"
+        className="w-full justify-start text-red-400 hover:bg-red-950 hover:text-red-300 transition-colors"
         onClick={() => signOut()}
       >
         <LogOut className="h-4 w-4 mr-2" />
