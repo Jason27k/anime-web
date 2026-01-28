@@ -2,13 +2,6 @@
 
 import { useState, useTransition, useEffect } from "react";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -34,21 +27,6 @@ interface EditAnimeSheetProps {
   coverImage?: string;
 }
 
-function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia(query);
-    setMatches(media.matches);
-
-    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
-    media.addEventListener("change", listener);
-    return () => media.removeEventListener("change", listener);
-  }, [query]);
-
-  return matches;
-}
-
 export default function EditAnimeSheet({
   open,
   onOpenChange,
@@ -66,7 +44,6 @@ export default function EditAnimeSheet({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const isDesktop = useMediaQuery("(min-width: 768px)");
   const maxEpisodes = totalEpisodes || 12;
 
   // Reset state when sheet opens with new values
@@ -250,85 +227,49 @@ export default function EditAnimeSheet({
     </div>
   );
 
-  // Desktop: Centered modal with blurred background
-  if (isDesktop) {
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="p-0 border-0 bg-transparent max-w-lg overflow-hidden">
-          {/* Blurred background image */}
-          <div className="absolute inset-0 -z-10">
-            {coverImage && (
-              <>
-                <img
-                  src={coverImage}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-50"
-                />
-                <div className="absolute inset-0 bg-black/60" />
-              </>
-            )}
-          </div>
-
-          {/* Content card */}
-          <div className="relative bg-[#1a1d24]/90 backdrop-blur-sm rounded-2xl border border-white/10 p-6">
-            <DialogHeader className="text-left space-y-4">
-              <div className="flex gap-4">
-                {coverImage && (
-                  <img
-                    src={coverImage}
-                    alt={animeTitle}
-                    className="w-24 h-36 object-cover rounded-xl flex-shrink-0 shadow-lg"
-                  />
-                )}
-                <div className="flex-1 min-w-0 pt-2">
-                  <DialogTitle className="text-white text-xl leading-tight line-clamp-2">
-                    {animeTitle}
-                  </DialogTitle>
-                  <DialogDescription className="mt-2 text-white/60">
-                    Update your progress
-                  </DialogDescription>
-                </div>
-              </div>
-            </DialogHeader>
-
-            {showDeleteConfirm ? deleteConfirmContent : editContent}
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  // Mobile: Bottom sheet
+  // Centered modal with blurred background (both mobile and desktop)
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="bottom"
-        className="bg-[#1a1d24] border-t border-[#2a2f3a] rounded-t-2xl max-h-[85vh] overflow-y-auto"
-      >
-        <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-700 mb-4" />
-
-        <SheetHeader className="text-left pb-4">
-          <div className="flex gap-4">
-            {coverImage && (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="p-0 border-0 bg-transparent max-w-lg overflow-hidden mx-4 sm:mx-auto">
+        {/* Blurred background image */}
+        <div className="absolute inset-0 -z-10">
+          {coverImage && (
+            <>
               <img
                 src={coverImage}
-                alt={animeTitle}
-                className="w-16 h-24 object-cover rounded-lg flex-shrink-0"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40"
               />
-            )}
-            <div className="flex-1 min-w-0">
-              <SheetTitle className="text-white line-clamp-2 text-lg">
-                {animeTitle}
-              </SheetTitle>
-              <SheetDescription className="mt-1">
-                Update your progress
-              </SheetDescription>
-            </div>
-          </div>
-        </SheetHeader>
+              <div className="absolute inset-0 bg-black/80" />
+            </>
+          )}
+        </div>
 
-        {showDeleteConfirm ? deleteConfirmContent : editContent}
-      </SheetContent>
-    </Sheet>
+        {/* Content card */}
+        <div className="relative bg-[#1a1d24]/95 backdrop-blur-sm rounded-2xl border border-white/10 p-5 sm:p-6">
+          <DialogHeader className="text-left space-y-4">
+            <div className="flex gap-4">
+              {coverImage && (
+                <img
+                  src={coverImage}
+                  alt={animeTitle}
+                  className="w-20 h-30 sm:w-24 sm:h-36 object-cover rounded-xl flex-shrink-0 shadow-lg"
+                />
+              )}
+              <div className="flex-1 min-w-0 pt-1 sm:pt-2">
+                <DialogTitle className="text-white text-lg sm:text-xl leading-tight line-clamp-2">
+                  {animeTitle}
+                </DialogTitle>
+                <DialogDescription className="mt-1 sm:mt-2 text-white/60">
+                  Update your progress
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {showDeleteConfirm ? deleteConfirmContent : editContent}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
