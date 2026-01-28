@@ -212,7 +212,7 @@ export default function MyAnimePage({
                     />
                   </button>
                   <Badge
-                    className="absolute top-2 right-2 flex items-center gap-1 border-0 text-white shadow-md bg-orange-500 hover:bg-orange-500"
+                    className="absolute top-2 right-2 flex items-center gap-1 border-0 text-white shadow-md !bg-orange-500 hover:!bg-orange-500"
                   >
                     {animeInfo.status === "WATCHING" ? (
                       <><PlayCircle className="h-3 w-3" /> Watching</>
