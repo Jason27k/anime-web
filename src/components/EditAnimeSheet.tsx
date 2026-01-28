@@ -261,7 +261,7 @@ export default function EditAnimeSheet({
                 <img
                   src={coverImage}
                   alt={animeTitle}
-                  className="w-24 h-36 object-cover rounded-xl shrink-0 shadow-lg"
+                  className="w-24 h-36 object-cover rounded-xl shrink-0 shadow-lg transition-transform hover:scale-105"
                 />
               )}
               <div className="flex-1 min-w-0 pt-2">

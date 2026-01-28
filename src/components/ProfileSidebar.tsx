@@ -96,7 +96,7 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
             updateSettings({ language: value as LanguageType })
           }
         >
-          <SelectTrigger className="bg-[#191d26] border-0">
+          <SelectTrigger className="bg-[#191d26] border-0 hover:bg-[#252a36] transition-colors">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#191d26] border-0">
@@ -126,7 +126,7 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
               updateSettings({ cardSize: value as CardSize })
             }
           >
-            <SelectTrigger className="bg-[#191d26] border-0">
+            <SelectTrigger className="bg-[#191d26] border-0 hover:bg-[#252a36] transition-colors">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-[#191d26] border-0">
@@ -147,7 +147,7 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
               updateSettings({ gridDensity: value as GridDensity })
             }
           >
-            <SelectTrigger className="bg-[#191d26] border-0">
+            <SelectTrigger className="bg-[#191d26] border-0 hover:bg-[#252a36] transition-colors">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-[#191d26] border-0">
@@ -218,13 +218,13 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
   return (
     <div className="space-y-4">
       {/* User Profile Card - Always visible */}
-      <Card className="bg-[#1f232d] border-0">
+      <Card className="bg-[#1f232d] border-0 transition-colors hover:bg-[#252a36]">
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
             <img
               src={user?.imageUrl}
               alt={user?.fullName || "User"}
-              className="w-16 h-16 rounded-full bg-[#191d26]"
+              className="w-16 h-16 rounded-full bg-[#191d26] transition-transform hover:scale-105"
             />
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-semibold text-white truncate">
@@ -244,19 +244,19 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
 
           {stats && (
             <div className="grid grid-cols-2 gap-2 mt-4 text-center">
-              <div className="bg-[#191d26] rounded-lg p-2">
+              <div className="bg-[#191d26] rounded-lg p-2 transition-colors hover:bg-[#252a36] cursor-default">
                 <p className="text-xl font-bold text-blue-400">{stats.watching}</p>
                 <p className="text-xs text-muted-foreground">Watching</p>
               </div>
-              <div className="bg-[#191d26] rounded-lg p-2">
+              <div className="bg-[#191d26] rounded-lg p-2 transition-colors hover:bg-[#252a36] cursor-default">
                 <p className="text-xl font-bold text-green-400">{stats.completed}</p>
                 <p className="text-xs text-muted-foreground">Completed</p>
               </div>
-              <div className="bg-[#191d26] rounded-lg p-2">
+              <div className="bg-[#191d26] rounded-lg p-2 transition-colors hover:bg-[#252a36] cursor-default">
                 <p className="text-xl font-bold text-gray-400">{stats.dropped}</p>
                 <p className="text-xs text-muted-foreground">Dropped</p>
               </div>
-              <div className="bg-[#191d26] rounded-lg p-2">
+              <div className="bg-[#191d26] rounded-lg p-2 transition-colors hover:bg-[#252a36] cursor-default">
                 <p className="text-xl font-bold text-white">{stats.total}</p>
                 <p className="text-xs text-muted-foreground">Total</p>
               </div>
@@ -303,7 +303,7 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
 
       {/* Desktop: Settings Card */}
       {!isMobile && (
-        <Card className="bg-[#1f232d] border-0">
+        <Card className="bg-[#1f232d] border-0 transition-colors hover:bg-[#252a36]">
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center gap-2 text-base">
               <Settings className="h-4 w-4" />
@@ -318,7 +318,7 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
 
       {/* Desktop: Account Card */}
       {!isMobile && (
-        <Card className="bg-[#1f232d] border-0">
+        <Card className="bg-[#1f232d] border-0 transition-colors hover:bg-[#252a36]">
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center gap-2 text-base">
               <User className="h-4 w-4" />
