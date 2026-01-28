@@ -20,7 +20,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { updateAnimeProgress, removeFromMyListWithRevalidation } from "@/app/actions";
 import { AnimeStatus } from "@/lib/api-client";
-import { Loader2, Trash2, Check, Play, X } from "lucide-react";
+import { Loader2, Trash2, Check, Play, X, PartyPopper, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 interface EditAnimeSheetProps {
   open: boolean;
@@ -104,6 +105,23 @@ export default function EditAnimeSheet({
       const result = await updateAnimeProgress(animeId, episode, status);
       if (result.success) {
         onOpenChange(false);
+
+        // Show different toast based on status
+        if (status === "COMPLETED") {
+          toast.success("Completed!", {
+            description: `You finished ${animeTitle}`,
+            icon: <PartyPopper className="h-4 w-4" />,
+          });
+        } else if (status === "DROPPED") {
+          toast("Dropped", {
+            description: `Removed ${animeTitle} from watching`,
+            icon: <AlertCircle className="h-4 w-4 text-zinc-400" />,
+          });
+        } else {
+          toast.success("Progress saved", {
+            description: `Episode ${episode}${totalEpisodes ? ` of ${totalEpisodes}` : ""}`,
+          });
+        }
       }
     });
   };
@@ -114,6 +132,10 @@ export default function EditAnimeSheet({
       const result = await removeFromMyListWithRevalidation(animeId);
       if (result.success) {
         onOpenChange(false);
+        toast("Removed from list", {
+          description: animeTitle,
+          icon: <Trash2 className="h-4 w-4 text-red-400" />,
+        });
       }
       setIsDeleting(false);
       setShowDeleteConfirm(false);

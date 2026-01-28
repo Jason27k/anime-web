@@ -219,12 +219,12 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
 
                   {/* Status Badge */}
                   <Badge
-                    className={`absolute top-2 right-2 flex items-center gap-1 ${
+                    className={`absolute top-2 right-2 flex items-center gap-1 border-0 text-white shadow-md ${
                       animeInfo.status === "WATCHING"
-                        ? "bg-blue-600"
+                        ? "bg-blue-600 hover:bg-blue-600"
                         : animeInfo.status === "COMPLETED"
-                        ? "bg-green-600"
-                        : "bg-gray-600"
+                        ? "bg-green-600 hover:bg-green-600"
+                        : "bg-zinc-600 hover:bg-zinc-600"
                     }`}
                   >
                     {animeInfo.status === "WATCHING" ? (

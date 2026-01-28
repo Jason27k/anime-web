@@ -8,6 +8,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+import { Toaster } from "sonner";
 
 const robo = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
@@ -37,6 +38,17 @@ export default function RootLayout({
           <Header>
             <Provider>{children}</Provider>
           </Header>
+          <Toaster
+            theme="dark"
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#1f232d',
+                border: '1px solid #2a2f3a',
+                color: '#fff',
+              },
+            }}
+          />
           <SpeedInsights />
           <Analytics />
         </body>
