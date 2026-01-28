@@ -54,7 +54,8 @@ export default function ProfileSidebar({ stats }: ProfileSidebarProps) {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
+      // Match md breakpoint (768px)
+      setIsMobile(window.innerWidth < 768);
     };
 
     checkMobile();

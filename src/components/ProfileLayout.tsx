@@ -16,10 +16,10 @@ interface ProfileLayoutProps {
 export default function ProfileLayout({ children, stats }: ProfileLayoutProps) {
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sidebar - Fixed width on desktop, full width on mobile */}
-        <aside className="w-full lg:w-72 lg:flex-shrink-0">
-          <div className="lg:sticky lg:top-20">
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Sidebar - Fixed width on tablet+, full width on mobile */}
+        <aside className="w-full md:w-64 lg:w-72 md:flex-shrink-0">
+          <div className="md:sticky md:top-20">
             <ProfileSidebar stats={stats} />
           </div>
         </aside>
