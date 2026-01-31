@@ -18,3 +18,35 @@ export function getWeekRangeFromToday(): {
     endOfWeek: Math.floor(endOfWeek.getTime() / 1000),
   };
 }
+
+export function getTodayRange(): {
+  startOfDay: number;
+  endOfDay: number;
+} {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(startOfDay);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  return {
+    startOfDay: Math.floor(startOfDay.getTime() / 1000),
+    endOfDay: Math.floor(endOfDay.getTime() / 1000),
+  };
+}
+
+export function formatTimeUntilAiring(airingAt: number): string {
+  const now = Math.floor(Date.now() / 1000);
+  const diff = airingAt - now;
+
+  if (diff <= 0) {
+    return "Now Airing";
+  }
+
+  const hours = Math.floor(diff / 3600);
+  const minutes = Math.floor((diff % 3600) / 60);
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  return `${minutes}m`;
+}

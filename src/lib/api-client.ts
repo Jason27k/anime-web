@@ -157,3 +157,136 @@ class AnimeApiClient {
 }
 
 export const animeApi = new AnimeApiClient();
+
+// Types for new optimized endpoints
+export type ScheduleEntry = {
+  id: number;
+  episode: number;
+  airingAt: number;
+  media: {
+    id: number;
+    idMal: number;
+    title: {
+      romaji: string;
+      native: string;
+      english: string;
+    };
+    coverImage: {
+      extraLarge: string;
+      color?: string;
+    };
+    bannerImage?: string;
+    format: string;
+    popularity: number;
+    isAdult: boolean;
+  };
+};
+
+export type WatchlistScheduleResponse = {
+  schedules: ScheduleEntry[];
+  totalCount: number;
+};
+
+export type HomepageDataResponse = {
+  trending: MediaSummary[];
+  popular: MediaSummary[];
+  top: MediaSummary[];
+  upcoming: MediaSummary[];
+  todaySchedule: ScheduleEntry[];
+  currentSeason: "WINTER" | "SPRING" | "SUMMER" | "FALL";
+  currentSeasonYear: number;
+  nextSeason: "WINTER" | "SPRING" | "SUMMER" | "FALL";
+  nextSeasonYear: number;
+  cachedAt: string;
+};
+
+export type MediaSummary = {
+  id: number;
+  idMal: number;
+  title: {
+    romaji: string;
+    native: string;
+    english: string;
+  };
+  coverImage: {
+    extraLarge: string;
+    color?: string;
+  };
+  bannerImage?: string;
+  format: string;
+  status: string;
+  season: string;
+  seasonYear: number;
+  episodes?: number;
+  averageScore?: number;
+  popularity: number;
+  genres: string[];
+  nextAiringEpisode?: {
+    airingAt: number;
+    timeUntilAiring: number;
+    episode: number;
+  };
+};
+
+class OptimizedApiClient {
+  private baseUrl: string;
+
+  constructor() {
+    this.baseUrl = API_BASE_URL;
+  }
+
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get user's watchlist schedule for a date range.
+   * Backend queries AniList with only the user's saved anime IDs.
+   */
+  async getWatchlistSchedule(
+    userId: string,
+    startDate: number,
+    endDate: number
+  ): Promise<WatchlistScheduleResponse> {
+    const params = new URLSearchParams({
+      startDate: startDate.toString(),
+      endDate: endDate.toString(),
+    });
+    return this.request<WatchlistScheduleResponse>(
+      `/api/users/${userId}/watchlist-schedule?${params}`
+    );
+  }
+
+  /**
+   * Get cached homepage data (trending, popular, top, upcoming, today's schedule).
+   * Backend caches this data and refreshes every 15-30 minutes.
+   */
+  async getHomepageData(): Promise<HomepageDataResponse> {
+    return this.request<HomepageDataResponse>("/api/homepage");
+  }
+
+  /**
+   * Get today's airing schedule (cached).
+   * Backend caches and refreshes every 5-10 minutes.
+   */
+  async getTodaySchedule(): Promise<ScheduleEntry[]> {
+    return this.request<ScheduleEntry[]>("/api/schedule/today");
+  }
+}
+
+export const optimizedApi = new OptimizedApiClient();

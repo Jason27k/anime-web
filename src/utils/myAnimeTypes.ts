@@ -11,8 +11,7 @@ export interface Anime {
   title: Title;
   coverImage: CoverImage;
   episodes: number;
-  streamingEpisodes?: StreamingEpisode[]; // Optional if empty arrays need handling: `streamingEpisodes?: StreamingEpisode[]`
-  nextAiringEpisode: NextAiringEpisode | null;
+  streamingEpisodes?: StreamingEpisode[];
   season: "WINTER" | "SPRING" | "SUMMER" | "FALL";
   seasonYear: number;
 }

@@ -1,6 +1,6 @@
 # Next Steps for AnimeTrove
 
-## Completed ✅
+## Completed
 
 ### Project Migration
 
@@ -10,7 +10,7 @@
 - Updated all dependencies to latest versions
 - Set up src/ directory structure
 - Configured Clerk authentication
-- Set up Drizzle ORM with PostgreSQL
+- Migrated from Drizzle ORM/PostgreSQL to external REST API
 - Migrated all 15 routes and 20+ components
 
 ### UI Improvements
@@ -18,8 +18,9 @@
 - Refactored all hardcoded colors to use Tailwind design tokens
 - Simplified calendar display options (removed 2 unnecessary view modes)
 - Fixed dark mode and color inconsistencies
+- Improved navbar with icons on desktop, better hover states
 
-## To Do 📋
+## To Do
 
 ### Search Page Improvements
 
@@ -30,7 +31,7 @@
 
 ### General UI/UX
 
-- [ ] Review homepage layout
+- [ ] Review homepage layout (consider calendar as homepage?)
 - [ ] Improve loading states and skeleton screens
 - [ ] Review anime detail page design
 - [ ] Improve mobile menu experience
@@ -52,8 +53,7 @@
 
 - [ ] Copy `.env.local.example` to `.env.local`
 - [ ] Add Clerk API keys
-- [ ] Add database connection string
-- [ ] Run database migrations: `npm run db:push`
+- [ ] Configure REST API endpoint
 
 ## Development Commands
 
@@ -62,24 +62,12 @@ npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
-npm run db:generate  # Generate database migrations
-npm run db:push      # Push schema changes to database
-npm run db:studio    # Open Drizzle Studio (database GUI)
 ```
 
 ## Notes
 
-- Homepage is in good shape
-- Calendar is simplified and ready
-- Search page needs attention next
+- Homepage shows: Upcoming, Trending, Popular, Top Rated, Romance rows
+- Calendar shows weekly airing schedule (filtered to popular TV/ONA)
 - All colors now use design tokens for easy theming
 - Dark mode is default
-
-ASIDE WRITTEN BY JASON
-Add animations (and possible toast notifications) to the myanime/stats page
-change dialog menu for something that looks better
-change top right badge to something that better suits the page
-make language option chosen affect the titles in the page
-update navbar to reflect changes (maybe make this page pop up when user clicks their profile picture)
-update details page and dialogs for adding anime to list
-update loading skeleton for myanime/settings page
+- Using external REST API for user data (my-anime lists)

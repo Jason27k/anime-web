@@ -1,6 +1,5 @@
 import AnimeRow from "./AnimeRow";
 import { MediaDisplay } from "@/utils/anilistTypes";
-import AnimeCarousel from "./AnimeCarousel";
 
 interface AnimeHomeRowsProps {
   upcoming: MediaDisplay[];
@@ -10,9 +9,18 @@ interface AnimeHomeRowsProps {
   romance: MediaDisplay[];
   nextSeason: string;
   nextSeasonYear: number;
+  currentSeason?: "WINTER" | "SPRING" | "SUMMER" | "FALL";
+  currentSeasonYear?: number;
   loggedIn: boolean;
   ids: number[];
 }
+
+const seasonLabels: Record<string, string> = {
+  WINTER: "Winter",
+  SPRING: "Spring",
+  SUMMER: "Summer",
+  FALL: "Fall",
+};
 
 const AnimeHomeRows = ({
   upcoming,
@@ -22,16 +30,29 @@ const AnimeHomeRows = ({
   romance,
   nextSeason,
   nextSeasonYear,
+  currentSeason,
+  currentSeasonYear,
   loggedIn,
   ids,
 }: AnimeHomeRowsProps) => {
+  const currentSeasonLabel = currentSeason ? seasonLabels[currentSeason] : null;
+  const trendingTitle =
+    currentSeasonLabel && currentSeasonYear
+      ? `Trending ${currentSeasonLabel} ${currentSeasonYear}`
+      : "Trending";
+
   return (
     <div className="flex flex-col gap-4 h-full">
       <div className="flex flex-col gap-8 pt-2 h-full">
+        {/* Current season trending first for seasonal focus */}
         <AnimeRow
-          title="Trending"
+          title={trendingTitle}
           animes={trending}
-          link="/search?sort=TRENDING_DESC"
+          link={
+            currentSeason && currentSeasonYear
+              ? `/search?season=${currentSeason}&year=${currentSeasonYear}&sort=TRENDING_DESC`
+              : "/search?sort=TRENDING_DESC"
+          }
           loggedIn={loggedIn}
           ids={ids}
         />

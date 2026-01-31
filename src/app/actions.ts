@@ -811,3 +811,156 @@ export async function fetchAnimeStats() {
     return null;
   }
 }
+
+import { getTodayRange, getWeekRangeFromToday } from "@/utils/date";
+import { AiringSchedule } from "@/utils/anilistTypes";
+import { optimizedApi, ScheduleEntry } from "@/lib/api-client";
+
+// Helper to convert optimized API response to AiringSchedule format
+function convertScheduleEntry(entry: ScheduleEntry): AiringSchedule {
+  return {
+    id: entry.id,
+    episode: entry.episode,
+    airingAt: entry.airingAt,
+    media: {
+      id: entry.media.id,
+      idMal: entry.media.idMal,
+      title: entry.media.title,
+      coverImage: entry.media.coverImage,
+      bannerImage: entry.media.bannerImage || "",
+      format: entry.media.format as AiringSchedule["media"]["format"],
+      popularity: entry.media.popularity,
+      isAdult: entry.media.isAdult,
+      // Default values for fields not in ScheduleEntry
+      startDate: { year: 0, month: 0, day: 0 },
+      endDate: { year: 0, month: 0, day: 0 },
+      status: "RELEASING",
+      season: "WINTER",
+      seasonYear: new Date().getFullYear(),
+      genres: [],
+      duration: 0,
+      type: "ANIME",
+      episodes: 0,
+      description: "",
+      rankings: [],
+      studios: { nodes: [] },
+    },
+  };
+}
+
+/**
+ * Fetch today's airing schedule.
+ * Tries optimized cached endpoint first, falls back to direct AniList query.
+ */
+export async function fetchTodaySchedule(): Promise<AiringSchedule[]> {
+  // Try optimized endpoint first
+  try {
+    const cachedSchedule = await optimizedApi.getTodaySchedule();
+    return cachedSchedule.map(convertScheduleEntry);
+  } catch {
+    // Optimized endpoint not available, fall back to direct query
+    console.log("Optimized today schedule endpoint not available, using fallback");
+  }
+
+  // Fallback: Direct AniList query
+  const { startOfDay, endOfDay } = getTodayRange();
+
+  try {
+    const response = await fetchSchedule(startOfDay, endOfDay, 1);
+    const schedules = response.data.Page.airingSchedules;
+
+    // Apply same filters as calendar: popularity > 10000, TV/ONA formats
+    const filtered = schedules.filter((schedule) => {
+      const media = schedule.media;
+      return (
+        media.popularity > 10000 &&
+        (media.format === "TV" || media.format === "ONA") &&
+        !media.isAdult
+      );
+    });
+
+    // Sort by airing time
+    return filtered.sort((a, b) => a.airingAt - b.airingAt);
+  } catch (error) {
+    console.error("Failed to fetch today's schedule:", error);
+    return [];
+  }
+}
+
+/**
+ * Fetch user's watchlist airing schedule for the week.
+ * Tries optimized endpoint first (queries only user's anime), falls back to fetching all + filtering.
+ */
+export async function fetchWatchlistAiring(
+  userAnimeIds: number[]
+): Promise<{ schedules: AiringSchedule[]; totalCount: number }> {
+  if (!userAnimeIds || userAnimeIds.length === 0) {
+    return { schedules: [], totalCount: 0 };
+  }
+
+  const { startOfWeek, endOfWeek } = getWeekRangeFromToday();
+
+  // Try optimized endpoint first
+  try {
+    const user = await currentUser();
+    if (user) {
+      const response = await optimizedApi.getWatchlistSchedule(
+        user.id,
+        startOfWeek,
+        endOfWeek
+      );
+      return {
+        schedules: response.schedules.map(convertScheduleEntry),
+        totalCount: response.totalCount,
+      };
+    }
+  } catch {
+    // Optimized endpoint not available, fall back to manual filtering
+    console.log("Optimized watchlist schedule endpoint not available, using fallback");
+  }
+
+  // Fallback: Fetch all schedules and filter client-side
+  const userAnimeSet = new Set(userAnimeIds);
+
+  try {
+    const allSchedules: AiringSchedule[] = [];
+    let page = 1;
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+      const response = await fetchSchedule(startOfWeek, endOfWeek, page);
+      const schedules = response.data.Page.airingSchedules;
+      allSchedules.push(...schedules);
+      hasNextPage = response.data.Page.pageInfo.hasNextPage;
+      page++;
+      // Safety limit to prevent infinite loops
+      if (page > 10) break;
+    }
+
+    // Filter to only user's saved anime
+    const filtered = allSchedules.filter((schedule) =>
+      userAnimeSet.has(schedule.media.id)
+    );
+
+    // Sort by airing time
+    const sorted = filtered.sort((a, b) => a.airingAt - b.airingAt);
+
+    return { schedules: sorted, totalCount: sorted.length };
+  } catch (error) {
+    console.error("Failed to fetch watchlist airing:", error);
+    return { schedules: [], totalCount: 0 };
+  }
+}
+
+/**
+ * Fetch all homepage data from optimized cached endpoint.
+ * Returns null if endpoint not available (caller should use individual fetches).
+ */
+export async function fetchHomepageData() {
+  try {
+    return await optimizedApi.getHomepageData();
+  } catch {
+    // Endpoint not available
+    return null;
+  }
+}
