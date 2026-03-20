@@ -13,10 +13,10 @@ const redis = hasRedis
 
 // TTLs in seconds — mirrors what the Go backend used
 export const TTL = {
-  schedule: 30 * 60,       // 30 min
-  search: 60 * 60,         // 1 hr
+  schedule: 6 * 60 * 60, // 6 hr
+  search: 60 * 60, // 1 hr
   genres: 7 * 24 * 60 * 60, // 7 days
-  anime: 3 * 60 * 60,      // 3 hr (releasing/default)
+  anime: 3 * 60 * 60, // 3 hr (releasing/default)
   finished: 7 * 24 * 60 * 60, // 7 days
 } as const;
 
@@ -32,7 +32,7 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
 export async function cacheSet(
   key: string,
   value: unknown,
-  ttlSeconds: number
+  ttlSeconds: number,
 ): Promise<void> {
   if (!redis) return;
   try {

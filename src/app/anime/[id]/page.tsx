@@ -1,6 +1,28 @@
 import { fetchAniListAnime, getMyListEntry } from "@/app/actions";
-import AnimeDetailsTwo from "@/components/AnimeDetailsTwo";
+import AnimeDetails from "@/components/AnimeDetails";
 import { currentUser } from "@clerk/nextjs/server";
+import { Suspense } from "react";
+import AnimeDetailLoading from "./loading";
+
+async function AnimeDetailsContent({ id }: { id: number }) {
+  const [animeResponse, user] = await Promise.all([
+    fetchAniListAnime(id),
+    currentUser(),
+  ]);
+
+  const anime = animeResponse.data.Media;
+  const loggedIn = !!user;
+  const listEntry = loggedIn ? await getMyListEntry(id) : null;
+
+  return (
+    <AnimeDetails
+      anime={anime}
+      loggedIn={loggedIn}
+      liked={listEntry !== null}
+      listEntry={listEntry ? { status: listEntry.status, episode: listEntry.episode } : null}
+    />
+  );
+}
 
 const DetailsPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = parseInt((await params).id);
@@ -8,20 +30,10 @@ const DetailsPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     return <div>Invalid ID</div>;
   }
 
-  const animeResponse = await fetchAniListAnime(id);
-  const anime = animeResponse.data.Media;
-
-  const user = await currentUser();
-  const loggedIn = !!user;
-  const listEntry = loggedIn ? await getMyListEntry(id) : null;
-
   return (
-    <AnimeDetailsTwo
-      anime={anime}
-      loggedIn={loggedIn}
-      liked={listEntry !== null}
-      listEntry={listEntry ? { status: listEntry.status, episode: listEntry.episode } : null}
-    />
+    <Suspense fallback={<AnimeDetailLoading />}>
+      <AnimeDetailsContent id={id} />
+    </Suspense>
   );
 };
 

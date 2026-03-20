@@ -80,7 +80,7 @@ const HeroCarousel = ({ trendingAnime }: HeroCarouselProps) => {
           </span>
 
           {/* Title */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white mb-4 leading-[0.95]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white mb-4 leading-[0.95] line-clamp-3">
             {title}
           </h1>
 

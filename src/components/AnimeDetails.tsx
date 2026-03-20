@@ -13,7 +13,7 @@ import { AnimeStatus } from "@/lib/api-client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 
-interface AnimeDetailPropsTwo {
+interface AnimeDetailProps {
   anime: Media;
   loggedIn: boolean;
   liked: boolean;
@@ -43,12 +43,12 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function AnimeDetailsTwo({
+export default function AnimeDetails({
   anime,
   loggedIn,
   liked,
   listEntry,
-}: AnimeDetailPropsTwo) {
+}: AnimeDetailProps) {
   const [addSheetOpen, setAddSheetOpen] = useState(false);
   const [linkCollapsed, setLinkCollapsed] = useState(false);
   const [selectedEpisode, setSelectedEpisode] = useState(anime.streamingEpisodes[0]);
@@ -91,7 +91,7 @@ export default function AnimeDetailsTwo({
   return (
     <div>
       {/* ── Cinematic Hero ── */}
-      <section className="relative w-screen -mx-5 -mt-6 lg:-mx-10 xl:-mx-17 2xl:-mx-[12vw] h-[480px] md:h-[580px] overflow-hidden flex items-end pb-16 px-8 md:px-16">
+      <section className="relative w-[calc(100%+2.5rem)] -mx-5 -mt-6 lg:w-[calc(100%+5rem)] lg:-mx-10 xl:w-[calc(100%+8.5rem)] xl:-mx-17 2xl:w-[calc(100%+12rem)] 2xl:-mx-24 min-[1750px]:mx-0 min-[1750px]:w-full h-[480px] md:h-[580px] overflow-hidden flex items-end pb-16 px-5 lg:px-10 xl:px-17 2xl:px-24">
         {/* Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent z-10" />
@@ -119,7 +119,7 @@ export default function AnimeDetailsTwo({
             )}
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground uppercase mb-4 leading-[0.9]">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground uppercase mb-4 leading-[0.9] line-clamp-3">
             {title}
           </h1>
 
@@ -404,7 +404,7 @@ export default function AnimeDetailsTwo({
 
       {/* ── Recommendations ── */}
       {recommendations.length > 0 && (
-        <section className="w-screen -mx-5 lg:-mx-10 xl:-mx-17 2xl:-mx-[12vw] bg-surface-container-low/50 py-20 px-8 md:px-16">
+        <section className="w-[calc(100%+2.5rem)] -mx-5 lg:w-[calc(100%+5rem)] lg:-mx-10 xl:w-[calc(100%+8.5rem)] xl:-mx-17 2xl:w-[calc(100%+12rem)] 2xl:-mx-24 min-[1750px]:mx-0 min-[1750px]:w-full bg-surface-container-low/50 py-20 px-5 lg:px-10 xl:px-17 2xl:px-24">
           <div className="max-w-screen-2xl mx-auto">
             <div className="flex items-end justify-between mb-10">
               <div>
@@ -449,7 +449,7 @@ export default function AnimeDetailsTwo({
 
       {/* ── Related Anime ── */}
       {relatedAnime.length > 0 && (
-        <section className="w-screen -mx-5 lg:-mx-10 xl:-mx-17 2xl:-mx-[12vw] py-20 px-8 md:px-16">
+        <section className="w-[calc(100%+2.5rem)] -mx-5 lg:w-[calc(100%+5rem)] lg:-mx-10 xl:w-[calc(100%+8.5rem)] xl:-mx-17 2xl:w-[calc(100%+12rem)] 2xl:-mx-24 min-[1750px]:mx-0 min-[1750px]:w-full py-20 px-5 lg:px-10 xl:px-17 2xl:px-24">
           <div className="max-w-screen-2xl mx-auto">
             <div className="flex items-end justify-between mb-10">
               <div>

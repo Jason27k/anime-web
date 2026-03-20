@@ -4,7 +4,7 @@ export default function AnimeDetailLoading() {
   return (
     <div>
       {/* ── Hero ── */}
-      <div className="relative w-screen -mx-5 -mt-6 lg:-mx-10 xl:-mx-17 2xl:-mx-[12vw] h-[480px] md:h-[580px] overflow-hidden flex items-end pb-16 px-8 md:px-16">
+      <div className="relative w-[calc(100%+2.5rem)] -mx-5 -mt-6 lg:w-[calc(100%+5rem)] lg:-mx-10 xl:w-[calc(100%+8.5rem)] xl:-mx-17 2xl:w-[calc(100%+12rem)] 2xl:-mx-24 min-[1750px]:mx-0 min-[1750px]:w-full h-[480px] md:h-[580px] overflow-hidden flex items-end pb-16 px-5 lg:px-10 xl:px-17 2xl:px-24">
         <Skeleton className="absolute inset-0 rounded-none" />
         <div className="relative z-10 max-w-4xl w-full space-y-4">
           <div className="flex items-center gap-3">
@@ -104,7 +104,7 @@ export default function AnimeDetailLoading() {
       </section>
 
       {/* ── Recommendations ── */}
-      <section className="w-screen -mx-5 lg:-mx-10 xl:-mx-17 2xl:-mx-[12vw] bg-surface-container-low/50 py-20 px-8 md:px-16">
+      <section className="w-[calc(100%+2.5rem)] -mx-5 lg:w-[calc(100%+5rem)] lg:-mx-10 xl:w-[calc(100%+8.5rem)] xl:-mx-17 2xl:w-[calc(100%+12rem)] 2xl:-mx-24 min-[1750px]:mx-0 min-[1750px]:w-full bg-surface-container-low/50 py-20 px-5 lg:px-10 xl:px-17 2xl:px-24">
         <div className="max-w-screen-2xl mx-auto">
           <div className="mb-10 space-y-2">
             <Skeleton className="h-4 w-24" />
