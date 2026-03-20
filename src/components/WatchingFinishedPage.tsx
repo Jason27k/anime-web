@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,6 @@ import Link from "next/link";
 import { AnimeInfo } from "@/app/my-anime/page";
 import AnimeSheet from "./AnimeSheet";
 import { AnimeStatus } from "@/lib/api-client";
-import { SettingsContext, LanguageType } from "@/app/Provider";
 
 interface MyAnimeProps {
   animeInfoList: AnimeInfo[];
@@ -36,7 +35,6 @@ export default function MyAnimePage({
   route,
   stats,
 }: MyAnimeProps) {
-  const { settings } = useContext(SettingsContext);
   const [editingAnime, setEditingAnime] = useState<{
     id: number;
     title: string;
@@ -48,16 +46,7 @@ export default function MyAnimePage({
   } | null>(null);
 
   function getTitle(title: Title): string {
-    switch (settings.language) {
-      case LanguageType.English:
-        return title.english || title.romaji || title.userPreferred;
-      case LanguageType.Romanji:
-        return title.romaji || title.english || title.userPreferred;
-      case LanguageType.Japanese:
-        return title.native || title.romaji || title.userPreferred;
-      default:
-        return title.userPreferred;
-    }
+    return title.english || title.romaji || title.userPreferred;
   }
 
   function timeOrSeasonString(anime: Anime) {

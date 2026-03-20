@@ -1,110 +1,63 @@
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ArrowDownToLine, CirclePlus, Star, User } from "lucide-react";
 
 export default function CalendarLoadingPage() {
   return (
     <div className="flex flex-col w-full">
-      <TabOptionsLoading />
-      <div className="flex flex-col">
-        {[...Array(7)].map((_, index) => (
-          <AnimeDayLoading key={index} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function TabOptionsLoading() {
-  return (
-    <div className="flex justify-between flex-wrap gap-4 sm:gap-0 sm:flex-nowrap items-center pb-2">
-      <div className="flex gap-2">
-        <Skeleton className="h-10 w-24 bg-gray-700" />
-        <Skeleton className="h-10 w-24 bg-gray-700" />
-        <Skeleton className="h-10 w-24 bg-gray-700" />
-      </div>
-      <div className="flex gap-2">
-        <Skeleton className="h-8 w-8 rounded-md bg-gray-700" />
-        <Skeleton className="h-8 w-8 rounded-md bg-gray-700" />
-        <Skeleton className="h-8 w-8 rounded-md bg-gray-700" />
-      </div>
-    </div>
-  );
-}
-
-function AnimeDayLoading() {
-  return (
-    <>
-      <div className="flex w-full justify-between items-center pt-5 pb-6">
-        <Skeleton className="h-10 w-40 bg-gray-700" />
-        <Button className="bg-transparent">
-          <ArrowDownToLine size={24} className="text-primary" />
-        </Button>
-      </div>
-      <AnimeDisplayLoading />
-    </>
-  );
-}
-
-function AnimeDisplayLoading() {
-  return (
-    <ScrollArea className="pt-2 flex justify-center w-full">
-      <div className="flex flex-col items-center">
-        <div className="hidden min-[465px]:grid w-full grid-cols-1 min-[975px]:grid-cols-2 min-[2000px]:grid-cols-3 gap-4 justify-center">
-          {[...Array(3)].map((_, index) => (
-            <AnimeCardLoading key={index} />
-          ))}
+      {/* Hero Header */}
+      <header className="mb-16">
+        <div className="flex items-baseline gap-4 mb-2">
+          <Skeleton className="h-4 w-20" />
+          <div className="h-px flex-grow bg-gradient-to-r from-primary/30 to-transparent" />
         </div>
-      </div>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
-  );
-}
+        <Skeleton className="h-16 md:h-24 w-3/4 mb-4 rounded-lg" />
+        <Skeleton className="h-5 w-72" />
+      </header>
 
-function AnimeCardLoading() {
-  return (
-    <div className="flex h-[265px] justify-center w-full">
-      <div className="flex flex-col relative h-full w-[185px]">
-        <Skeleton className="h-[265px] w-full min-w-[135px] bg-gray-700" />
-        <div className="bg-[#000000b3] flex flex-col justify-around items-start absolute bottom-0 w-full min-h-20 p-2">
-          <Skeleton className="h-4 w-3/4 bg-gray-500 mb-1" />
-          <Skeleton className="h-4 w-1/2 bg-gray-500" />
-          <Skeleton className="h-3 w-1/3 bg-primary mt-2" />
-        </div>
-      </div>
-      <div className="flex flex-col bg-[#1f232d] w-[98%] max-w-[500px]">
-        <div className="flex justify-between text-[#9fa7b0] p-3">
-          <Skeleton className="h-6 w-1/3 bg-gray-700" />
-          <div className="flex flex-col items-end">
-            <div className="flex gap-2 items-center">
-              <Star size={16} className="text-primary" />
-              <Skeleton className="h-4 w-10 bg-gray-700" />
+      <div className="space-y-4">
+        {/* First day — expanded */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between w-full mb-8 gap-2">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-9 w-36 sm:h-10 sm:w-48" />
+              <Skeleton className="h-6 w-24 rounded-full" />
             </div>
-            <div className="flex gap-2 items-center">
-              <User size={16} className="text-primary" />
-              <Skeleton className="h-4 w-10 bg-gray-700" />
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-4 w-24 hidden sm:block" />
+              <Skeleton className="h-5 w-5 rounded" />
             </div>
           </div>
-        </div>
-        <div className="text-[#7c8793] pl-3 w-[98%]">
-          <Skeleton className="h-4 w-full bg-gray-700 mb-1" />
-          <Skeleton className="h-4 w-full bg-gray-700 mb-1" />
-          <Skeleton className="h-4 w-3/4 bg-gray-700" />
-        </div>
-        <div className="flex flex-row-reverse items-center bg-[#191d26] justify-start mt-auto h-12 px-1 overflow-hidden w-full">
-          <div className="ml-auto pl-1">
-            <CirclePlus size={24} className="text-[#7c8793] ml-auto" />
-          </div>
-          <div className="flex items-center justify-start overflow-hidden w-full">
-            {[...Array(4)].map((_, index) => (
-              <Skeleton
-                key={index}
-                className="h-6 w-16 bg-primary rounded-xl mx-1"
-              />
+          {/* Expanded card grid */}
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 min-[600px]:grid-cols-3 min-[900px]:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 md:gap-5 xl:gap-8">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex flex-col gap-2">
+                <Skeleton className="w-full h-52 rounded-lg" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-3 w-2/3" />
+              </div>
             ))}
           </div>
-        </div>
+        </section>
+
+        {/* Remaining 6 days — collapsed */}
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between w-full p-3 sm:p-6 rounded-xl bg-surface-container-low gap-2"
+          >
+            <div className="flex items-center gap-3 sm:gap-6">
+              <Skeleton className="h-6 w-24 sm:h-7 sm:w-32" />
+              <div className="hidden sm:flex gap-1.5">
+                {[...Array(4)].map((_, j) => (
+                  <div key={j} className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-4 rounded" />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

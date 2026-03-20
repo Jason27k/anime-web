@@ -1,7 +1,5 @@
 "use client";
-import { User, Star } from "lucide-react";
-import { LanguageContext, LanguageType } from "@/app/Provider";
-import { useContext } from "react";
+import { Star, Users } from "lucide-react";
 import Link from "next/link";
 import { MediaDisplay } from "@/utils/anilistTypes";
 import { convertUTCToLocal } from "@/utils/date";
@@ -19,63 +17,72 @@ const AnimeCardMedium = ({
   loggedIn,
   ids,
 }: AnimeCardMediumProps) => {
-  const languageContext = useContext(LanguageContext);
-
   const image = anime.coverImage.extraLarge;
-  const title =
-    (languageContext.language === LanguageType.English
-      ? anime.title.english
-      : languageContext.language === LanguageType.Romanji
-      ? anime.title.romaji
-      : anime.title.native) ?? anime.title.romaji;
+  const title = anime.title.english ?? anime.title.romaji ?? anime.title.native;
 
   let airingString = "";
   if (airing) {
     const date = convertUTCToLocal(airing);
-    const time = date.toLocaleTimeString("en-US", {
+    airingString = date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "numeric",
     });
-    airingString = time;
   }
+
   const score =
     anime.averageScore === null || !anime.averageScore
-      ? ""
+      ? null
       : anime.averageScore / 10;
   const members = anime.popularity;
+
   return (
     <Link
       href={"/anime/" + anime.id}
-      className="flex flex-col items-start h-96"
+      className="flex flex-col group cursor-pointer w-36 flex-shrink-0"
     >
-      <div className="flex flex-col gap-2 justify-start h-96">
-        <div className="relative h-72 w-52 flex items-start">
-          <img
-            src={image}
-            alt={title}
-            loading="lazy"
-            className="bg-[#191d26] mx-auto h-72 w-52"
-          />
-        </div>
-        <h2 className="w-52 text-white line-clamp-2 text-start text-base h-[3rem]">
-          {title}
-        </h2>
-        <div className="flex text-[#8c8c8c] gap-2 text-sm items-end justify-between ">
-          <div className="flex justify-start items-center gap-1">
-            <User size={17} />
-            <p>
-              {" "}
-              {members > 1000000
-                ? Math.floor(members / 100000) / 10 + "M"
-                : Math.floor(members / 1000) + "K"}
-            </p>
+      <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-surface-container-low mb-3 transition-transform duration-500 hover:scale-[1.03] shadow-lg hover:shadow-primary/10">
+        <img
+          src={image}
+          alt={title}
+          loading="lazy"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+        {airingString && (
+          <span
+            className="absolute top-2 left-2 text-white text-xs font-black tracking-tighter px-2 py-1 rounded"
+            style={{ backgroundColor: "rgba(0,0,0,0.8)" }}
+          >
+            {airingString}
+          </span>
+        )}
+        {score && (
+          <div
+            className="absolute bottom-2 right-2 flex items-center gap-1 text-primary px-2 py-1 rounded"
+            style={{ backgroundColor: "rgba(0,0,0,0.8)" }}
+          >
+            <Star size={11} fill="currentColor" />
+            <span className="text-xs font-black">{score}</span>
           </div>
-          {<p className="text-start">{airingString}</p>}
-          <div className="flex justify-start items-center gap-1">
-            <Star size={17} />
-            <p>{score}</p>
-          </div>
+        )}
+      </div>
+      <h2 className="text-sm font-bold text-foreground leading-snug group-hover:text-primary transition-colors mb-1 line-clamp-2">
+        {title}
+      </h2>
+      <div className="flex items-center justify-between text-muted-foreground text-xs uppercase tracking-wider">
+        <div className="flex items-center gap-1">
+          <Users size={12} />
+          <span>
+            {members > 1000000
+              ? Math.floor(members / 100000) / 10 + "M"
+              : Math.floor(members / 1000) + "K"}
+          </span>
         </div>
+        {anime.nextAiringEpisode ? (
+          <span>EP {anime.nextAiringEpisode.episode}</span>
+        ) : anime.episodes ? (
+          <span>{anime.episodes} EPS</span>
+        ) : null}
       </div>
     </Link>
   );

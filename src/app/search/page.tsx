@@ -39,12 +39,10 @@ const Search = async ({
       `/search/?${query ? "query=" + query + "&" : ""}${
         selectedGenres ? "genres=" + selectedGenres + "&" : ""
       }${
-        sort ? "sort=" + sort + "&" : ":"
+        sort ? "sort=" + sort + "&" : ""
       }season=${selectedSeason}&year=${currentYear}`
     );
   }
-
-  console.log(await searchParams);
 
   return (
     <Suspense>

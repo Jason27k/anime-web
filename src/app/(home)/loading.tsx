@@ -1,72 +1,79 @@
-import React from "react";
-import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Star, User } from "lucide-react";
 
 const LoadingPage = () => {
   return (
-    <div>
-      <AnimeHomeRowsLoading />
-    </div>
-  );
-};
+    <div className="flex flex-col gap-8">
+      {/* Hero carousel */}
+      <Skeleton className="w-full h-[420px] md:h-[500px] rounded-xl" />
 
-const AnimeHomeRowsLoading = () => {
-  return (
-    <div className="flex flex-col gap-4 h-full">
-      <div className="flex flex-col gap-8 pt-2 h-full">
-        <AnimeRowLoading title="Trending" link="/search?sort=TRENDING_DESC" />
-        <AnimeRowLoading title="Top All Time" link="/search?sort=SCORE_DESC" />
-        <AnimeRowLoading title="Upcoming Season" link="/upcoming" />
-        <AnimeRowLoading
-          title="Popular Anime"
-          link="/search?sort=POPULARITY_DESC"
-        />
-        <AnimeRowLoading title="Romance Lover" link="/search?genres=Romance" />
-      </div>
-    </div>
-  );
-};
-
-const AnimeRowLoading = ({ title, link }: { title: string; link: string }) => {
-  return (
-    <>
-      <div className="flex flex-col text-white gap-2">
-        <div className="flex justify-between">
-          <h1 className="text-2xl">{title}</h1>
-          <Link href={link}>View All</Link>
+      {/* Seasonal Favorites — text left, 3 cards right */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        <div className="lg:col-span-4 flex flex-col justify-center gap-3">
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-4 w-full max-w-xs" />
+          <Skeleton className="h-4 w-3/4 max-w-xs" />
+          <Skeleton className="h-10 w-44 rounded-full mt-2" />
         </div>
-        <div className="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-5 xl:grid-cols-6 gap-10 justify-center">
-          {[...Array(5)].map((_, index) => (
-            <AnimeMediumResizableLoading key={index} />
+        <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          {[...Array(2)].map((_, i) => (
+            <Skeleton key={i} className="aspect-[3/4] rounded-lg" />
           ))}
-          <div className="block md:hidden xl:block">
-            <AnimeMediumResizableLoading />
-          </div>
+          <Skeleton className="aspect-[3/4] rounded-lg hidden md:block" />
         </div>
+      </section>
+
+      <div className="flex flex-col gap-16">
+        {/* Top All Time row */}
+        <AnimeRowLoading />
+        {/* Most Popular row */}
+        <AnimeRowLoading />
+
+        {/* Upcoming — 3 cards left, text right */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            {[...Array(2)].map((_, i) => (
+              <Skeleton key={i} className="aspect-[3/4] rounded-lg" />
+            ))}
+            <Skeleton className="aspect-[3/4] rounded-lg hidden md:block" />
+          </div>
+          <div className="lg:col-span-4 flex flex-col justify-center gap-3">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-9 w-40" />
+            <Skeleton className="h-5 w-36" />
+            <Skeleton className="h-4 w-full max-w-xs" />
+            <Skeleton className="h-4 w-3/4 max-w-xs" />
+            <Skeleton className="h-10 w-44 rounded-full mt-2" />
+          </div>
+        </section>
       </div>
-    </>
+    </div>
   );
 };
 
-const AnimeMediumResizableLoading = () => {
+const AnimeRowLoading = () => {
   return (
-    <div className="flex flex-col items-start">
-      <div className="flex flex-col gap-2 justify-start w-full">
-        <div className="relative w-full h-52">
-          <Skeleton className="w-full h-full" />
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-between items-end">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-1 w-12 rounded-full" />
         </div>
-        <Skeleton className="h-12 w-full" />
-        <div className="flex flex-wrap min-[450px]:flex-nowrap text-[#8c8c8c] gap-2 text-sm items-end justify-between -mt-1">
-          <div className="flex justify-start items-center gap-1">
-            <User size={17} />
-            <Skeleton className="w-12 h-4" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 min-[600px]:grid-cols-3 min-[900px]:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-5 xl:gap-6">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex flex-col gap-2">
+            <Skeleton className="w-full h-52 rounded-lg" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-3 w-2/3" />
           </div>
-          <Skeleton className="w-20 h-4" />
-          <div className="flex justify-start items-center gap-1">
-            <Star size={17} />
-            <Skeleton className="w-8 h-4" />
-          </div>
+        ))}
+        <div className="flex flex-col gap-2 md:hidden xl:flex">
+          <Skeleton className="w-full h-52 rounded-lg" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-3 w-2/3" />
         </div>
       </div>
     </div>

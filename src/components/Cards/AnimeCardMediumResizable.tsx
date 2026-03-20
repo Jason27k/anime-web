@@ -1,9 +1,6 @@
 "use client";
-import { User, Star } from "lucide-react";
-import { LanguageContext, LanguageType } from "@/app/Provider";
-import { useContext } from "react";
+import { Star, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import "@/styles/CardStyles.css";
 import Link from "next/link";
 import { MediaDisplay } from "@/utils/anilistTypes";
 import { convertUTCToLocal } from "@/utils/date";
@@ -23,71 +20,72 @@ const AnimeMediumResizable = ({
   loggedIn,
   ids,
 }: AnimeMediumResizableProps) => {
-  const languageContext = useContext(LanguageContext);
-
   const image = anime.coverImage.extraLarge;
-  const title =
-    (languageContext.language === LanguageType.English
-      ? anime.title.english
-      : languageContext.language === LanguageType.Romanji
-      ? anime.title.romaji
-      : anime.title.native) ?? anime.title.romaji;
+  const title = anime.title.english ?? anime.title.romaji ?? anime.title.native;
 
   let airingString = "";
   if (airing) {
     const date = convertUTCToLocal(airing);
-    const time = date.toLocaleTimeString("en-US", {
+    airingString = date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "numeric",
     });
-    airingString = time;
   }
+
   const score =
     anime.averageScore === null || !anime.averageScore
-      ? ""
+      ? null
       : anime.averageScore / 10;
   const members = anime.popularity;
+
   return (
     <Link
       href={"/anime/" + anime.id}
-      className={cn(className, "flex flex-col items-start")}
+      className={cn(className, "flex flex-col group cursor-pointer w-full")}
     >
-      <div className="flex flex-col gap-2 justify-start w-full">
-        <div className="relative w-full">
-          <img
-            src={image}
-            alt={title}
-            loading="lazy"
-            className="bg-[#191d26]"
-          />
-        </div>
-        <h2 className="text-white line-clamp-2 text-start text-base w-full h-12">
-          {title}
-        </h2>
-        <div className="flex flex-wrap min-[450px]:flex-nowrap text-[#8c8c8c] gap-2 text-sm items-end justify-between -mt-1">
-          <div
-            className={`justify-start items-center gap-1 ${
-              airingString ? "hidden" : "flex"
-            } min-[450px]:flex`}
+      <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-surface-container-low mb-3 transition-transform duration-500 hover:scale-[1.03] shadow-lg hover:shadow-primary/10">
+        <img
+          src={image}
+          alt={title}
+          loading="lazy"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+        {airingString && (
+          <span
+            className="absolute top-2 left-2 text-white text-xs font-black tracking-tighter px-2 py-1 rounded"
+            style={{ backgroundColor: "rgba(0,0,0,0.8)" }}
           >
-            <User size={17} />
-            <p>
-              {" "}
-              {members > 1000000
-                ? Math.floor(members / 100000) / 10 + "M"
-                : Math.floor(members / 1000) + "K"}
-            </p>
-          </div>
-          <p className="text-start">{airingString}</p>
+            {airingString}
+          </span>
+        )}
+        {score && (
           <div
-            className={`justify-start items-center gap-1 ${
-              airingString ? "hidden" : "flex"
-            } min-[450px]:flex`}
+            className="absolute bottom-2 right-2 flex items-center gap-1 text-primary px-2 py-1 rounded"
+            style={{ backgroundColor: "rgba(0,0,0,0.8)" }}
           >
-            {score && <Star size={17} />}
-            <p>{score}</p>
+            <Star size={11} fill="currentColor" />
+            <span className="text-xs font-black">{score}</span>
           </div>
+        )}
+      </div>
+      <h2 className="text-sm font-bold text-foreground leading-snug group-hover:text-primary transition-colors mb-1 line-clamp-2">
+        {title}
+      </h2>
+      <div className="flex items-center justify-between text-muted-foreground text-xs uppercase tracking-wider">
+        <div className="flex items-center gap-1">
+          <Users size={12} />
+          <span>
+            {members > 1000000
+              ? Math.floor(members / 100000) / 10 + "M"
+              : Math.floor(members / 1000) + "K"}
+          </span>
         </div>
+        {anime.nextAiringEpisode ? (
+          <span>EP {anime.nextAiringEpisode.episode}</span>
+        ) : anime.episodes ? (
+          <span>{anime.episodes} EPS</span>
+        ) : null}
       </div>
     </Link>
   );

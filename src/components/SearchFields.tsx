@@ -8,7 +8,6 @@ import { GenreComboBox } from "./GenreComboBox";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import TabOptions from "@/components/TabOptions";
 import {
   Command,
   CommandEmpty,
@@ -35,8 +34,8 @@ import AnimeDisplay from "./AnimeDisplay";
 import { useInView } from "react-intersection-observer";
 import { fetchSearch, SearchQueryVariables } from "@/app/actions";
 import { capitalize } from "@/utils/formatting";
-import { TabsTrigger, TabsContent } from "./ui/tabs";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { ArrowUpDown } from "lucide-react";
 
 interface SearchFieldsProps {
   genres: String[];
@@ -48,94 +47,13 @@ interface SearchFieldsProps {
   searchParams: { [key: string]: string | undefined } | undefined;
 }
 
-const TabTriggerFilters = () => {
-  return <TabsTrigger value="filters">Filters</TabsTrigger>;
-};
-
-const TabContentFilters = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const options = [
-    "Title (English)",
-    "Title (Native)",
-    "Title (Romaji)",
-    "Popularity",
-    "Score",
-    "Trending",
-  ];
-  const optionsMap = {
-    "Title (English)": "TITLE_ENGLISH",
-    "Title (Native)": "TITLE_NATIVE",
-    "Title (Romaji)": "TITLE_ROMAJI",
-    Popularity: "POPULARITY_DESC",
-    Score: "SCORE_DESC",
-    Trending: "TRENDING_DESC",
-  };
-  const sort = searchParams.get("sort");
-
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value === "") {
-        params.delete(name);
-        return params.toString();
-      }
-      params.set(name, value);
-      return params.toString();
-    },
-    [searchParams]
-  );
-
-  const handleClearFilters = () => {
-    const newParams = new URLSearchParams();
-    router.push(pathname + "?" + newParams.toString());
-  };
-
-  const handleSortSelect = (sort: string) => {
-    router.push(pathname + "?" + createQueryString("sort", sort));
-  };
-
-  const handleSortRemove = () => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.delete("sort");
-    router.push(pathname + "?" + newParams.toString());
-  };
-  return (
-    <TabsContent value="filters" className="border-0 py-2 md:py-0">
-      <div className="flex justify-center items-center gap-2">
-        <Button
-          onClick={handleSortRemove}
-          className="bg-white hover:bg-white"
-          disabled={!sort}
-        >
-          <X className="h-4 w-4 text-primary" size={16} />
-        </Button>
-        <Select onValueChange={handleSortSelect} value={sort || undefined}>
-          <SelectTrigger className="text-muted-foreground border-input">
-            <SelectValue placeholder="Select Sort..." />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map((option) => (
-              <SelectItem
-                key={option}
-                value={optionsMap[option as keyof typeof optionsMap]}
-              >
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          className="bg-primary text-white px-2 py-1 rounded-md"
-          onClick={handleClearFilters}
-        >
-          Clear Filters
-        </Button>
-      </div>
-    </TabsContent>
-  );
-};
+const sortOptions = [
+  { label: "Title (English)", value: "TITLE_ENGLISH" },
+  { label: "Title (Romaji)", value: "TITLE_ROMAJI" },
+  { label: "Popularity", value: "POPULARITY_DESC" },
+  { label: "Score", value: "SCORE_DESC" },
+  { label: "Trending", value: "TRENDING_DESC" },
+];
 
 const SearchFields = ({
   genres,
@@ -156,7 +74,6 @@ const SearchFields = ({
   const [yearsPopOpen, setYearsPopOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(searchParams?.query || "");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [display, setDisplay] = useState<0 | 1 | 2 | 3>(3);
 
   const { data, error, fetchNextPage, hasNextPage, isFetching, isPending } =
     useInfiniteQuery({
@@ -216,7 +133,9 @@ const SearchFields = ({
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams?.toString());
+      const params = new URLSearchParams(
+        Object.entries(searchParams ?? {}).filter((e): e is [string, string] => e[1] !== undefined)
+      );
       if (value === "") {
         params.delete(name);
         return params.toString();
@@ -229,7 +148,9 @@ const SearchFields = ({
 
   const createQueryStringPair = useCallback(
     (nameOne: string, valueOne: string, nameTwo: string, valueTwo: string) => {
-      const params = new URLSearchParams(searchParams?.toString());
+      const params = new URLSearchParams(
+        Object.entries(searchParams ?? {}).filter((e): e is [string, string] => e[1] !== undefined)
+      );
       if (valueOne === "" || valueTwo === "") {
         params.delete(nameOne);
         params.delete(nameTwo);
@@ -244,7 +165,9 @@ const SearchFields = ({
 
   const returnParamsExcepts = useCallback(
     (name: string) => {
-      const params = new URLSearchParams(searchParams?.toString());
+      const params = new URLSearchParams(
+        Object.entries(searchParams ?? {}).filter((e): e is [string, string] => e[1] !== undefined)
+      );
       params.delete(name);
       return params.toString();
     },
@@ -309,38 +232,56 @@ const SearchFields = ({
     }
   };
 
+  const hasActiveFilters = selectedYear || selectedSeason || (selectedGenres && selectedGenres.length > 0) || sort;
+
   return (
-    <div className={cn(className, `"w-full mt-2"`)}>
-      <div className="flex flex-wrap min-[990px]:h-[64px] text-white lg:justify-between lg:flex-nowrap gap-2 px-0 ">
-        <div className="flex flex-col gap-1 w-full lg:max-w-none mb-0">
-          <Label htmlFor="search">Title</Label>
-          <div className="rounded-md border border-input bg-background flex items-center w-full">
-            <SearchIcon className="text-muted-foreground pl-2" size={20} />
-            <Input
-              placeholder="Search"
-              id="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="inline border-0 pl-1 focus-visible:ring-0 focus-visible:ring-transparent text-black focus-visible:ring-offset-0"
-            />
-          </div>
+    <div className={cn(className, "w-full")}>
+      {/* Page header */}
+      <header className="mb-10">
+        <div className="flex items-baseline gap-4 mb-2">
+          <span className="text-primary text-sm font-bold tracking-[0.2em] uppercase">Discover</span>
+          <div className="h-px flex-grow bg-gradient-to-r from-primary/30 to-transparent" />
         </div>
-        <div className="flex w-full justify-between flex-wrap md:flex-nowrap gap-2">
-          <div className="flex flex-col gap-1 w-full mb-0">
-            <Label htmlFor="genres">Genres</Label>
-            <div className="rounded-md border border-input bg-background flex items-center w-full">
-              <GenreComboBox genres={genres} />
+        <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-foreground mb-3">BROWSE</h1>
+        <p className="text-muted-foreground max-w-xl leading-relaxed">
+          Search and filter the full anime catalogue.
+        </p>
+      </header>
+
+      {/* Filter bar */}
+      <div className="bg-surface-container-low rounded-2xl p-4 md:p-6 mb-4">
+        <div className="flex flex-wrap lg:flex-nowrap gap-3">
+          {/* Title search */}
+          <div className="flex flex-col gap-1.5 w-full lg:max-w-none">
+            <Label htmlFor="search" className="text-[10px] font-bold text-primary tracking-[0.15em] uppercase">Title</Label>
+            <div className="rounded-lg border border-outline-variant/30 bg-surface-container flex items-center w-full focus-within:border-primary/50 transition-colors">
+              <SearchIcon className="text-muted-foreground ml-3 shrink-0" size={16} />
+              <Input
+                placeholder="Search titles..."
+                id="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="border-0 bg-transparent pl-2 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 text-foreground placeholder:text-muted-foreground"
+              />
             </div>
           </div>
-          <div className="flex flex-col gap-1 w-full mb-0">
-            <Label htmlFor="years">Year</Label>
-            <div className="rounded-md border border-input bg-background flex items-center w-full">
+
+          <div className="flex w-full justify-between flex-wrap md:flex-nowrap gap-3">
+            {/* Genres */}
+            <div className="flex flex-col gap-1.5 w-full">
+              <Label htmlFor="genres" className="text-[10px] font-bold text-primary tracking-[0.15em] uppercase">Genres</Label>
+              <GenreComboBox genres={genres} />
+            </div>
+
+            {/* Year */}
+            <div className="flex flex-col gap-1.5 w-full">
+              <Label htmlFor="years" className="text-[10px] font-bold text-primary tracking-[0.15em] uppercase">Year</Label>
               <Popover open={yearsPopOpen} onOpenChange={setYearsPopOpen}>
                 <PopoverTrigger asChild className="w-full">
                   <Button
                     variant="outline"
                     role="combobox"
-                    className="justify-between border-input h-[42px] text-muted-foreground font-normal group"
+                    className="justify-between border-outline-variant/30 bg-surface-container h-[42px] text-muted-foreground font-normal hover:bg-surface-container-high hover:text-foreground transition-colors group"
                     id="years"
                   >
                     {selectedYear ? selectedYear : "Select year..."}
@@ -349,12 +290,9 @@ const SearchFields = ({
                 </PopoverTrigger>
                 <PopoverContent className="w-screen md:w-full bg-transparent border-0 px-5 -mt-4 md:px-0 md:mt-0">
                   <Command value={selectedYear || undefined} className="w-full">
-                    <CommandInput
-                      placeholder="Search years..."
-                      className="text-muted-foreground w-full"
-                    />
+                    <CommandInput placeholder="Search years..." className="text-muted-foreground w-full" />
                     <CommandList className="w-full">
-                      <CommandEmpty>No Year found.</CommandEmpty>
+                      <CommandEmpty>No year found.</CommandEmpty>
                       <CommandGroup className="w-full">
                         {years.map((currentYear) => (
                           <CommandItem
@@ -365,9 +303,7 @@ const SearchFields = ({
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                selectedYear === String(currentYear)
-                                  ? "opacity-100"
-                                  : "opacity-0"
+                                selectedYear === String(currentYear) ? "opacity-100" : "opacity-0"
                               )}
                             />
                             {currentYear}
@@ -379,19 +315,16 @@ const SearchFields = ({
                 </PopoverContent>
               </Popover>
             </div>
-          </div>
-          <div className="flex flex-col gap-1 w-full mb-0">
-            <Label htmlFor="seasons">Seasons</Label>
-            <div className="rounded-md border border-input bg-background flex items-center w-full">
-              <Select
-                onValueChange={handleSeasonSelect}
-                value={selectedSeason || undefined}
-              >
+
+            {/* Season */}
+            <div className="flex flex-col gap-1.5 w-full">
+              <Label htmlFor="seasons" className="text-[10px] font-bold text-primary tracking-[0.15em] uppercase">Season</Label>
+              <Select onValueChange={handleSeasonSelect} value={selectedSeason || undefined}>
                 <SelectTrigger
-                  className="text-muted-foreground border-input h-[42px]"
+                  className="text-muted-foreground border-outline-variant/30 bg-surface-container h-[42px] hover:bg-surface-container-high transition-colors"
                   id="seasons"
                 >
-                  <SelectValue placeholder="Select seasons..." />
+                  <SelectValue placeholder="Select season..." />
                 </SelectTrigger>
                 <SelectContent>
                   {seasons.map((currentSeason) => (
@@ -405,59 +338,69 @@ const SearchFields = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap w-full justify-start gap-2 py-3">
-        {selectedYear && (
-          <div
-            className="bg-white px-3 py-1 rounded-lg group flex items-center gap-1"
-            onClick={() =>
-              selectedSeason
-                ? null
-                : router.push(pathname + "?" + createQueryString("year", ""))
-            }
-          >
-            <p className="text-sm">{selectedYear}</p>
-            <div className="hidden group-hover:block">
-              <X className="h-4 w-4 text-muted-foreground" size={16} />
-            </div>
-          </div>
-        )}
-        {selectedSeason && (
-          <div
-            className="bg-white px-3 py-1 rounded-lg group flex items-center gap-1"
-            onClick={() =>
-              router.push(pathname + "?" + createQueryString("season", ""))
-            }
-          >
-            <p className="text-sm">{capitalize(selectedSeason)}</p>
-            <div className="hidden group-hover:block">
-              <X className="h-4 w-4 text-muted-foreground" size={16} />
-            </div>
-          </div>
-        )}
-        {selectedGenres &&
-          selectedGenres.map((genre) => (
-            <div
-              className="bg-white px-3 py-1 rounded-lg group flex items-center gap-1"
+
+      {/* Active filter chips */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap w-full justify-start gap-2 pb-2">
+          {selectedYear && (
+            <button
+              className="flex items-center gap-1.5 bg-surface-container-high border border-outline-variant/20 px-3 py-1 rounded-full text-sm text-foreground hover:border-primary/40 transition-colors group"
+              onClick={() => !selectedSeason && router.push(pathname + "?" + createQueryString("year", ""))}
+            >
+              {selectedYear}
+              {!selectedSeason && <X className="h-3 w-3 text-muted-foreground group-hover:text-primary" />}
+            </button>
+          )}
+          {selectedSeason && (
+            <button
+              className="flex items-center gap-1.5 bg-surface-container-high border border-outline-variant/20 px-3 py-1 rounded-full text-sm text-foreground hover:border-primary/40 transition-colors group"
+              onClick={() => router.push(pathname + "?" + createQueryString("season", ""))}
+            >
+              {capitalize(selectedSeason)}
+              <X className="h-3 w-3 text-muted-foreground group-hover:text-primary" />
+            </button>
+          )}
+          {selectedGenres?.map((genre) => (
+            <button
               key={genre + "filter"}
+              className="flex items-center gap-1.5 bg-surface-container-high border border-outline-variant/20 px-3 py-1 rounded-full text-sm text-foreground hover:border-primary/40 transition-colors group"
               onClick={() => handleGenreRemove(genre)}
             >
-              <p className="text-sm">{genre}</p>
-              <div className="hidden group-hover:block">
-                <X className="h-4 w-4 text-muted-foreground" size={16} />
-              </div>
-            </div>
+              {genre}
+              <X className="h-3 w-3 text-muted-foreground group-hover:text-primary" />
+            </button>
           ))}
+        </div>
+      )}
+
+      {/* Sort row */}
+      <div className="flex items-center gap-2 pb-2 flex-wrap">
+        <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-bold uppercase tracking-[0.15em]">
+          <ArrowUpDown size={12} />
+          Sort
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {sortOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() =>
+                router.push(
+                  pathname + "?" + createQueryString("sort", sort === option.value ? "" : option.value)
+                )
+              }
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                sort === option.value
+                  ? "bg-primary text-background"
+                  : "bg-surface-container-high text-muted-foreground hover:text-foreground border border-outline-variant/20"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
-      <TabOptions
-        display={display}
-        setDisplay={setDisplay}
-        className="pb-2 min-[990px]:mt-10 min-[1024px]:mt-0"
-        defaultValue="filters"
-        tabTriggers={<TabTriggerFilters />}
-        tabContents={<TabContentFilters />}
-      />
+
       <AnimeDisplay
-        display={display}
         animeData={data?.pages.flatMap((page) => page.data.Page.media) || []}
         loggedIn={loggedIn}
         ids={ids}
@@ -465,7 +408,7 @@ const SearchFields = ({
       <div ref={ref}>
         {hasNextPage && (
           <div className="flex justify-center items-center w-full h-16">
-            <p className="text-white">Loading...</p>
+            <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest">Loading more...</p>
           </div>
         )}
       </div>

@@ -1,8 +1,6 @@
 "use client";
 import AnimeDay from "./AnimeDay";
 import { AiringSchedule } from "@/utils/anilistTypes";
-import { useState } from "react";
-import TabOptions from "../TabOptions";
 import { convertUTCToLocal } from "@/utils/date";
 
 const AnimeCalendar = ({
@@ -14,8 +12,6 @@ const AnimeCalendar = ({
   loggedIn: boolean;
   ids: number[];
 }) => {
-  const [display, setDisplay] = useState<0 | 1 | 2 | 3>(1);
-
   const days = [
     "Sunday",
     "Monday",
@@ -26,26 +22,52 @@ const AnimeCalendar = ({
     "Saturday",
   ];
 
-  const offset = new Date().getDay();
+  const today = new Date();
+  const offset = today.getDay();
 
   return (
     <div className="flex flex-col w-full">
-      <TabOptions display={display} setDisplay={setDisplay} />
-      <div className="flex flex-col w-full">
-        {days.map((_, index) => (
-          <AnimeDay
-            key={index}
-            day={days[(index + offset) % 7]}
-            display={display}
-            loggedIn={loggedIn}
-            ids={ids}
-            airingSchedules={airingSchedules.filter(
-              (schedule) =>
-                convertUTCToLocal(schedule.airingAt).getDay() ===
-                (index + offset) % 7
-            )}
-          />
-        ))}
+      {/* Hero Header */}
+      <header className="mb-16">
+        <div className="flex items-baseline gap-4 mb-2">
+          <span className="text-primary text-sm font-bold tracking-[0.2em] uppercase">
+            Schedule
+          </span>
+          <div className="h-px flex-grow bg-gradient-to-r from-primary/30 to-transparent" />
+        </div>
+        <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-foreground mb-4">
+          WEEKLY PREMIERES
+        </h1>
+        <p className="text-muted-foreground max-w-xl text-lg leading-relaxed">
+          All times are displayed in your local timezone.
+        </p>
+      </header>
+
+      <div className="space-y-4">
+        {days.map((_, index) => {
+          const dayIndex = (index + offset) % 7;
+          const daySchedules = airingSchedules.filter(
+            (schedule) =>
+              convertUTCToLocal(schedule.airingAt).getDay() === dayIndex
+          );
+          const date = new Date(today);
+          date.setDate(today.getDate() + index);
+          const dateLabel = date.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+          });
+          return (
+            <AnimeDay
+              key={index}
+              day={days[dayIndex]}
+              dateLabel={dateLabel}
+              defaultExpanded={index === 0}
+              loggedIn={loggedIn}
+              ids={ids}
+              airingSchedules={daySchedules}
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { LanguageContext, LanguageType } from "@/app/Provider";
-import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Star, User } from "lucide-react";
@@ -24,7 +22,6 @@ const AnimeLongCard = ({
   ids,
 }: AnimeLongCardProps) => {
   const router = useRouter();
-  const languageContext = useContext(LanguageContext);
   const [genres, setGenres] = useState<string[]>([]);
   const genreContainerRef = useRef<HTMLDivElement>(null);
 
@@ -76,12 +73,7 @@ const AnimeLongCard = ({
   }, []);
 
   const image = anime.coverImage.extraLarge;
-  const title =
-    (languageContext.language === LanguageType.English
-      ? anime.title.english
-      : languageContext.language === LanguageType.Romanji
-      ? anime.title.romaji
-      : anime.title.native) ?? anime.title.romaji;
+  const title = anime.title.english ?? anime.title.romaji ?? anime.title.native;
 
   let airingString = "";
   if (airing) {

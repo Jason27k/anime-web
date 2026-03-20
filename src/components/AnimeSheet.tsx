@@ -208,19 +208,19 @@ export default function AnimeSheet({
       value: "WATCHING",
       label: "Watching",
       icon: Play,
-      activeClass: "bg-blue-600 text-white border-blue-600",
+      activeClass: "bg-primary text-primary-foreground border-primary",
     },
     {
       value: "COMPLETED",
       label: "Completed",
       icon: Check,
-      activeClass: "bg-green-600 text-white border-green-600",
+      activeClass: "bg-primary text-primary-foreground border-primary",
     },
     {
       value: "DROPPED",
       label: "Dropped",
       icon: X,
-      activeClass: "bg-zinc-600 text-white border-zinc-600",
+      activeClass: "bg-primary text-primary-foreground border-primary",
     },
   ];
 
@@ -234,7 +234,7 @@ export default function AnimeSheet({
           variant="outline"
           onClick={() => setShowDeleteConfirm(false)}
           disabled={isDeleting}
-          className="flex-1 border-[#2a2f3a] bg-transparent hover:bg-[#252a36]"
+          className="flex-1 border-border bg-transparent hover:bg-surface-container-high"
         >
           Cancel
         </Button>
@@ -273,7 +273,7 @@ export default function AnimeSheet({
                 className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
                   isActive
                     ? option.activeClass
-                    : "border-[#2a2f3a] bg-[#1f232d] text-muted-foreground hover:border-[#3a3f4a]"
+                    : "border-border bg-surface-container text-muted-foreground hover:border-outline"
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -294,19 +294,19 @@ export default function AnimeSheet({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleEpisodeChange(Math.max(1, episode - 1))}
-                className="w-8 h-8 rounded-lg bg-[#1f232d] border border-[#2a2f3a] text-white hover:bg-[#252a36] transition-colors flex items-center justify-center disabled:opacity-50"
+                className="w-8 h-8 rounded-lg bg-surface-container border border-border text-foreground hover:bg-surface-container-high transition-colors flex items-center justify-center disabled:opacity-50"
                 disabled={episode <= 1}
               >
                 −
               </button>
-              <span className="text-lg font-semibold text-white min-w-16 text-center">
+              <span className="text-lg font-semibold text-foreground min-w-16 text-center">
                 {episode} / {maxEpisodes}
               </span>
               <button
                 onClick={() =>
                   handleEpisodeChange(Math.min(maxEpisodes, episode + 1))
                 }
-                className="w-8 h-8 rounded-lg bg-[#1f232d] border border-[#2a2f3a] text-white hover:bg-[#252a36] transition-colors flex items-center justify-center disabled:opacity-50"
+                className="w-8 h-8 rounded-lg bg-surface-container border border-border text-foreground hover:bg-surface-container-high transition-colors flex items-center justify-center disabled:opacity-50"
                 disabled={episode >= maxEpisodes}
               >
                 +
@@ -365,7 +365,7 @@ export default function AnimeSheet({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-[#1a1d24] border border-[#2a2f3a] max-w-lg p-6 rounded-2xl">
+        <DialogContent className="bg-surface-container-low border border-border max-w-lg p-6 rounded-2xl">
           <DialogHeader className="text-left space-y-4">
             <div className="flex gap-4">
               {coverImage && (
@@ -376,7 +376,7 @@ export default function AnimeSheet({
                 />
               )}
               <div className="flex-1 min-w-0 pt-2">
-                <DialogTitle className="text-white text-xl leading-tight line-clamp-2">
+                <DialogTitle className="text-foreground text-xl leading-tight line-clamp-2">
                   {animeTitle}
                 </DialogTitle>
                 <DialogDescription className="mt-2 text-muted-foreground">
@@ -397,9 +397,9 @@ export default function AnimeSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="bg-[#1a1d24] border-t border-[#2a2f3a] rounded-t-2xl max-h-[85vh] overflow-y-auto"
+        className="bg-surface-container-low border-t border-border rounded-t-2xl max-h-[85vh] overflow-y-auto"
       >
-        <div className="mx-auto w-12 h-1.5 shrink-0 rounded-full bg-zinc-700 mb-4" />
+        <div className="mx-auto w-12 h-1.5 shrink-0 rounded-full bg-outline-variant mb-4" />
 
         <SheetHeader className="text-left pb-4">
           <div className="flex gap-4">
@@ -411,7 +411,7 @@ export default function AnimeSheet({
               />
             )}
             <div className="flex-1 min-w-0">
-              <SheetTitle className="text-white line-clamp-2 text-lg">
+              <SheetTitle className="text-foreground line-clamp-2 text-lg">
                 {animeTitle}
               </SheetTitle>
               <SheetDescription className="mt-1">

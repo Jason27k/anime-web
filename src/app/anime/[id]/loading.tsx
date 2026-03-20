@@ -1,152 +1,125 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ChevronDown,
-  ExternalLink,
-  PlayCircle,
-  Star,
-  User,
-} from "lucide-react";
 
-export default function AnimeDetailsLoading() {
+export default function AnimeDetailLoading() {
   return (
-    <div className="container mx-auto px-4 py-8 text-white">
-      <div className="relative h-64 md:h-96 mb-8 rounded-xl overflow-hidden">
-        <Skeleton className="absolute inset-0" />
-        <div className="absolute inset-0 flex flex-col justify-end p-6">
-          <Skeleton className="h-10 w-3/4 mb-2" />
-          <Skeleton className="h-6 w-1/2" />
+    <div>
+      {/* ── Hero ── */}
+      <div className="relative w-screen -mx-5 -mt-6 lg:-mx-10 xl:-mx-17 2xl:-mx-[12vw] h-[480px] md:h-[580px] overflow-hidden flex items-end pb-16 px-8 md:px-16">
+        <Skeleton className="absolute inset-0 rounded-none" />
+        <div className="relative z-10 max-w-4xl w-full space-y-4">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-6 w-28 rounded-full" />
+            <Skeleton className="h-6 w-16 rounded-full" />
+          </div>
+          <Skeleton className="h-16 md:h-20 w-2/3 rounded-lg" />
+          <div className="flex gap-3 pt-2">
+            <Skeleton className="h-11 w-36 rounded-lg" />
+            <Skeleton className="h-11 w-44 rounded-lg" />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-        <div className="sm:col-span-1 flex flex-col gap-8">
-          <Card className="bg-[#1f232d] text-[#7c8793] border-0">
-            <CardContent className="p-4">
-              <Skeleton className="w-full aspect-[2/3] rounded-lg" />
-              <div className="mt-4 flex items-center justify-center space-x-2 text-white">
-                <Star className="w-6 h-6 text-yellow-400" />
-                <Skeleton className="h-6 w-12" />
-                <User className="w-6 h-6 text-yellow-400" />
-                <Skeleton className="h-6 w-16" />
+      {/* ── Main Content Grid ── */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-24 -mt-8">
+
+        {/* Sidebar */}
+        <aside className="lg:col-span-3 space-y-6">
+          <Skeleton className="aspect-[2/3] rounded-xl w-full" />
+          <div className="bg-surface-container-low p-6 rounded-xl space-y-5">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="space-y-1.5">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-4 w-32" />
               </div>
-              <div className="mt-4 space-y-2">
-                <Button className="w-full" disabled>
-                  <PlayCircle className="mr-2 h-4 w-4" /> Watch Now
-                </Button>
-                <Button variant="outline" className="w-full" disabled>
-                  <ExternalLink className="mr-2 h-4 w-4" /> Official Site
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-[#1f232d] text-[#7c8793] border-0">
-            <CardHeader>
-              <CardTitle className="text-white">Trailer</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="aspect-video w-full" />
-            </CardContent>
-          </Card>
-          <Card className="bg-[#1f232d] text-[#7c8793] border-0">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-white">Anime Links</CardTitle>
-              <ChevronDown className="h-6 w-6" />
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {[1, 2, 3].map((_, index) => (
-                  <Skeleton key={index} className="h-10 w-full" />
+            ))}
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-16" />
+              <div className="flex flex-wrap gap-1.5">
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="h-5 w-14 rounded" />
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="sm:col-span-2 flex flex-col gap-8">
-          <Tabs defaultValue="overview">
-            <TabsList className="w-full bg-[#1f232d] text-[#7c8793] border-0 flex flex-col h-auto min-[380px]:mb-0 min-[380px]:grid min-[380px]:grid-cols-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="episodes">Episodes</TabsTrigger>
-              <TabsTrigger value="characters">Characters</TabsTrigger>
-              <TabsTrigger value="staff">Staff</TabsTrigger>
-            </TabsList>
-            <TabsContent value="overview">
-              <Card className="bg-[#1f232d] text-[#7c8793] border-0">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="flex-1">
-                      <Skeleton className="h-4 w-full mb-2" />
-                      <Skeleton className="h-4 w-full mb-2" />
-                      <Skeleton className="h-4 w-3/4 mb-4" />
-                      <div className="grid grid-cols-2 gap-2">
-                        {["Episodes", "Duration", "Genres", "Themes"].map(
-                          (item, index) => (
-                            <div key={index}>
-                              <strong>{item}:</strong>
-                              <Skeleton className="h-4 w-full mt-1" />
-                            </div>
-                          )
-                        )}
-                      </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Column */}
+        <div className="lg:col-span-9 space-y-16">
+
+          {/* Synopsis */}
+          <section>
+            <div className="flex items-center gap-3 mb-6">
+              <Skeleton className="w-8 h-1 rounded-full" />
+              <Skeleton className="h-8 w-32" />
+            </div>
+            <div className="bg-surface-container-low p-8 rounded-2xl space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className={`h-4 ${i === 4 ? "w-3/4" : "w-full"}`} />
+              ))}
+            </div>
+          </section>
+
+          {/* Characters & Cast */}
+          <section>
+            <div className="flex items-center gap-3 mb-6">
+              <Skeleton className="w-8 h-1 rounded-full" />
+              <Skeleton className="h-8 w-48" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="flex items-center justify-between bg-surface-container-low p-4 rounded-xl">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="w-14 h-14 rounded-full shrink-0" />
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-3 w-20" />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            {["episodes", "characters", "staff"].map((tab) => (
-              <TabsContent key={tab} value={tab}>
-                <Card className="bg-[#1f232d] text-[#7c8793] border-0">
-                  <CardHeader>
-                    <CardTitle>
-                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                      {[...Array(8)].map((_, index) => (
-                        <div key={index} className="flex flex-col items-center">
-                          <Skeleton className="w-32 h-44 rounded-lg" />
-                          <Skeleton className="h-4 w-24 mt-2" />
-                          <Skeleton className="h-3 w-16 mt-1" />
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            ))}
-          </Tabs>
-          <Tabs defaultValue="recommendations">
-            <TabsList className="w-full bg-[#1f232d] text-[#7c8793] border-0 flex flex-col h-auto min-[380px]:mb-0 min-[380px]:grid min-[380px]:grid-cols-2">
-              <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-              <TabsTrigger value="related">Related Anime</TabsTrigger>
-            </TabsList>
-            {["recommendations", "related"].map((tab) => (
-              <TabsContent key={tab} value={tab}>
-                <Card className="bg-[#1f232d] text-[#7c8793] border-0 w-full lg:mt-4">
-                  <CardHeader>
-                    <CardTitle className="text-white">
-                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                      {[...Array(12)].map((_, index) => (
-                        <div key={index} className="flex flex-col items-center">
-                          <Skeleton className="w-24 h-36 rounded-md" />
-                          <Skeleton className="h-3 w-20 mt-2" />
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            ))}
-          </Tabs>
+                  <div className="text-right space-y-1.5">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Staff */}
+          <section>
+            <div className="flex items-center gap-3 mb-6">
+              <Skeleton className="w-8 h-1 rounded-full" />
+              <Skeleton className="h-8 w-40" />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-surface-container-low p-5 rounded-xl flex flex-col items-center gap-2">
+                  <Skeleton className="w-16 h-16 rounded-full" />
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
-      </div>
+      </section>
+
+      {/* ── Recommendations ── */}
+      <section className="w-screen -mx-5 lg:-mx-10 xl:-mx-17 2xl:-mx-[12vw] bg-surface-container-low/50 py-20 px-8 md:px-16">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="mb-10 space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-72" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="aspect-[2/3] rounded-lg w-full" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

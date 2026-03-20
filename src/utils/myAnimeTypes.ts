@@ -12,6 +12,7 @@ export interface Anime {
   coverImage: CoverImage;
   episodes: number;
   streamingEpisodes?: StreamingEpisode[];
+  nextAiringEpisode?: NextAiringEpisode | null;
   season: "WINTER" | "SPRING" | "SUMMER" | "FALL";
   seasonYear: number;
 }

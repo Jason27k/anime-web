@@ -29,32 +29,44 @@
   --chart-5: 27 87% 67%;
 }
 
-/* Dark mode CSS variables */
+/* Dark mode CSS variables — palette from calendar.html */
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 30 100% 42%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --background: 214 20% 8%;          /* #101418 */
+  --foreground: 213 12% 88%;         /* #e0e3e8 */
+  --card: 210 15% 12%;               /* #1c2024 surface-container */
+  --card-foreground: 213 12% 88%;
+  --popover: 210 15% 12%;
+  --popover-foreground: 213 12% 88%;
+  --primary: 28 100% 73%;            /* #ffb778 */
+  --primary-foreground: 30 100% 15%; /* #4c2700 on-primary */
+  --secondary: 30 100% 73%;          /* #ffbc74 */
+  --secondary-foreground: 33 100% 14%;
+  --muted: 210 15% 11%;              /* #181c20 surface-container-low */
+  --muted-foreground: 27 30% 77%;    /* #dbc2af on-surface-variant */
+  --accent: 210 10% 17%;             /* #262a2e surface-container-high */
+  --accent-foreground: 213 12% 88%;
+  --destructive: 5 100% 84%;         /* #ffb4ab */
+  --destructive-foreground: 356 100% 29%;
+  --border: 24 23% 27%;              /* #554335 outline-variant */
+  --input: 24 23% 27%;
+  --ring: 28 100% 73%;               /* #ffb778 */
   --chart-1: 220 70% 50%;
   --chart-2: 160 60% 45%;
   --chart-3: 30 80% 55%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
+
+  /* Surface design tokens */
+  --surface-container-lowest: 213 19% 6%;  /* #0b0f12 */
+  --surface-container-low: 210 15% 11%;    /* #181c20 */
+  --surface-container: 210 15% 12%;        /* #1c2024 */
+  --surface-container-high: 210 10% 17%;   /* #262a2e */
+  --surface-container-highest: 210 7% 22%; /* #313539 */
+  --on-surface-variant: 27 30% 77%;        /* #dbc2af */
+  --primary-container: 30 100% 42%;        /* #d67901 */
+  --on-primary: 30 100% 15%;              /* #4c2700 */
+  --outline-variant: 24 23% 27%;           /* #554335 */
+  --outline: 27 16% 56%;                   /* #a38d7c */
 }
 
 @theme {
@@ -83,6 +95,18 @@
   --color-chart-3: hsl(var(--chart-3));
   --color-chart-4: hsl(var(--chart-4));
   --color-chart-5: hsl(var(--chart-5));
+
+  /* Surface design tokens */
+  --color-surface-container-lowest: hsl(var(--surface-container-lowest));
+  --color-surface-container-low: hsl(var(--surface-container-low));
+  --color-surface-container: hsl(var(--surface-container));
+  --color-surface-container-high: hsl(var(--surface-container-high));
+  --color-surface-container-highest: hsl(var(--surface-container-highest));
+  --color-on-surface-variant: hsl(var(--on-surface-variant));
+  --color-primary-container: hsl(var(--primary-container));
+  --color-on-primary: hsl(var(--on-primary));
+  --color-outline-variant: hsl(var(--outline-variant));
+  --color-outline: hsl(var(--outline));
 }
 
 /* Base styles */
@@ -94,4 +118,20 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom scrollbar for horizontal scroll sections */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--surface-container-low));
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary-container));
+  border-radius: 10px;
 }

@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useContext } from "react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   CheckCircle2,
   PlayCircle,
   XCircle,
   LayoutGrid,
+  Pencil,
 } from "lucide-react";
 import { Anime, Title } from "@/utils/myAnimeTypes";
 import { convertUTCToLocal } from "@/utils/date";
@@ -18,7 +16,7 @@ import Link from "next/link";
 import { AnimeInfo } from "@/app/my-anime/page";
 import AnimeSheet from "./AnimeSheet";
 import { AnimeStatus } from "@/lib/api-client";
-import { SettingsContext, LanguageType } from "@/app/Provider";
+import { SettingsContext } from "@/app/Provider";
 
 interface AnimeListProps {
   animeInfoList: AnimeInfo[];
@@ -38,16 +36,7 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
   } | null>(null);
 
   function getTitle(title: Title): string {
-    switch (settings.language) {
-      case LanguageType.English:
-        return title.english || title.romaji || title.userPreferred;
-      case LanguageType.Romanji:
-        return title.romaji || title.english || title.userPreferred;
-      case LanguageType.Japanese:
-        return title.native || title.romaji || title.userPreferred;
-      default:
-        return title.userPreferred;
-    }
+    return title.english || title.romaji || title.userPreferred;
   }
 
   function timeOrSeasonString(anime: Anime) {
@@ -56,13 +45,8 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
     if (anime.nextAiringEpisode && anime.nextAiringEpisode.airingAt) {
       const date = convertUTCToLocal(anime.nextAiringEpisode.airingAt);
       const days = [
-        "Sundays",
-        "Mondays",
-        "Tuesdays",
-        "Wednesdays",
-        "Thursdays",
-        "Fridays",
-        "Saturdays",
+        "Sundays", "Mondays", "Tuesdays", "Wednesdays",
+        "Thursdays", "Fridays", "Saturdays",
       ];
       const dayString = days[date.getDay()] || "No time specified";
       const time = date.toLocaleTimeString("en-US", {
@@ -78,36 +62,17 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
 
   const tabs = [
     { route: "all" as const, label: "All", icon: LayoutGrid, href: "/my-anime" },
-    {
-      route: "watching" as const,
-      label: "Watching",
-      icon: PlayCircle,
-      href: "/my-anime/watching",
-    },
-    {
-      route: "finished" as const,
-      label: "Completed",
-      icon: CheckCircle2,
-      href: "/my-anime/finished",
-    },
-    {
-      route: "dropped" as const,
-      label: "Dropped",
-      icon: XCircle,
-      href: "/my-anime/dropped",
-    },
+    { route: "watching" as const, label: "Watching", icon: PlayCircle, href: "/my-anime/watching" },
+    { route: "finished" as const, label: "Completed", icon: CheckCircle2, href: "/my-anime/finished" },
+    { route: "dropped" as const, label: "Dropped", icon: XCircle, href: "/my-anime/dropped" },
   ];
 
   const getStatusFilter = (r: typeof route) => {
     switch (r) {
-      case "watching":
-        return "WATCHING";
-      case "finished":
-        return "COMPLETED";
-      case "dropped":
-        return "DROPPED";
-      default:
-        return null;
+      case "watching": return "WATCHING";
+      case "finished": return "COMPLETED";
+      case "dropped": return "DROPPED";
+      default: return null;
     }
   };
 
@@ -116,65 +81,53 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
     return filter === null || animeInfo.status === filter;
   });
 
-  // Grid classes based on settings
   const gridClasses = {
     compact: {
-      small: "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2",
-      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3",
-      large: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4",
+      small: "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4",
+      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5",
+      large: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6",
     },
     comfortable: {
-      small: "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3",
-      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4",
-      large: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5",
+      small: "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4",
+      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5",
+      large: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6",
     },
     spacious: {
-      small: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4",
-      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5",
-      large: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+      small: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5",
+      medium: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6",
+      large: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
     },
   };
 
-  const currentGridClass =
-    gridClasses[settings.gridDensity][settings.cardSize];
-
-  // Card image height based on size
-  const imageClasses = {
-    small: "aspect-[3/4]",
-    medium: "aspect-[3/4]",
-    large: "aspect-[2/3]",
-  };
+  const currentGridClass = gridClasses[settings.gridDensity][settings.cardSize];
 
   return (
-    <div className="space-y-4">
-      {/* Tab Navigation */}
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-8">
+      {/* Underline Tab Navigation */}
+      <div className="flex items-center gap-6 md:gap-8 border-b border-border overflow-x-auto hide-scrollbar">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = route === tab.route;
           return (
-            <Button
+            <Link
               key={tab.route}
-              size="sm"
-              className={`${
+              href={tab.href}
+              className={`flex items-center gap-2 pb-4 text-base font-semibold whitespace-nowrap transition-colors border-b -mb-px ${
                 isActive
-                  ? "bg-primary text-white"
-                  : "bg-[#191d26] text-muted-foreground hover:bg-[#252a36] hover:text-white"
+                  ? "text-primary border-primary"
+                  : "text-muted-foreground border-transparent hover:text-foreground"
               }`}
-              asChild
             >
-              <Link href={tab.href}>
-                <Icon className="mr-2 h-4 w-4" />
-                {tab.label}
-              </Link>
-            </Button>
+              <Icon className="h-4 w-4 shrink-0" />
+              {tab.label}
+            </Link>
           );
         })}
       </div>
 
       {/* Anime Grid */}
       {filteredList.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-16 text-muted-foreground">
           <p>No anime in this category yet.</p>
         </div>
       ) : (
@@ -188,100 +141,97 @@ export default function AnimeList({ animeInfoList, route }: AnimeListProps) {
                 : 0;
 
             const airingInfo = timeOrSeasonString(animeInfo.anime);
-
             const displayTitle = getTitle(animeInfo.anime.title);
 
+            const openEdit = () =>
+              setEditingAnime({
+                id: animeInfo.anime.id,
+                title: displayTitle,
+                episode: animeInfo.episode,
+                status: animeInfo.status,
+                totalEpisodes: animeInfo.anime.episodes,
+                isAnimeFinishedAiring: animeInfo.anime.nextAiringEpisode === null,
+                coverImage: animeInfo.anime.coverImage.extraLarge,
+              });
+
             return (
-              <Card
-                key={animeInfo.anime.id}
-                className="overflow-hidden border-0 bg-[#1f232d] flex flex-col group"
-              >
-                <div className={`relative w-full ${imageClasses[settings.cardSize]}`}>
-                  <button
-                    onClick={() =>
-                      setEditingAnime({
-                        id: animeInfo.anime.id,
-                        title: displayTitle,
-                        episode: animeInfo.episode,
-                        status: animeInfo.status,
-                        totalEpisodes: animeInfo.anime.episodes,
-                        isAnimeFinishedAiring:
-                          animeInfo.anime.nextAiringEpisode === null,
-                        coverImage: animeInfo.anime.coverImage.extraLarge,
-                      })
-                    }
-                    className="w-full h-full cursor-pointer"
-                  >
-                    <img
-                      src={animeInfo.anime.coverImage.extraLarge}
-                      alt={displayTitle}
-                      className="object-cover h-full w-full transition-opacity group-hover:opacity-80"
-                    />
-                  </button>
+              <div key={animeInfo.anime.id} className="group flex flex-col gap-3">
+                {/* Cover Image */}
+                <div
+                  className="relative aspect-[2/3] overflow-hidden rounded-lg bg-surface-container-low shadow-xl transition-transform duration-300 group-hover:scale-[1.03] group-hover:shadow-primary/10 cursor-pointer"
+                  onClick={openEdit}
+                >
+                  <img
+                    src={animeInfo.anime.coverImage.extraLarge}
+                    alt={displayTitle}
+                    className="w-full h-full object-cover"
+                  />
 
-                  {/* Status Badge */}
-                  <Badge
-                    className="absolute top-2 right-2 flex items-center gap-1 border-0 text-white shadow-md !bg-orange-500 hover:!bg-orange-500"
-                  >
-                    {animeInfo.status === "WATCHING" ? (
-                      <><PlayCircle className="h-3 w-3" /> Watching</>
-                    ) : animeInfo.status === "COMPLETED" ? (
-                      <><CheckCircle2 className="h-3 w-3" /> Completed</>
-                    ) : (
-                      <><XCircle className="h-3 w-3" /> Dropped</>
-                    )}
-                  </Badge>
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
-                  {/* Progress Bar */}
+                  {/* Edit icon on hover */}
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-primary p-1.5 rounded-full text-primary-foreground shadow-lg">
+                      <Pencil className="h-3.5 w-3.5" />
+                    </div>
+                  </div>
+
+                  {/* Episode progress bar */}
                   {settings.showEpisodeProgress &&
                     animeInfo.anime.episodes &&
                     animeInfo.anime.episodes > 1 && (
-                      <div className="absolute bottom-0 left-0 right-0">
+                      <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
                         <Progress value={progressPercent} className="h-1 rounded-none" />
                       </div>
                     )}
                 </div>
 
-                {/* Card Content */}
-                <CardContent className="p-3 flex-1">
+                {/* Info below image */}
+                <div className="flex flex-col gap-1">
                   <Link href={"/anime/" + animeInfo.anime.id}>
-                    <h2
-                      className="font-semibold text-sm mb-1 line-clamp-2 text-white leading-tight hover:text-primary transition-colors"
+                    <h3
+                      className="font-bold text-foreground line-clamp-1 leading-tight group-hover:text-primary transition-colors text-sm"
                       title={displayTitle}
                     >
                       {displayTitle}
-                    </h2>
+                    </h3>
                   </Link>
-                  {animeInfo.anime.episodes && (
-                    <p className="text-xs text-muted-foreground">
-                      Ep {animeInfo.episode || 1} / {animeInfo.anime.episodes}
-                    </p>
-                  )}
-                  {airingInfo && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {airingInfo}
-                    </p>
-                  )}
-                </CardContent>
 
-                {/* Card Footer */}
-                <CardFooter className="p-3 pt-0">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full bg-[#191d26] text-muted-foreground hover:bg-primary hover:text-white"
-                    asChild
-                  >
-                    <Link href={"/anime/" + animeInfo.anime.id}>
+                  <div className="flex items-center justify-between">
+                    {animeInfo.anime.episodes ? (
+                      <span className="text-[11px] font-bold text-muted-foreground tracking-wider uppercase">
+                        {animeInfo.episode || 1}/{animeInfo.anime.episodes} EPS
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-muted-foreground">—</span>
+                    )}
+                  </div>
+
+                  {airingInfo && (
+                    <p className="text-xs text-muted-foreground">{airingInfo}</p>
+                  )}
+
+                  {/* Status label on "all" tab */}
+                  {route === "all" && (
+                    <span
+                      className={`text-[10px] uppercase font-bold tracking-widest ${
+                        animeInfo.status === "WATCHING"
+                          ? "text-primary"
+                          : animeInfo.status === "COMPLETED"
+                          ? "text-green-500"
+                          : "text-muted-foreground"
+                      }`}
+                    >
                       {animeInfo.status === "WATCHING"
-                        ? "Continue"
+                        ? "Watching"
                         : animeInfo.status === "COMPLETED"
-                        ? "Details"
-                        : "View"}
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                        ? "Completed"
+                        : "Dropped"}
+                    </span>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>

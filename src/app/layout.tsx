@@ -17,7 +17,10 @@ const robo = Roboto({
 
 export const metadata: Metadata = {
   title: "AnimeTrove",
-  description: "AnimeTrove is a anime discovery platform.",
+  description: "The definitive anime discovery platform.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
