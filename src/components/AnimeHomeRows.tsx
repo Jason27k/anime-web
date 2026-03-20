@@ -8,13 +8,10 @@ interface AnimeHomeRowsProps {
   trending: MediaDisplay[];
   popular: MediaDisplay[];
   top: MediaDisplay[];
-  romance: MediaDisplay[];
   nextSeason: string;
   nextSeasonYear: number;
   currentSeason?: "WINTER" | "SPRING" | "SUMMER" | "FALL";
   currentSeasonYear?: number;
-  loggedIn: boolean;
-  ids: number[];
 }
 
 const seasonLabels: Record<string, string> = {
@@ -33,27 +30,56 @@ const AnimeHomeRows = ({
   nextSeasonYear,
   currentSeason,
   currentSeasonYear,
-  loggedIn,
-  ids,
 }: AnimeHomeRowsProps) => {
   const nextSeasonLabel = seasonLabels[nextSeason] ?? nextSeason;
 
   return (
     <div className="flex flex-col gap-16">
+      {/* Trending this season — text left, cards right */}
+      {trending.length > 0 && currentSeason && currentSeasonYear && (
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Left text panel */}
+          <div className="lg:col-span-4 flex flex-col justify-center">
+            <span className="text-primary font-bold text-sm tracking-[0.2em] uppercase mb-2">
+              {seasonLabels[currentSeason]} {currentSeasonYear}
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-3 leading-tight text-foreground">
+              Trending <br />This Season
+            </h2>
+            <p className="text-muted-foreground mb-5 max-w-sm leading-relaxed">
+              The most talked-about anime airing right now.
+            </p>
+            <Link
+              href={`/search?year=${currentSeasonYear}&season=${currentSeason}&sort=TRENDING_DESC`}
+              className="w-fit bg-surface-container-high hover:bg-surface-container-highest text-foreground px-6 py-2.5 rounded-full border border-outline-variant/20 transition-all font-bold text-sm uppercase tracking-widest"
+            >
+              View All
+            </Link>
+          </div>
+
+          {/* Right cards panel */}
+          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            {trending.slice(0, 3).map((item, index) => (
+              <AnimeCardOverlay
+                key={item.id}
+                anime={item}
+                className={index === 2 ? "hidden md:block" : undefined}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       <AnimeRow
         title="Top All Time"
         animes={top}
         link="/search?sort=SCORE_DESC"
-        loggedIn={loggedIn}
-        ids={ids}
       />
 
       <AnimeRow
         title="Most Popular"
         animes={popular}
         link="/search?sort=POPULARITY_DESC"
-        loggedIn={loggedIn}
-        ids={ids}
       />
 
       {/* Upcoming season highlights — mirrored layout (text right) */}

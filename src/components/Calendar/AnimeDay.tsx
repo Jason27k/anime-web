@@ -9,8 +9,6 @@ interface AnimeDayProps {
   dateLabel: string;
   defaultExpanded: boolean;
   airingSchedules: AiringSchedule[];
-  loggedIn: boolean;
-  ids: number[];
 }
 
 const AnimeDay = ({
@@ -18,8 +16,6 @@ const AnimeDay = ({
   dateLabel,
   defaultExpanded,
   airingSchedules,
-  loggedIn,
-  ids,
 }: AnimeDayProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const dotCount = Math.min(airingSchedules.length, 8);
@@ -51,8 +47,6 @@ const AnimeDay = ({
         </button>
         <AnimeMediumFormatted
           airingSchedules={airingSchedules}
-          loggedIn={loggedIn}
-          ids={ids}
         />
       </section>
     );

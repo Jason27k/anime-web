@@ -7,11 +7,9 @@ interface AnimeRowProps {
   title: string;
   animes: MediaDisplay[];
   link: string;
-  loggedIn: boolean;
-  ids: number[];
 }
 
-const AnimeRow = ({ title, animes, link, loggedIn, ids }: AnimeRowProps) => {
+const AnimeRow = ({ title, animes, link }: AnimeRowProps) => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-end">
@@ -36,16 +34,14 @@ const AnimeRow = ({ title, animes, link, loggedIn, ids }: AnimeRowProps) => {
               <AnimeMediumResizable
                 key={anime.id}
                 anime={anime}
-                loggedIn={loggedIn}
-                ids={ids}
               />
             ))}
-        <AnimeMediumResizable
-          anime={animes[6]}
-          className="block md:hidden xl:block"
-          loggedIn={loggedIn}
-          ids={ids}
-        />
+        {animes[5] && (
+          <AnimeMediumResizable
+            anime={animes[5]}
+            className="block md:hidden xl:block"
+          />
+        )}
       </div>
     </div>
   );

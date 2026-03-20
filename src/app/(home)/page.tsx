@@ -5,11 +5,10 @@ import {
   fetchWatchlistAiring,
 } from "@/app/actions";
 import AnimeHomeRows from "@/components/AnimeHomeRows";
+import AnimeRow from "@/components/AnimeRow";
 import HeroCarousel from "@/components/HeroCarousel";
-import TodaysEpisodes from "@/components/TodaysEpisodes";
-import WatchlistAiring from "@/components/WatchlistAiring";
 import { currentUser } from "@clerk/nextjs/server";
-import { MediaDisplay, AiringSchedule } from "@/utils/anilistTypes";
+import { MediaDisplay } from "@/utils/anilistTypes";
 
 function getSeasonInfo() {
   const month = new Date().getMonth();
@@ -50,7 +49,6 @@ const page = async () => {
     trendingResponse,
     popularResponse,
     topResponse,
-    romanceResponse,
   ] = await Promise.all([
     fetchTodaySchedule(),
     fetchMyAnimeIds(),
@@ -58,14 +56,12 @@ const page = async () => {
     animeSearch({ seasonYear: year, season: currentSeason, sort: ["TRENDING_DESC"], page: 1 }),
     animeSearch({ sort: ["POPULARITY_DESC"], page: 1 }),
     animeSearch({ sort: ["SCORE_DESC"], page: 1 }),
-    animeSearch({ genres: ["Romance"], page: 1 }),
   ]);
 
   const upcoming: MediaDisplay[] = upcomingResponse?.data.Page.media ?? [];
   const trending: MediaDisplay[] = trendingResponse?.data.Page.media ?? [];
   const popular: MediaDisplay[] = popularResponse?.data.Page.media ?? [];
   const top: MediaDisplay[] = topResponse?.data.Page.media ?? [];
-  const romance: MediaDisplay[] = romanceResponse?.data.Page.media ?? [];
   const userAnimeIds = ids ?? [];
 
   if (!upcoming.length && !trending.length) {
@@ -79,22 +75,33 @@ const page = async () => {
 
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
+  // Sort today's schedule: upcoming first, then aired
+  const orderedToday = [
+    ...todaySchedule.filter((s) => s.airingAt > currentTimestamp),
+    ...todaySchedule.filter((s) => s.airingAt <= currentTimestamp),
+  ].slice(0, 6).map((s) => s.media);
+
+  // Extract media from watchlist airing schedules
+  const watchlistMedia = watchlistAiringData.schedules.map((s) => s.media);
+
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-16">
       <HeroCarousel trendingAnime={trending} />
 
       {userAnimeIds.length > 0 ? (
-        watchlistAiringData.schedules.length > 0 && (
-          <WatchlistAiring
-            schedules={watchlistAiringData.schedules}
-            totalCount={watchlistAiringData.totalCount}
+        watchlistMedia.length > 0 && (
+          <AnimeRow
+            title="Your Shows This Week"
+            animes={watchlistMedia}
+            link="/calendar"
           />
         )
       ) : (
-        todaySchedule.length > 0 && (
-          <TodaysEpisodes
-            schedules={todaySchedule}
-            currentTimestamp={currentTimestamp}
+        orderedToday.length > 0 && (
+          <AnimeRow
+            title="Today's Episodes"
+            animes={orderedToday}
+            link="/calendar"
           />
         )
       )}
@@ -104,13 +111,10 @@ const page = async () => {
         top={top}
         trending={trending}
         popular={popular}
-        romance={romance}
         nextSeason={nextSeason}
         nextSeasonYear={nextSeasonYear}
         currentSeason={currentSeason}
         currentSeasonYear={year}
-        loggedIn={loggedIn}
-        ids={userAnimeIds}
       />
     </div>
   );

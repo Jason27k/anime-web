@@ -9,8 +9,6 @@ import {
 import { ListVideo, UserPlus, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const PER_PAGE = 20;
-
 const NoUserFound = () => {
   return (
     <div className="container mx-auto p-4 flex items-center justify-center min-h-[calc(100vh-100px)]">

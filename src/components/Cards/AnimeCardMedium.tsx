@@ -7,15 +7,11 @@ import { convertUTCToLocal } from "@/utils/date";
 interface AnimeCardMediumProps {
   anime: MediaDisplay;
   airing?: number;
-  loggedIn: boolean;
-  ids: number[];
 }
 
 const AnimeCardMedium = ({
   anime,
   airing,
-  loggedIn,
-  ids,
 }: AnimeCardMediumProps) => {
   const image = anime.coverImage.extraLarge;
   const title = anime.title.english ?? anime.title.romaji ?? anime.title.native;

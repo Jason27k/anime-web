@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition } from "react";
 import {
   Sheet,
   SheetContent,
@@ -89,18 +89,20 @@ export default function AnimeSheet({
   const [isPending, startTransition] = useTransition();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [prevOpen, setPrevOpen] = useState(open);
 
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const maxEpisodes = totalEpisodes || 12;
-
-  // Reset state when dialog/sheet opens with new values
-  useEffect(() => {
+  // Reset state when sheet opens — done during render to avoid cascading effects
+  if (prevOpen !== open) {
+    setPrevOpen(open);
     if (open) {
       setEpisode(currentEpisode || 1);
       setStatus(currentStatus || "WATCHING");
       setShowDeleteConfirm(false);
     }
-  }, [open, currentEpisode, currentStatus]);
+  }
+
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const maxEpisodes = totalEpisodes || 12;
 
   // When status changes to COMPLETED, set episode to max
   const handleStatusChange = (newStatus: AnimeStatus) => {

@@ -239,10 +239,7 @@ export async function fetchSchedule(
 
 // ---- search ----
 
-export async function animeSearch(
-  variables: SearchQueryVariables,
-  excludeIds?: number[]
-) {
+export async function animeSearch(variables: SearchQueryVariables) {
   const keyPayload = JSON.stringify(variables);
   const encoder = new TextEncoder();
   const hashBuffer = await crypto.subtle.digest(
@@ -263,16 +260,9 @@ export async function animeSearch(
     await cacheSet(cacheKey, data, TTL.search);
   }
 
-  const deduped = Array.from(
+  data.data.Page.media = Array.from(
     new Map(data.data.Page.media.map((a) => [a.id, a])).values()
   );
-
-  if (excludeIds) {
-    const excluded = new Set(excludeIds);
-    data.data.Page.media = deduped.filter((a) => !excluded.has(a.id));
-  } else {
-    data.data.Page.media = deduped;
-  }
 
   return data;
 }
@@ -309,7 +299,7 @@ export async function fetchTodaySchedule(): Promise<AiringSchedule[]> {
     return schedules
       .filter(
         (s) =>
-          s.media.popularity > 10000 &&
+          s.media.popularity > 3000 &&
           (s.media.format === "TV" || s.media.format === "ONA") &&
           !s.media.isAdult
       )
@@ -572,7 +562,7 @@ export async function addToMyList(
 
 // ---- remove from list ----
 
-export async function removefromMyList(animeId: number, refresh: boolean) {
+export async function removeFromMyList(animeId: number, refresh: boolean) {
   const { userId } = await auth();
   if (!userId) return { success: false, error: "Not authenticated" };
 
@@ -606,7 +596,7 @@ export async function removefromMyList(animeId: number, refresh: boolean) {
 }
 
 export async function removeFromMyListWithRevalidation(animeId: number) {
-  return removefromMyList(animeId, true);
+  return removeFromMyList(animeId, true);
 }
 
 // ---- update progress ----

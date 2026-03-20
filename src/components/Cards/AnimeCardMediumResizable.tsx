@@ -9,16 +9,12 @@ interface AnimeMediumResizableProps {
   anime: MediaDisplay;
   className?: string;
   airing?: number;
-  loggedIn: boolean;
-  ids: number[];
 }
 
 const AnimeMediumResizable = ({
   anime,
   className,
   airing,
-  loggedIn,
-  ids,
 }: AnimeMediumResizableProps) => {
   const image = anime.coverImage.extraLarge;
   const title = anime.title.english ?? anime.title.romaji ?? anime.title.native;
@@ -41,7 +37,7 @@ const AnimeMediumResizable = ({
   return (
     <Link
       href={"/anime/" + anime.id}
-      className={cn(className, "flex flex-col group cursor-pointer w-full")}
+      className={cn(className, "flex flex-col group cursor-pointer w-full min-w-0")}
     >
       <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-surface-container-low mb-3 transition-transform duration-500 hover:scale-[1.03] shadow-lg hover:shadow-primary/10">
         <img
