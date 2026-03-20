@@ -34,6 +34,30 @@ export function getTodayRange(): {
   };
 }
 
+export function getDayRanges(): Array<{
+  start: number;
+  end: number;
+  name: string;
+  dateLabel: string;
+}> {
+  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const today = new Date();
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+    return {
+      start: Math.floor(start.getTime() / 1000),
+      end: Math.floor(end.getTime() / 1000),
+      name: dayNames[date.getDay()],
+      dateLabel: date.toLocaleDateString("en-US", { month: "long", day: "numeric" }),
+    };
+  });
+}
+
 export function formatTimeUntilAiring(airingAt: number): string {
   const now = Math.floor(Date.now() / 1000);
   const diff = airingAt - now;

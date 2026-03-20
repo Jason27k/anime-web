@@ -4,6 +4,8 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import AnimeDetailLoading from "./loading";
 
+export const maxDuration = 30;
+
 async function AnimeDetailsContent({ id }: { id: number }) {
   const [animeResponse, user] = await Promise.all([
     fetchAniListAnime(id),

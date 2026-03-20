@@ -1,47 +1,30 @@
-import { fetchMyAnimeIds, fetchSchedule } from "@/app/actions";
-import { CalendarQueryResponse } from "@/utils/anilistTypes";
-import { getWeekRangeFromToday } from "@/utils/date";
+import { Suspense } from "react";
+import { fetchMyAnimeIds } from "@/app/actions";
+import { getDayRanges } from "@/utils/date";
 import { currentUser } from "@clerk/nextjs/server";
-import AnimeCalendar from "./AnimeCalendar";
-
-const MIN_MEMBERS = 2000;
+import CalendarShell from "./CalendarShell";
+import AnimeDayLoader, { AnimeDaySkeleton } from "./AnimeDayLoader";
 
 const CalendarContent = async () => {
-  const { startOfWeek, endOfWeek } = getWeekRangeFromToday();
-
-  const user = await currentUser();
-  const loggedIn = !!(user?.id);
-
-  const ids = (await fetchMyAnimeIds()) || [];
-
-  let page = 1;
-  let response: CalendarQueryResponse = await fetchSchedule(
-    startOfWeek,
-    endOfWeek,
-    page
-  );
-
-  const isValid = (schedule: CalendarQueryResponse["data"]["Page"]["airingSchedules"][number]) =>
-    schedule.media.popularity >= MIN_MEMBERS &&
-    (schedule.media.format === "TV" || schedule.media.format === "ONA") &&
-    schedule.media.type === "ANIME";
-
-  let airingSchedules = response.data.Page.airingSchedules.filter(isValid);
-
-  while (response.data.Page.pageInfo.hasNextPage) {
-    page++;
-    response = await fetchSchedule(startOfWeek, endOfWeek, page);
-    airingSchedules = airingSchedules.concat(
-      response.data.Page.airingSchedules.filter(isValid)
-    );
-  }
+  const [[user, ids], dayRanges] = await Promise.all([
+    Promise.all([currentUser(), fetchMyAnimeIds()]),
+    Promise.resolve(getDayRanges()),
+  ]);
 
   return (
-    <AnimeCalendar
-      airingSchedules={airingSchedules}
-      loggedIn={loggedIn}
-      ids={ids}
-    />
+    <CalendarShell loggedIn={!!user?.id} ids={ids || []}>
+      {dayRanges.map((day, i) => (
+        <Suspense key={day.start} fallback={<AnimeDaySkeleton defaultExpanded={i === 0} />}>
+          <AnimeDayLoader
+            dayStart={day.start}
+            dayEnd={day.end}
+            name={day.name}
+            dateLabel={day.dateLabel}
+            defaultExpanded={i === 0}
+          />
+        </Suspense>
+      ))}
+    </CalendarShell>
   );
 };
 

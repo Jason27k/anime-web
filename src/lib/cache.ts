@@ -14,7 +14,7 @@ const redis = hasRedis
 // TTLs in seconds — mirrors what the Go backend used
 export const TTL = {
   schedule: 6 * 60 * 60, // 6 hr
-  search: 60 * 60, // 1 hr
+  search: 6 * 60 * 60, // 6 hr
   genres: 7 * 24 * 60 * 60, // 7 days
   anime: 3 * 60 * 60, // 3 hr (releasing/default)
   finished: 7 * 24 * 60 * 60, // 7 days

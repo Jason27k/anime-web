@@ -37,7 +37,8 @@ const ANILIST_URL = "https://graphql.anilist.co";
 
 async function anilistFetch<T>(
   query: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
+  retries = 2
 ): Promise<T> {
   const res = await fetch(ANILIST_URL, {
     method: "POST",
@@ -45,6 +46,14 @@ async function anilistFetch<T>(
     body: JSON.stringify({ query, variables }),
     cache: "no-store",
   });
+
+  if (res.status === 429 && retries > 0) {
+    const retryAfter = res.headers.get("Retry-After");
+    const delay = retryAfter ? Math.min(parseInt(retryAfter) * 1000, 4000) : 2000;
+    await new Promise((r) => setTimeout(r, delay));
+    return anilistFetch<T>(query, variables, retries - 1);
+  }
+
   if (!res.ok) throw new Error(`AniList request failed: ${res.status}`);
   return res.json();
 }
@@ -285,6 +294,34 @@ export async function fetchGenres(): Promise<string[]> {
   );
   await cacheSet(cacheKey, data, TTL.genres);
   return data.data.GenreCollection.filter((g) => g !== "Hentai");
+}
+
+// ---- single day schedule ----
+
+const MIN_MEMBERS = 2000;
+
+export async function fetchDaySchedule(dayStart: number, dayEnd: number): Promise<AiringSchedule[]> {
+  const cacheKey = `schedule:day:${dayStart}`;
+  const cached = await cacheGet<AiringSchedule[]>(cacheKey);
+  if (cached) return cached;
+
+  const isValid = (s: AiringSchedule) =>
+    s.media.popularity >= MIN_MEMBERS &&
+    (s.media.format === "TV" || s.media.format === "ONA") &&
+    s.media.type === "ANIME";
+
+  let page = 1;
+  let response = await fetchSchedule(dayStart, dayEnd, page);
+  let schedules = response.data.Page.airingSchedules.filter(isValid);
+
+  while (response.data.Page.pageInfo.hasNextPage && page < 3) {
+    page++;
+    response = await fetchSchedule(dayStart, dayEnd, page);
+    schedules = schedules.concat(response.data.Page.airingSchedules.filter(isValid));
+  }
+
+  await cacheSet(cacheKey, schedules, TTL.schedule);
+  return schedules;
 }
 
 // ---- today's schedule ----

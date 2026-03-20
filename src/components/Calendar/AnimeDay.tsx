@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AiringSchedule } from "@/utils/anilistTypes";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { AnimeMediumFormatted } from "../AnimeMediumFormatted";
+import { useCalendar } from "./CalendarContext";
 
 interface AnimeDayProps {
   day: string;
@@ -18,7 +19,14 @@ const AnimeDay = ({
   airingSchedules,
 }: AnimeDayProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
-  const dotCount = Math.min(airingSchedules.length, 8);
+  const { myListOnly, ids, loggedIn } = useCalendar();
+
+  const visibleSchedules =
+    myListOnly && loggedIn
+      ? airingSchedules.filter((s) => ids.has(s.media.id))
+      : airingSchedules;
+
+  const dotCount = Math.min(visibleSchedules.length, 8);
 
   if (expanded) {
     return (
@@ -32,7 +40,7 @@ const AnimeDay = ({
               {day}
             </h2>
             <span className="px-2 py-1 bg-primary-container/20 text-primary text-xs font-bold rounded-full border border-primary/20 whitespace-nowrap shrink-0">
-              {airingSchedules.length} RELEASES
+              {visibleSchedules.length} RELEASES
             </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
@@ -45,9 +53,7 @@ const AnimeDay = ({
             />
           </div>
         </button>
-        <AnimeMediumFormatted
-          airingSchedules={airingSchedules}
-        />
+        <AnimeMediumFormatted airingSchedules={visibleSchedules} />
       </section>
     );
   }
@@ -69,8 +75,8 @@ const AnimeDay = ({
       </div>
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase whitespace-nowrap">
-          <span className="hidden sm:inline">{airingSchedules.length} PREMIERES</span>
-          <span className="sm:hidden">{airingSchedules.length}</span>
+          <span className="hidden sm:inline">{visibleSchedules.length} PREMIERES</span>
+          <span className="sm:hidden">{visibleSchedules.length}</span>
         </span>
         <ChevronRight
           size={16}
