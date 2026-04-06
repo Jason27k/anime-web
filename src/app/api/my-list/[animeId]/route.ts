@@ -1,0 +1,33 @@
+import { auth } from "@clerk/nextjs/server";
+import { db } from "@/lib/db";
+import { myAnimes } from "@/lib/schema";
+import { cacheDel } from "@/lib/cache";
+import { eq, and } from "drizzle-orm";
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ animeId: string }> },
+) {
+  const { userId } = await auth();
+  if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { animeId: raw } = await params;
+  const animeId = parseInt(raw);
+  if (isNaN(animeId))
+    return Response.json({ error: "Invalid ID" }, { status: 400 });
+
+  await db
+    .delete(myAnimes)
+    .where(and(eq(myAnimes.userId, userId), eq(myAnimes.animeId, animeId)));
+
+  await cacheDel(
+    `mylist:${userId}`,
+    `mylist:${userId}:ids`,
+    `mylist:${userId}:stats`,
+    `mylist:${userId}:WATCHING`,
+    `mylist:${userId}:COMPLETED`,
+    `mylist:${userId}:DROPPED`,
+  );
+
+  return Response.json({ success: true });
+}
