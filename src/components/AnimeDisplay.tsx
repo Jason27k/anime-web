@@ -1,6 +1,6 @@
 "use client";
 import { ScrollArea } from "./ui/scroll-area";
-import { AiringSchedule, MediaDisplay } from "@/utils/anilistTypes";
+import { AiringSchedule, AnimeCardData } from "@/utils/anilistTypes";
 import AnimeCard from "./Cards/AnimeCard";
 
 const AnimeDisplay = ({
@@ -9,7 +9,7 @@ const AnimeDisplay = ({
   loggedIn,
   ids,
 }: {
-  animeData?: MediaDisplay[];
+  animeData?: AnimeCardData[];
   airingSchedules?: AiringSchedule[];
   loggedIn: boolean;
   ids: number[];
@@ -33,7 +33,7 @@ const AnimeDisplay = ({
                 />
               ))
             : animeData &&
-              animeData.map((anime: MediaDisplay) => (
+              animeData.map((anime: AnimeCardData) => (
                 <AnimeCard
                   anime={anime}
                   key={anime.id}

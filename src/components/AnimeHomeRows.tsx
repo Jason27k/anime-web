@@ -1,16 +1,16 @@
 import AnimeRow from "./AnimeRow";
 import AnimeCardOverlay from "./Cards/AnimeCardOverlay";
 import Link from "next/link";
-import { MediaDisplay } from "@/utils/anilistTypes";
+import { AnimeCardData, MediaSeason } from "@/utils/anilistTypes";
 
 interface AnimeHomeRowsProps {
-  upcoming: MediaDisplay[];
-  trending: MediaDisplay[];
-  popular: MediaDisplay[];
-  top: MediaDisplay[];
+  upcoming: AnimeCardData[];
+  trending: AnimeCardData[];
+  popular: AnimeCardData[];
+  top: AnimeCardData[];
   nextSeason: string;
   nextSeasonYear: number;
-  currentSeason?: "WINTER" | "SPRING" | "SUMMER" | "FALL";
+  currentSeason?: MediaSeason;
   currentSeasonYear?: number;
 }
 

@@ -8,14 +8,14 @@ import AnimeHomeRows from "@/components/AnimeHomeRows";
 import AnimeRow from "@/components/AnimeRow";
 import HeroCarousel from "@/components/HeroCarousel";
 import { currentUser } from "@clerk/nextjs/server";
-import { MediaDisplay } from "@/utils/anilistTypes";
+import { MediaDisplay, MediaSeason } from "@/utils/anilistTypes";
 
 function getSeasonInfo() {
   const month = new Date().getMonth();
   const year = new Date().getFullYear();
 
-  let currentSeason: "WINTER" | "SPRING" | "SUMMER" | "FALL";
-  let nextSeason: "WINTER" | "SPRING" | "SUMMER" | "FALL";
+  let currentSeason: MediaSeason;
+  let nextSeason: MediaSeason;
   let nextSeasonYear = year;
 
   if (month < 3) {

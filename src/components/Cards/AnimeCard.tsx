@@ -3,12 +3,12 @@
 import { CirclePlus, Pencil, Star, Users } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { MediaDisplay } from "@/utils/anilistTypes";
+import { AnimeCardData } from "@/utils/anilistTypes";
 import { convertUTCToLocal } from "@/utils/date";
 import AnimeSheet from "../AnimeSheet";
 
 interface AnimeCardProps {
-  anime: MediaDisplay;
+  anime: AnimeCardData;
   airing?: number;
   loggedIn: boolean;
   ids: number[];
@@ -40,7 +40,7 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
     anime.averageScore === null || !anime.averageScore
       ? null
       : anime.averageScore / 10;
-  const members = anime.popularity;
+  const members = anime.popularity ?? 0;
 
   return (
     <div className="flex flex-col group cursor-pointer relative w-full max-w-[200px] mx-auto">
@@ -74,7 +74,7 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
           {title}
         </h3>
         <p className="text-muted-foreground text-xs uppercase tracking-wider mb-0.5">
-          {anime.studios.nodes[0]?.name ?? ""}
+          {anime.studios?.nodes[0]?.name ?? ""}
         </p>
         <div className="flex items-center justify-between text-muted-foreground text-xs uppercase tracking-wider">
           <div className="flex items-center gap-1">
@@ -113,7 +113,7 @@ const AnimeCard = ({ anime, airing, loggedIn, ids }: AnimeCardProps) => {
             onOpenChange={setAddSheetOpen}
             animeId={anime.id}
             animeTitle={title}
-            totalEpisodes={anime.episodes}
+            totalEpisodes={anime.episodes ?? null}
             coverImage={anime.coverImage.extraLarge}
             isInList={isInList}
             onSuccess={(action) => {

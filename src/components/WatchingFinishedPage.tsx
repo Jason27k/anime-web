@@ -15,7 +15,7 @@ import { Anime, Title } from "@/utils/myAnimeTypes";
 import { convertUTCToLocal } from "@/utils/date";
 import { capitalize } from "@/utils/formatting";
 import Link from "next/link";
-import { AnimeInfo } from "@/app/my-anime/page";
+import { AnimeInfo } from "@/utils/myAnimeTypes";
 import AnimeSheet from "./AnimeSheet";
 import { AnimeStatus } from "@/lib/api-client";
 

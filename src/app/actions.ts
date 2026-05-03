@@ -11,6 +11,7 @@ import {
   SearchQueryResponse,
   AiringSchedule,
   MediaResponse,
+  MediaSeason,
 } from "@/utils/anilistTypes";
 import { Anime } from "@/utils/myAnimeTypes";
 import { getTodayRange, getWeekRangeFromToday } from "@/utils/date";
@@ -24,7 +25,7 @@ export type SearchQueryVariables = {
   isAdult?: boolean;
   search?: string;
   status?: string;
-  season?: "WINTER" | "SPRING" | "SUMMER" | "FALL";
+  season?: MediaSeason;
   seasonYear?: number;
   year?: string;
   genres?: string[];

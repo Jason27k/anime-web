@@ -6,15 +6,7 @@ import { Button } from "@/components/ui/button";
 import { fetchMyList, fetchMyListStats } from "@/app/actions";
 import NoUserFound from "@/components/NoUserFound";
 import NoLikedAnime from "@/components/NoLikedAnime";
-import { AnimeStatus } from "@/lib/api-client";
-import { Anime } from "@/utils/myAnimeTypes";
-
-export type AnimeInfo = {
-  id: number;
-  status: AnimeStatus;
-  episode: number | null;
-  anime: Anime;
-};
+import { AnimeInfo } from "@/utils/myAnimeTypes";
 
 const PER_PAGE = 20;
 
@@ -52,12 +44,9 @@ export default async function Page({
 
   const paged = myList.slice(pageNumber * PER_PAGE, (pageNumber + 1) * PER_PAGE);
 
-  const animeInfoList: AnimeInfo[] = paged.map((e) => ({
-    id: e.animeId,
-    status: e.status,
-    episode: e.episode,
-    anime: e.anime as Anime,
-  }));
+  const animeInfoList: AnimeInfo[] = paged.flatMap((e) =>
+    e.anime ? [{ id: e.animeId, status: e.status, episode: e.episode, anime: e.anime }] : []
+  );
 
   return (
     <ProfileLayout stats={stats ?? undefined}>

@@ -1,3 +1,13 @@
+import { AnimeStatus } from "@/lib/api-client";
+import { MediaSeason } from "@/utils/anilistTypes";
+
+export type AnimeInfo = {
+  id: number;
+  status: AnimeStatus;
+  episode: number | null;
+  anime: Anime;
+};
+
 export interface AnimeData {
   data: {
     Page: {
@@ -13,7 +23,7 @@ export interface Anime {
   episodes: number;
   streamingEpisodes?: StreamingEpisode[];
   nextAiringEpisode?: NextAiringEpisode | null;
-  season: "WINTER" | "SPRING" | "SUMMER" | "FALL";
+  season: MediaSeason;
   seasonYear: number;
 }
 

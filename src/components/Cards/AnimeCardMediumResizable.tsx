@@ -2,11 +2,11 @@
 import { Star, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { MediaDisplay } from "@/utils/anilistTypes";
+import { AnimeCardData } from "@/utils/anilistTypes";
 import { convertUTCToLocal } from "@/utils/date";
 
 interface AnimeMediumResizableProps {
-  anime: MediaDisplay;
+  anime: AnimeCardData;
   className?: string;
   airing?: number;
 }
@@ -32,7 +32,7 @@ const AnimeMediumResizable = ({
     anime.averageScore === null || !anime.averageScore
       ? null
       : anime.averageScore / 10;
-  const members = anime.popularity;
+  const members = anime.popularity ?? 0;
 
   return (
     <Link

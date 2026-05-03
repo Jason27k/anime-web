@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { MediaDisplay } from "@/utils/anilistTypes";
+import { AnimeCardData } from "@/utils/anilistTypes";
 import { cn } from "@/lib/utils";
 
 interface AnimeCardOverlayProps {
-  anime: MediaDisplay;
+  anime: AnimeCardData;
   className?: string;
 }
 

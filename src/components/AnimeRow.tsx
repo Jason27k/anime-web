@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import AnimeMediumResizable from "./Cards/AnimeCardMediumResizable";
-import { MediaDisplay } from "@/utils/anilistTypes";
+import { AnimeCardData } from "@/utils/anilistTypes";
 
 interface AnimeRowProps {
   title: string;
-  animes: MediaDisplay[];
+  animes: AnimeCardData[];
   link: string;
 }
 
@@ -30,7 +30,7 @@ const AnimeRow = ({ title, animes, link }: AnimeRowProps) => {
         {animes &&
           animes
             .slice(0, 5)
-            .map((anime: MediaDisplay) => (
+            .map((anime) => (
               <AnimeMediumResizable
                 key={anime.id}
                 anime={anime}

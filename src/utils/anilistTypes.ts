@@ -1,42 +1,83 @@
-export type MediaResponse = {
-  data: {
-    Media: Media;
-  };
+// ---- Shared union types ----
+
+export type MediaFormat = "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
+export type MediaType = "ANIME" | "MANGA";
+export type ReleaseStatus = "FINISHED" | "RELEASING" | "NOT_YET_RELEASED" | "CANCELLED";
+export type MediaSeason = "WINTER" | "SPRING" | "SUMMER" | "FALL";
+
+// ---- Generic AniList page response ----
+
+export type AniListPageResponse<T> = {
+  data: { Page: T };
 };
-type Title = {
+
+// ---- Shared sub-types ----
+
+// Exported so card components and other consumers can reference it directly
+export type MediaTitle = {
   romaji: string;
   english: string;
   native: string;
 };
 
-export type Media = {
+// Unified: was AiringEpisodeType in Media and AiringEpisode in MediaDisplay — same shape
+export type AiringEpisode = {
+  airingAt: number;
+  timeUntilAiring: number;
+  episode: number;
+};
+
+// ---- MediaCore: fields shared identically by both Media and MediaDisplay ----
+
+export type MediaCore = {
   id: number;
-  title: Title;
-  coverImage: {
-    extraLarge: string;
-    large: string;
-  };
+  title: MediaTitle;
+  format: MediaFormat;
+  type: MediaType;
+  status: ReleaseStatus;
+  genres: string[];
+  isAdult: boolean;
+  popularity: number;
+  averageScore?: number;
+};
+
+// ---- AnimeCardData: minimal type for card components (ISP) ----
+// Only the fields cards actually render. Both MediaDisplay and Anime from myAnimeTypes
+// satisfy this shape structurally — no cast needed at call sites.
+
+export type AnimeCardData = {
+  id: number;
+  title: MediaTitle;
+  coverImage: { extraLarge: string };
+  episodes?: number | null;
+  nextAiringEpisode?: { airingAt: number; episode: number } | null;
+  averageScore?: number | null;
+  popularity?: number;
+  studios?: { nodes: { name: string }[] };
+};
+
+// ---- Media detail (anime/[id] page) ----
+
+export type MediaResponse = {
+  data: { Media: Media };
+};
+
+export type Media = MediaCore & {
+  coverImage: { extraLarge: string; large: string };
   bannerImage?: string;
   startDate: DateType;
   endDate?: DateType;
   description?: string;
-  season?: "SPRING" | "SUMMER" | "FALL" | "WINTER";
+  season?: MediaSeason;
   seasonYear?: number;
-  type: "ANIME" | "MANGA";
-  format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
-  status: "FINISHED" | "RELEASING" | "NOT_YET_RELEASED" | "CANCELLED";
   episodes?: number;
   duration?: number;
   chapters?: number;
   volumes?: number;
-  genres: string[];
   synonyms: string[];
   source: "ORIGINAL" | "MANGA" | "LIGHT_NOVEL" | "VISUAL_NOVEL";
-  isAdult: boolean;
   isLocked: boolean;
   meanScore?: number;
-  averageScore?: number;
-  popularity: number;
   favourites: number;
   isFavouriteBlocked: boolean;
   hashtag?: string;
@@ -45,50 +86,28 @@ export type Media = {
   isFavourite: boolean;
   isRecommendationBlocked: boolean;
   isReviewBlocked: boolean;
-  nextAiringEpisode?: AiringEpisodeType;
-  relations: {
-    edges: RelationEdge[];
-  };
-  characterPreview?: {
-    edges: CharacterEdge[];
-  };
-  staffPreview?: {
-    edges: StaffEdge[];
-  };
-  studios: {
-    edges: StudioEdge[];
-  };
-  reviewPreview?: {
-    pageInfo: { total: number };
-    nodes: ReviewNode[];
-  };
-  recommendations: {
-    pageInfo: { total: number };
-    nodes: RecommendationNode[];
-  };
+  nextAiringEpisode?: AiringEpisode;
+  relations: { edges: RelationEdge[] };
+  characterPreview?: { edges: CharacterEdge[] };
+  staffPreview?: { edges: StaffEdge[] };
+  studios: { edges: StudioEdge[] };
+  reviewPreview?: { pageInfo: { total: number }; nodes: ReviewNode[] };
+  recommendations: { pageInfo: { total: number }; nodes: RecommendationNode[] };
   externalLinks: ExternalLink[];
   streamingEpisodes: StreamingEpisode[];
-  trailer?: {
-    id: string;
-    site: string;
-  };
+  trailer?: { id: string; site: string };
   rankings: Ranking[];
   tags: Tag[];
-  mediaListEntry?: unknown; // Adjust this type based on data structure
+  mediaListEntry?: unknown;
   stats?: Stats;
 };
 
-// Supporting Types
+// ---- Supporting types for Media ----
+
 type DateType = {
   year: number;
   month?: number;
   day?: number;
-};
-
-type AiringEpisodeType = {
-  airingAt: number;
-  timeUntilAiring: number;
-  episode: number;
 };
 
 type RelationEdge = {
@@ -97,10 +116,10 @@ type RelationEdge = {
   node: {
     id: number;
     idMal: number;
-    title: Title;
-    format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
-    type: "ANIME" | "MANGA";
-    status: "FINISHED" | "RELEASING" | "NOT_YET_RELEASED" | "CANCELLED";
+    title: MediaTitle;
+    format: MediaFormat;
+    type: MediaType;
+    status: ReleaseStatus;
     bannerImage?: string;
     coverImage: { large: string };
   };
@@ -138,10 +157,7 @@ type StaffEdge = {
 
 type StudioEdge = {
   isMain: boolean;
-  node: {
-    id: number;
-    name: string;
-  };
+  node: { id: number; name: string };
 };
 
 type ReviewNode = {
@@ -149,11 +165,7 @@ type ReviewNode = {
   summary: string;
   rating: number;
   ratingAmount: number;
-  user: {
-    id: number;
-    name: string;
-    avatar: { large: string };
-  };
+  user: { id: number; name: string; avatar: { large: string } };
 };
 
 type RecommendationNode = {
@@ -163,18 +175,14 @@ type RecommendationNode = {
   mediaRecommendation: {
     id: number;
     idMal: number;
-    title: Title;
-    format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
-    type: "ANIME" | "MANGA";
-    status: "FINISHED" | "RELEASING" | "NOT_YET_RELEASED" | "CANCELLED";
+    title: MediaTitle;
+    format: MediaFormat;
+    type: MediaType;
+    status: ReleaseStatus;
     bannerImage?: string;
     coverImage: { large: string };
   };
-  user: {
-    id: number;
-    name: string;
-    avatar: { large: string };
-  };
+  user: { id: number; name: string; avatar: { large: string } };
 };
 
 type ExternalLink = {
@@ -200,7 +208,7 @@ type Ranking = {
   id: number;
   rank: number;
   type: "RATED" | "POPULAR";
-  format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
+  format: MediaFormat;
   year?: number;
   season?: string;
   allTime: boolean;
@@ -222,21 +230,47 @@ type Stats = {
     status: "CURRENT" | "PLANNING" | "COMPLETED" | "DROPPED" | "PAUSED";
     amount: number;
   }[];
-  scoreDistribution: {
-    score: number;
-    amount: number;
-  }[];
+  scoreDistribution: { score: number; amount: number }[];
 };
 
-// Weekly & Search Types
-export type CalendarQueryResponse = {
-  data: {
-    Page: {
-      pageInfo: PageInfo;
-      airingSchedules: AiringSchedule[];
-    };
-  };
+// ---- Browse / search types ----
+
+export type MediaDisplay = MediaCore & {
+  idMal: number;
+  coverImage: { extraLarge: string; color?: string | null };
+  bannerImage: string;
+  startDate: DateTypeDisplay;
+  endDate: DateTypeDisplay;
+  description: string;
+  season: MediaSeason;
+  seasonYear: number;
+  episodes: number;
+  duration: number;
+  nextAiringEpisode?: AiringEpisode;
+  rankings: RankingDisplay[];
+  studios: { nodes: Studio[] };
 };
+
+type DateTypeDisplay = {
+  year: number;
+  month: number;
+  day: number;
+};
+
+type RankingDisplay = {
+  rank: number;
+  type: "RATED" | "POPULAR";
+  season: MediaSeason | null;
+  allTime: boolean;
+};
+
+type Studio = {
+  id: number;
+  name: string;
+  siteUrl: string;
+};
+
+// ---- Calendar / schedule types ----
 
 export type PageInfo = {
   hasNextPage: boolean;
@@ -250,81 +284,12 @@ export type AiringSchedule = {
   media: MediaDisplay;
 };
 
-export type MediaDisplay = {
-  id: number;
-  idMal: number;
-  title: {
-    romaji: string;
-    native: string;
-    english: string;
-  };
-  startDate: DateTypeDisplay;
-  endDate: DateTypeDisplay;
-  status: "RELEASING" | "FINISHED" | "NOT_YET_RELEASED" | "CANCELLED";
-  season: "WINTER" | "SPRING" | "SUMMER" | "FALL";
-  seasonYear: number;
-  format: "TV" | "MOVIE" | "SPECIAL" | "OVA" | "ONA" | "MUSIC";
-  genres: string[];
-  duration: number;
-  type: "ANIME" | "MANGA";
-  popularity: number;
-  episodes: number;
-  averageScore?: number;
-  description: string;
-  bannerImage: string;
-  isAdult: boolean;
-  nextAiringEpisode?: AiringEpisode; // optional if it can be null
-  coverImage: CoverImage;
-  rankings: RankingDisplay[];
-  studios: Studios;
-};
+export type CalendarQueryResponse = AniListPageResponse<{
+  pageInfo: PageInfo;
+  airingSchedules: AiringSchedule[];
+}>;
 
-type DateTypeDisplay = {
-  year: number;
-  month: number;
-  day: number;
-};
-
-type AiringEpisode = {
-  airingAt: number;
-  timeUntilAiring: number;
-  episode: number;
-};
-
-type CoverImage = {
-  extraLarge: string;
-  color?: string | null; // optional if it can be null
-};
-
-type RankingDisplay = {
-  rank: number;
-  type: "RATED" | "POPULAR";
-  season: "WINTER" | "SPRING" | "SUMMER" | "FALL" | null;
-  allTime: boolean;
-};
-
-type Studios = {
-  nodes: Studio[];
-};
-
-type Studio = {
-  id: number;
-  name: string;
-  siteUrl: string;
-};
-
-// Search types
-export type SearchQueryResponse = {
-  data: {
-    Page: Page;
-  };
-};
-
-// Page and PageInfo Types
-type Page = {
-  pageInfo: PageInfoSearch;
-  media: MediaDisplay[];
-};
+// ---- Search types ----
 
 type PageInfoSearch = {
   total: number;
@@ -333,3 +298,10 @@ type PageInfoSearch = {
   lastPage: number;
   hasNextPage: boolean;
 };
+
+type SearchPage = {
+  pageInfo: PageInfoSearch;
+  media: MediaDisplay[];
+};
+
+export type SearchQueryResponse = AniListPageResponse<SearchPage>;

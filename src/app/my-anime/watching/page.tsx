@@ -1,12 +1,11 @@
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { AnimeInfo } from "../page";
+import { AnimeInfo } from "@/utils/myAnimeTypes";
 import AnimeList from "@/components/AnimeList";
 import ProfileLayout from "@/components/ProfileLayout";
 import { Button } from "@/components/ui/button";
 import { fetchMyList, fetchMyListStats } from "@/app/actions";
 import NoUserFound from "@/components/NoUserFound";
-import { Anime } from "@/utils/myAnimeTypes";
 
 const PER_PAGE = 20;
 
@@ -35,12 +34,9 @@ export default async function Page({
 
   const paged = myList.slice(pageNumber * PER_PAGE, (pageNumber + 1) * PER_PAGE);
 
-  const animeInfoList: AnimeInfo[] = paged.map((e) => ({
-    id: e.animeId,
-    status: e.status,
-    episode: e.episode,
-    anime: e.anime as Anime,
-  }));
+  const animeInfoList: AnimeInfo[] = paged.flatMap((e) =>
+    e.anime ? [{ id: e.animeId, status: e.status, episode: e.episode, anime: e.anime }] : []
+  );
 
   return (
     <ProfileLayout stats={stats ?? undefined}>

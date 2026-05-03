@@ -1,12 +1,12 @@
 "use client";
 import AnimeMediumResizable from "./Cards/AnimeCardMediumResizable";
-import { AiringSchedule, MediaDisplay } from "@/utils/anilistTypes";
+import { AiringSchedule, AnimeCardData } from "@/utils/anilistTypes";
 
 export const AnimeMediumFormatted = ({
   animeData,
   airingSchedules,
 }: {
-  animeData?: MediaDisplay[];
+  animeData?: AnimeCardData[];
   airingSchedules?: AiringSchedule[];
 }) => {
   return (
@@ -20,7 +20,7 @@ export const AnimeMediumFormatted = ({
             />
           ))
         : animeData &&
-          animeData.map((anime: MediaDisplay) => (
+          animeData.map((anime: AnimeCardData) => (
             <AnimeMediumResizable
               anime={anime}
               key={anime.id}
