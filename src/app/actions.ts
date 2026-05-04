@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { myAnimes } from "@/lib/schema";
 import { cacheGet, cacheSet, cacheDel, TTL } from "@/lib/cache";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -363,8 +363,11 @@ async function fetchMyAnimeList(ids: number[]): Promise<Map<number, Anime>> {
 // ---- my anime ids (for home page personalization) ----
 
 export async function fetchMyAnimeIds(): Promise<number[]> {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return [];
+  const token = await getToken();
+  if (!token) return [];
+  const db = getDb(token);
 
   const cacheKey = `mylist:${userId}:ids`;
   const cached = await cacheGet<number[]>(cacheKey);
@@ -388,8 +391,11 @@ export async function fetchMyAnimeIds(): Promise<number[]> {
 export async function fetchMyList(
   status?: AnimeStatus
 ): Promise<MyListEntry[]> {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return [];
+  const token = await getToken();
+  if (!token) return [];
+  const db = getDb(token);
 
   const cacheKey = status ? `mylist:${userId}:${status}` : `mylist:${userId}`;
   const cached = await cacheGet<MyListEntry[]>(cacheKey);
@@ -429,8 +435,11 @@ export async function fetchMyList(
 // ---- stats ----
 
 export async function fetchMyListStats(): Promise<MyListStats | null> {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return null;
+  const token = await getToken();
+  if (!token) return null;
+  const db = getDb(token);
 
   const cacheKey = `mylist:${userId}:stats`;
   const cached = await cacheGet<MyListStats>(cacheKey);
@@ -474,8 +483,11 @@ export async function hasUserSavedAnime(animeId: number): Promise<boolean> {
 export async function getMyListEntry(
   animeId: number
 ): Promise<MyListEntry | null> {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return null;
+  const token = await getToken();
+  if (!token) return null;
+  const db = getDb(token);
 
   try {
     const rows = await db
@@ -506,8 +518,11 @@ export async function addToMyList(
   refresh: boolean,
   episodeOrFormData?: number | FormData
 ) {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return { success: false, error: "Not authenticated" };
+  const token = await getToken();
+  if (!token) return { success: false, error: "Not authenticated" };
+  const db = getDb(token);
 
   const apiStatus: AnimeStatus =
     status === "completed"
@@ -564,8 +579,11 @@ export async function addToMyList(
 // ---- remove from list ----
 
 export async function removeFromMyList(animeId: number, refresh: boolean) {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return { success: false, error: "Not authenticated" };
+  const token = await getToken();
+  if (!token) return { success: false, error: "Not authenticated" };
+  const db = getDb(token);
 
   try {
     await db
@@ -607,8 +625,11 @@ export async function updateAnimeProgress(
   episode: number | null,
   status: AnimeStatus
 ) {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return { success: false, error: "Not authenticated" };
+  const token = await getToken();
+  if (!token) return { success: false, error: "Not authenticated" };
+  const db = getDb(token);
 
   try {
     await db

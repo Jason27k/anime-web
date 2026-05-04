@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { myAnimes } from "@/lib/schema";
 import { cacheDel } from "@/lib/cache";
 import { eq, and, desc } from "drizzle-orm";
@@ -13,10 +13,13 @@ type Change = {
 
 // POST — mobile pushes pending changes, receives full canonical list back
 export async function POST(request: Request) {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const token = await getToken();
+  if (!token) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const { changes = [] }: { changes: Change[] } = await request.json();
+  const db = getDb(token);
 
   // Apply each change
   for (const c of changes) {
